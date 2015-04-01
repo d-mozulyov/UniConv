@@ -160,6 +160,25 @@ interface
 
 
 type
+  // standard types
+  {$if CompilerVersion < 19}
+  NativeInt = Integer;
+  PNativeInt = PInteger;
+  {$ifend}
+  {$if CompilerVersion < 22}
+  PNativeInt = ^NativeInt;
+  PNativeUInt = ^NativeUInt;
+  {$ifend}
+  {$if (not Defined(FPC)) and (CompilerVersion < 15)}
+  UInt64 = Int64;
+  PUInt64 = ^UInt64;
+  {$ifend}
+  {$if CompilerVersion < 23}
+  TExtended80Rec = Extended;
+  PExtended80Rec = ^TExtended80Rec;
+  {$ifend}
+  TBytes = array of Byte;
+
   // compiler independent UTF-16 char/string
   {$ifdef UNICODE}
     TUnicodeChar = Char;
@@ -170,15 +189,6 @@ type
   {$endif}
   PUnicodeChar = ^TUnicodeChar;
   PUnicodeString = ^TUnicodeString;
-
-  // native integer types
-  {$if CompilerVersion < 19}
-    NativeInt = Integer;
-    PNativeInt = PInteger;
-    NativeUInt = Cardinal;
-    PNativeUInt = PCardinal;
-  {$ifend}
-
 
 type
   // byte order mark
