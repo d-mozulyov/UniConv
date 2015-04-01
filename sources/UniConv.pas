@@ -158,26 +158,30 @@ const
 interface
   uses Types;
 
-
 type
   // standard types
-  {$if CompilerVersion < 19}
-  NativeInt = Integer;
-  PNativeInt = PInteger;
-  {$ifend}
-  {$if CompilerVersion < 22}
-  PNativeInt = ^NativeInt;
-  PNativeUInt = ^NativeUInt;
-  {$ifend}
-  {$if (not Defined(FPC)) and (CompilerVersion < 15)}
-  UInt64 = Int64;
-  PUInt64 = ^UInt64;
-  {$ifend}
-  {$if CompilerVersion < 23}
+  {$ifdef FPC}
+    PUInt64 = ^UInt64;
+  {$else}
+    {$if CompilerVersion < 15}
+      UInt64 = Int64;
+      PUInt64 = ^UInt64;
+    {$ifend}
+    {$if CompilerVersion < 19}
+      NativeInt = Integer;
+      PNativeInt = PInteger;
+    {$ifend}
+    {$if CompilerVersion < 22}
+      PNativeInt = ^NativeInt;
+      PNativeUInt = ^NativeUInt;
+    {$ifend}
+  {$endif}
+  {$if Defined(FPC) or (CompilerVersion < 23)}
   TExtended80Rec = Extended;
   PExtended80Rec = ^TExtended80Rec;
   {$ifend}
   TBytes = array of Byte;
+  PBytes = ^TBytes;
 
   // compiler independent UTF-16 char/string
   {$ifdef UNICODE}
@@ -1148,9 +1152,9 @@ var
 
 type  
   {$ifdef NEXTGEN}
-    PBytes = PByte;
+    PByteArray = PByte;
   {$else}
-    PBytes = PAnsiChar;
+    PByteArray = PAnsiChar;
   {$endif}
 
   T4Bytes = array[0..3] of Byte;
@@ -6011,7 +6015,7 @@ done:
     3: begin
          PWord(p_dest)^ := X;
          X := X shr 16;
-         Byte(PBytes(p_dest)[2]) := X;
+         Byte(PByteArray(p_dest)[2]) := X;
        end;
     4: begin
        fill_four:
@@ -6269,7 +6273,7 @@ begin
       end;
     end;
 
-    Result := (PBytes(dest)-PBytes(saved_dest))+1;
+    Result := (PByteArray(dest)-PByteArray(saved_dest))+1;
     if (dest_size < Result) then
     begin
       // too_small
@@ -8151,10 +8155,10 @@ var
   {$ifdef CPUX86}
   F: record
     Y_Offset: Integer;
-    TopPtr: PBytes;
+    TopPtr: PByteArray;
   end;
   {$else .MANY_REGS}
-    TopPtr: PBytes;
+    TopPtr: PByteArray;
   {$endif}
 
   U, V: NativeUInt;
@@ -8180,10 +8184,10 @@ begin
 
   Lookup := Comp.Lookup;
   {$ifdef CPUX86}F.Y_Offset := Integer(S2)-Integer(S1){$endif};
-  {$ifdef CPUX86}F.{$endif}TopPtr := PBytes(S1) + Comp.Length - SizeOf(NativeUInt);
+  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
 
   // while (Length >= SizeOf(NativeUInt)) do
-  if (PBytes(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
   main_loop:
   begin
     X := PNativeUInt(S1)^;
@@ -8241,7 +8245,7 @@ begin
       end;
     end;
 
-   if (PBytes(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
   end;
   main_loop_finish:
 
@@ -8312,11 +8316,11 @@ var
   {$ifdef CPUX86}
   F: record
     _1, _2: PUniConvW_B;
-    TopPtr: PBytes;
+    TopPtr: PByteArray;
   end;
   {$else .MANY_REGS}
     _1, _2: PUniConvW_B;
-    TopPtr: PBytes;
+    TopPtr: PByteArray;
   {$endif}
 
   {$ifdef CPUX86}
@@ -8331,10 +8335,10 @@ begin
 
   {$ifdef CPUX86}F.{$endif}_1 := Comp.Lookup;
   {$ifdef CPUX86}F.{$endif}_2 := Comp.Lookup_2;
-  {$ifdef CPUX86}F.{$endif}TopPtr := PBytes(S1) + Comp.Length - SizeOf(NativeUInt);
+  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
 
   // while (Length >= SizeOf(NativeUInt)) do
-  if (PBytes(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
   main_loop:
   begin
     X := PNativeUInt(S1)^;
@@ -8371,7 +8375,7 @@ begin
         if {3}({$ifdef CPUX86}F._1[X]<>F._2[Y]{$else}_1[X]<>_2[Y]{$endif}) then goto make_result;
     end;
 
-   if (PBytes(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
   end;
   main_loop_finish:
 
@@ -8593,7 +8597,7 @@ begin
     X := Ord(S1[Length-1]);
     if (_1 <> nil) then X := _1[X];
 
-    Y := Ord(PBytes(S2)[Length-1]);
+    Y := Ord(PByteArray(S2)[Length-1]);
     Y := _2[Y];
     if (X <> Y) then goto make_result;
   end;
@@ -8630,10 +8634,10 @@ asm
   mov edi, [ECX].TUniConvComp.Lookup_2
 
   lea ecx, [eax + ebx*2]
-  lea ebx, [eax - 4] // S1 := PBytes(S1) - 4;
+  lea ebx, [eax - 4] // S1 := PByteArray(S1) - 4;
   sub ecx, 8
   mov ebp, edx       // S2 := S2;
-  push ecx           // TopS1Ptr(stack) := PBytes(S1) + Length*SizeOf(WideChar) - 4-4;
+  push ecx           // TopS1Ptr(stack) := PByteArray(S1) + Length*SizeOf(WideChar) - 4-4;
 
   cmp ebx, ecx
   jnbe @after_loop
@@ -8911,7 +8915,7 @@ var
   {$endif}
 begin
   {$ifdef CPUX86}
-    F.Y_offset := (PBytes(S2)-PBytes(S1));
+    F.Y_offset := (PByteArray(S2)-PByteArray(S1));
   {$else .MANY_REGS}
     uniconv_lookup_UTF8_size := @UniConv.uniconv_lookup_UTF8_size;
     uniconv_lookup_ucs2_upper := @UniConv.uniconv_lookup_ucs2_upper;
@@ -8927,7 +8931,7 @@ begin
   if (Length < 4) then goto read_small;
 read_normal:
   X := PCardinal(S1)^;
-  Y := PCardinal({$ifdef CPUX86}PBytes(S1)+F.Y_offset{$else}S2{$endif})^;
+  Y := PCardinal({$ifdef CPUX86}PByteArray(S1)+F.Y_offset{$else}S2{$endif})^;
 read:
   U := X or Y;
   Inc(S1, SizeOf(Cardinal));
@@ -9062,19 +9066,19 @@ read_small:
   case Length of
     1: begin
          X := PByte(S1)^;
-         Y := PByte({$ifdef CPUX86}PBytes(S1)+F.Y_offset{$else}S2{$endif})^;
+         Y := PByte({$ifdef CPUX86}PByteArray(S1)+F.Y_offset{$else}S2{$endif})^;
          if (X <> Y) then goto read;
        end;
     2: begin
          X := PWord(S1)^;
-         Y := PWord({$ifdef CPUX86}PBytes(S1)+F.Y_offset{$else}S2{$endif})^;
+         Y := PWord({$ifdef CPUX86}PByteArray(S1)+F.Y_offset{$else}S2{$endif})^;
          if (X <> Y) then goto read;
        end;
     3: begin
          X := P4Bytes(S1)[2];
-         Y := P4Bytes({$ifdef CPUX86}PBytes(S1)+F.Y_offset{$else}S2{$endif})[2];
+         Y := P4Bytes({$ifdef CPUX86}PByteArray(S1)+F.Y_offset{$else}S2{$endif})[2];
          X := (X shl 16) + PWord(S1)^;
-         Y := (Y shl 16) + PWord({$ifdef CPUX86}PBytes(S1)+F.Y_offset{$else}S2{$endif})^;
+         Y := (Y shl 16) + PWord({$ifdef CPUX86}PByteArray(S1)+F.Y_offset{$else}S2{$endif})^;
          if (X <> Y) then goto read;
        end;
   end;
@@ -9796,7 +9800,7 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PAnsiStrRec(PBytes(Pointer(S)) - SizeOf(P^));
+    P := PAnsiStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -9835,7 +9839,7 @@ done:
   {$ifend}
   Inc(NativeInt(P), SizeOf(P^));
   {$ifNdef NEXTGEN}
-  PBytes(P)[Length] := NULL_ANSICHAR;
+  PByteArray(P)[Length] := NULL_ANSICHAR;
   {$endif}
   Result := P;
 end;
@@ -9856,7 +9860,7 @@ begin
   begin
     {$ifNdef NEXTGEN}
     Inc(P);
-    PBytes(P)[Length] := NULL_ANSICHAR;
+    PByteArray(P)[Length] := NULL_ANSICHAR;
     Dec(P);
     {$endif}
 
@@ -9898,7 +9902,7 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PUnicodeStrRec(PBytes(Pointer(S)) - SizeOf(P^));
+    P := PUnicodeStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -9978,7 +9982,7 @@ begin
   end else
   begin
     Length := Length*2;
-    CurrentLen := PInteger(PBytes(S) - STR_OFFSET_LENGTH)^;
+    CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
 
     if (flag >= 0) then
     begin
@@ -10005,7 +10009,7 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PWideStrRec(PBytes(S) - SizeOf(P^));
+    P := PWideStrRec(PByteArray(S) - SizeOf(P^));
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -10154,7 +10158,7 @@ end;
 
 function equal_sbcs_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup1, Lookup2: PUniConvSBCSLookup;
@@ -10289,7 +10293,7 @@ end;
 
 function equal_sbcs_UTF8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
@@ -10361,7 +10365,7 @@ end;
 
 function equal_sbcs_ucs2(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -10414,7 +10418,7 @@ end;
 {$ifdef UNICODE}
 function equal_sbcs_ucs2(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -10495,7 +10499,7 @@ end;
 
 function equal_UTF8_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
@@ -10558,7 +10562,7 @@ end;
 
 function equal_UTF8_UTF8(const S1: UTF8String; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -10618,7 +10622,7 @@ end;
 
 function equal_UTF8_ucs2(const S1: UTF8String; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -10657,7 +10661,7 @@ end;
 {$ifdef UNICODE}
 function equal_UTF8_ucs2(const S1: UTF8String; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -10718,7 +10722,7 @@ end;
 
 function equal_ucs2_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -10793,7 +10797,7 @@ end;
 
 function equal_ucs2_UTF8(const S1: WideString; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -10845,7 +10849,7 @@ end;
 
 function equal_ucs2_ucs2(const S1: WideString; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -10886,7 +10890,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2(const S1: WideString; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -10921,7 +10925,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -10974,7 +10978,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_UTF8(const S1: UnicodeString; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -11013,7 +11017,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2(const S1: UnicodeString; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -11048,7 +11052,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2(const S1: UnicodeString; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -11118,7 +11122,7 @@ end;
 
 function equal_sbcs_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup1, Lookup2: PUniConvSBCSLookup;
@@ -11253,7 +11257,7 @@ end;
 
 function equal_sbcs_UTF8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
@@ -11325,7 +11329,7 @@ end;
 
 function equal_sbcs_ucs2_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -11378,7 +11382,7 @@ end;
 {$ifdef UNICODE}
 function equal_sbcs_ucs2_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -11459,7 +11463,7 @@ end;
 
 function equal_UTF8_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
@@ -11522,7 +11526,7 @@ end;
 
 function equal_UTF8_UTF8_ignorecase(const S1: UTF8String; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -11582,7 +11586,7 @@ end;
 
 function equal_UTF8_ucs2_ignorecase(const S1: UTF8String; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -11621,7 +11625,7 @@ end;
 {$ifdef UNICODE}
 function equal_UTF8_ucs2_ignorecase(const S1: UTF8String; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -11682,7 +11686,7 @@ end;
 
 function equal_ucs2_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -11757,7 +11761,7 @@ end;
 
 function equal_ucs2_UTF8_ignorecase(const S1: WideString; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -11809,7 +11813,7 @@ end;
 
 function equal_ucs2_ucs2_ignorecase(const S1: WideString; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -11850,7 +11854,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2_ignorecase(const S1: WideString; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -11885,7 +11889,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   {$ifNdef INLINESUPPORT}
   Lookup: PUniConvSBCSLookup;
@@ -11938,7 +11942,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_UTF8_ignorecase(const S1: UnicodeString; const S2: UTF8String): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Comp: TUniConvComp;
   Ret: Integer;
@@ -11977,7 +11981,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2_ignorecase(const S1: UnicodeString; const S2: WideString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -12012,7 +12016,7 @@ end;
 {$ifdef UNICODE}
 function equal_ucs2_ucs2_ignorecase(const S1: UnicodeString; const S2: UnicodeString): Boolean;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Length: Cardinal;
   Ret: Integer;
 begin
@@ -12098,7 +12102,7 @@ end;
 
 function compare_sbcs_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CP1, CP2: Word;{$endif}
@@ -12241,7 +12245,7 @@ end;
 
 function compare_sbcs_UTF8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
   Comp: TUniConvComp;
@@ -12311,7 +12315,7 @@ end;
 
 function compare_sbcs_ucs2(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -12364,7 +12368,7 @@ end;
 {$ifdef UNICODE}
 function compare_sbcs_ucs2(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -12438,7 +12442,7 @@ end;
 
 function compare_UTF8_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
   Comp: TUniConvComp;
@@ -12499,7 +12503,7 @@ end;
 
 function compare_UTF8_UTF8(const S1: UTF8String; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -12556,7 +12560,7 @@ end;
 
 function compare_UTF8_ucs2(const S1: UTF8String; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -12585,7 +12589,7 @@ end;
 {$ifdef UNICODE}
 function compare_UTF8_ucs2(const S1: UTF8String; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -12644,7 +12648,7 @@ end;
 
 function compare_ucs2_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -12712,7 +12716,7 @@ end;
 
 function compare_ucs2_UTF8(const S1: WideString; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -12762,7 +12766,7 @@ end;
 
 function compare_ucs2_ucs2(const S1: WideString; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -12806,7 +12810,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2(const S1: WideString; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -12845,7 +12849,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -12898,7 +12902,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_UTF8(const S1: UnicodeString; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -12927,7 +12931,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2(const S1: UnicodeString; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -12966,7 +12970,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2(const S1: UnicodeString; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13048,7 +13052,7 @@ end;
 
 function compare_sbcs_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CP1, CP2: Word;{$endif}
@@ -13175,7 +13179,7 @@ end;
 
 function compare_sbcs_UTF8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
   Comp: TUniConvComp;
@@ -13245,7 +13249,7 @@ end;
 
 function compare_sbcs_ucs2_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -13298,7 +13302,7 @@ end;
 {$ifdef UNICODE}
 function compare_sbcs_ucs2_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -13372,7 +13376,7 @@ end;
 
 function compare_UTF8_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
   Lookup: PUniConvSBCSLookup;
   Comp: TUniConvComp;
@@ -13433,7 +13437,7 @@ end;
 
 function compare_UTF8_UTF8_ignorecase(const S1: UTF8String; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13490,7 +13494,7 @@ end;
 
 function compare_UTF8_ucs2_ignorecase(const S1: UTF8String; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -13519,7 +13523,7 @@ end;
 {$ifdef UNICODE}
 function compare_UTF8_ucs2_ignorecase(const S1: UTF8String; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -13578,7 +13582,7 @@ end;
 
 function compare_ucs2_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -13646,7 +13650,7 @@ end;
 
 function compare_ucs2_UTF8_ignorecase(const S1: WideString; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -13696,7 +13700,7 @@ end;
 
 function compare_ucs2_ucs2_ignorecase(const S1: WideString; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13740,7 +13744,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2_ignorecase(const S1: WideString; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13779,7 +13783,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
   {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
@@ -13832,7 +13836,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_UTF8_ignorecase(const S1: UnicodeString; const S2: UTF8String): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   Comp: TUniConvComp;
 begin
   P1 := Pointer(S1);
@@ -13861,7 +13865,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2_ignorecase(const S1: UnicodeString; const S2: WideString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13900,7 +13904,7 @@ end;
 {$ifdef UNICODE}
 function compare_ucs2_ucs2_ignorecase(const S1: UnicodeString; const S2: UnicodeString): Integer;
 var
-  P1, P2: PBytes;
+  P1, P2: PByteArray;
   L1, L2: Cardinal;
   Modify: Integer;
 begin
@@ -13965,7 +13969,7 @@ begin
 
   // CodePage
   {$ifdef INTERNALCODEPAGE}
-    CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;
+    CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;
   {$endif}
   if (CodePage = 0) or (CodePage = CODEPAGE_DEFAULT) then
   begin
@@ -13987,7 +13991,7 @@ begin
 
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14072,7 +14076,7 @@ begin
 
   // CodePage
   {$ifdef INTERNALCODEPAGE}
-    CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;
+    CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;
   {$endif}
   if (CodePage = 0) or (CodePage = CODEPAGE_DEFAULT) then
   begin
@@ -14094,7 +14098,7 @@ begin
 
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14175,7 +14179,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14234,7 +14238,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14293,7 +14297,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^ shr WIDE_STR_SHIFT;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^ shr WIDE_STR_SHIFT;
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -14365,7 +14369,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14415,7 +14419,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^ shr WIDE_STR_SHIFT;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^ shr WIDE_STR_SHIFT;
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -14487,7 +14491,7 @@ begin
   // todo
 
   // length
-  Length := PInteger(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PInteger(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
 
   // source & destination parameters
   Context.Source := Pointer(Source);
@@ -14731,7 +14735,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -14770,7 +14774,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -14801,7 +14805,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -14839,11 +14843,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 3*Length;
@@ -14882,7 +14886,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -14913,7 +14917,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 6*Length;
@@ -14951,11 +14955,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -14994,7 +14998,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15015,7 +15019,7 @@ begin
     Exit;
   end;
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Buffer := WideStringAlloc(Pointer(Destination), Length, -1);
   Pointer(Destination) := Buffer;
   Move(Pointer(Source)^, Buffer^, Length+Length);
@@ -15035,11 +15039,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15064,7 +15068,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15086,7 +15090,7 @@ begin
     Exit;
   end;
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15128,11 +15132,11 @@ begin
     Exit;
   end;
   
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15194,7 +15198,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15233,7 +15237,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15264,7 +15268,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15302,11 +15306,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 3*Length;
@@ -15345,7 +15349,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15384,7 +15388,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15415,7 +15419,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 6*Length;
@@ -15453,11 +15457,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15496,7 +15500,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15535,7 +15539,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15566,7 +15570,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15589,11 +15593,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15618,7 +15622,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15643,7 +15647,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15675,7 +15679,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15713,11 +15717,11 @@ begin
     Exit;
   end;
   
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15779,7 +15783,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15818,7 +15822,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -15849,7 +15853,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15887,11 +15891,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 3*Length;
@@ -15930,7 +15934,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -15969,7 +15973,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16000,7 +16004,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 6*Length;
@@ -16038,11 +16042,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16081,7 +16085,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16120,7 +16124,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16151,7 +16155,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16174,11 +16178,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16203,7 +16207,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16228,7 +16232,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16260,7 +16264,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16298,11 +16302,11 @@ begin
     Exit;
   end;
   
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16364,7 +16368,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16403,7 +16407,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16434,7 +16438,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 14*Length;
@@ -16472,11 +16476,11 @@ begin
     Exit;
   end;
 
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16515,7 +16519,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16554,7 +16558,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16585,7 +16589,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 14*Length;
@@ -16623,11 +16627,11 @@ begin
     Exit;
   end;
 
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16666,7 +16670,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16705,7 +16709,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16736,7 +16740,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 14*Length;
@@ -16759,11 +16763,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16788,7 +16792,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 7*Length;
@@ -16813,7 +16817,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16845,7 +16849,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 14*Length;
@@ -16883,11 +16887,11 @@ begin
     Exit;
   end;
   
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16949,7 +16953,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -16988,7 +16992,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17019,7 +17023,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17057,11 +17061,11 @@ begin
     Exit;
   end;
   
-  //{$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+  //{$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := 3*Length;
@@ -17100,7 +17104,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17139,7 +17143,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17170,7 +17174,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := 6*Length;
@@ -17208,11 +17212,11 @@ begin
     Exit;
   end;
 
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17251,7 +17255,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17290,7 +17294,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17321,7 +17325,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17344,11 +17348,11 @@ begin
     Exit;
   end;
   
-//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PBytes(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
+//  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Source))-STR_OFFSET_CODEPAGE)^;{$endif}
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17373,7 +17377,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length;
   Context.DestinationSize := Context.SourceSize;
@@ -17398,7 +17402,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17430,7 +17434,7 @@ begin
   // lookup parameters
   // todo
   
-  Length := PCardinal(PBytes(Pointer(Source))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Source))-STR_OFFSET_LENGTH)^;
   Context.Source := Pointer(Source);
   Context.SourceSize := Length+Length;
   Context.DestinationSize := Context.SourceSize;
