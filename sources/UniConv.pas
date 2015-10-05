@@ -24,26 +24,14 @@ unit UniConv;
 { email: softforyou@inbox.ru                                                   }
 { skype: dimandevil                                                            }
 { repository: https://github.com/d-mozulyov/UniConv                            }
-{                                                                              }
 { see also: https://github.com/d-mozulyov/CachedTexts                          }
 {******************************************************************************}
 
-{ ************************************************************************** }
-{  UniConv - one of the most fast, compact and powerful free cross-platform  }
-{  libraries (thread safety lock-free, low level optimized for each          }
-{  supported cpu: x86, x64, ARM) for text comparing, case changing and       }
-{  conversion between many unicode and single/double/multy byte encodings,   }
-{  according to the latest unicode/xml/html standards. ToDo                  }
-{                                                                            }
-{  Some bom/xml/html routine was also included,                              }
-{  because it's a very common and quite difficult to implement.              }
-{ ************************************************************************** }
 
 
 {  --------------------- SUPPORTED UNICODE ENCODINGS ----------------------  }
-(* 
+(*
      UTF-8
-     UCS2 (Most used: WideChar, WideString, UnicodeString)
      UTF-16(LE)
      UTF-16BE
      UTF-32(LE) = UCS4
@@ -537,10 +525,47 @@ type
   // low level lookup routine, that you can use to:
   // lower/upper, single byte encodings, UTF8 size
 
+var
+  // fast ucs2 upper/lower lookup tables
+  uniconv_lookup_ucs2_lower: TUniConvW_W;
+  uniconv_lookup_ucs2_upper: TUniConvW_W;
+
+  // UTF8 character size by first Byte
+  uniconv_lookup_UTF8_size: TUniConvB_B;
+
 type
-  // single byte char set encodings lookup
-  // ansi ~ sbcs = single byte char set
+  // single byte encodings lookups:
   // sbcs --> ucs2, sbcs --> UTF8, ucs2 --> sbcs, sbcs --> sbcs
+  //
+  //(0) 0xFFFF - Raw data
+  //(1) 874 – Thai
+  //(2) 1250 – Central and East European Latin
+  //(3) 1251 – Cyrillic
+  //(4) 1252 – West European Latin
+  //(5) 1253 – Greek
+  //(6) 1254 – Turkish
+  //(7) 1255 – Hebrew
+  //(8) 1256 – Arabic
+  //(9) 1257 – Baltic
+  //(10) 1258 – Vietnamese
+  //(11) 866 - Cyrillic (OEM)
+  //(12) 28592 - Central European (iso-8859-2)
+  //(13) 28593 - Latin 3 (iso-8859-3)
+  //(14) 28594 - Baltic (iso-8859-4)
+  //(15) 28595 - Cyrillic (iso-8859-5)
+  //(16) 28596 - Arabic (iso-8859-6)
+  //(17) 28597 - Greek (iso-8859-7)
+  //(18) 28598 - Hebrew (iso-8859-8)
+  //(19) 28600 - Nordic (iso-8859-10)
+  //(20) 28603 - Estonian (iso-8859-13)
+  //(21) 28604 - Celtic (iso-8859-14)
+  //(22) 28605 - Latin-9 (iso-8859-15)
+  //(23) 28606 - South-Eastern European (iso-8859-16)
+  //(24) 20866 - Cyrillic (koi8-r)
+  //(25) 21866 - Ukrainian (koi8-u)
+  //(26) 10000 - Western European (Mac)
+  //(27) 10007 - Cyrillic (Mac)
+
   PUniConvSBCSLookup = ^TUniConvSBCSLookup;
   TUniConvSBCSLookup = object
   private
@@ -578,16 +603,14 @@ type
     function GetLowerCaseUCS2: PUniConvW_B; {$ifdef INLINESUPPORT}inline;{$endif}
     function GetUpperCaseUTF8: PUniConvD_B; {$ifdef INLINESUPPORT}inline;{$endif}
     function GetLowerCaseUTF8: PUniConvD_B; {$ifdef INLINESUPPORT}inline;{$endif}
-
-    function FillUCS2(const ACase: TUniConvCase; var Buffer: PUniConvW_B): PUniConvW_B; overload;
-    function FillUTF8(const ACase: TUniConvCase; var Buffer: PUniConvD_B): PUniConvD_B; overload;
-    function FillSBCS({const ACase: TUniConvCase;} var Buffer: PUniConvB_W): PUniConvB_W; overload;
   protected
-    // low level ("static") filling functions
-    procedure FillUCS2(const ACase: TUniConvCase; var Buffer: TUniConvW_B; const AIndex: Integer); {static} overload;
-    procedure FillUTF8(const ACase: TUniConvCase; var Buffer: TUniConvD_B; const AIndex: Integer); {static} overload;
-    procedure FillSBCS(var Buffer: TUniConvB_W; const AIndex: Integer); {static} overload;
-  public                                      
+    procedure FillUCS2(var Buffer: TUniConvW_B; const ACase: TUniConvCase);
+    procedure FillUTF8(var Buffer: TUniConvD_B; const ACase: TUniConvCase);
+    procedure FillSBCS(var Buffer: TUniConvB_W);
+    function AllocFillUCS2(var Buffer: PUniConvW_B; const ACase: TUniConvCase): PUniConvW_B;
+    function AllocFillUTF8(var Buffer: PUniConvD_B; const ACase: TUniConvCase): PUniConvD_B;
+    function AllocFillSBCS(var Buffer: PUniConvB_W): PUniConvB_W;
+  public
     // information
     property Index: Word read F.Index;
     property CodePage: Word read F.CodePage;
@@ -608,53 +631,23 @@ type
     property LowerCaseUTF8: PUniConvD_B read GetLowerCaseUTF8;
 
     // single byte lookups from another encoding
-    function FromSBCS(const AIndex: Integer): PUniConvB_B; overload;
-    function FromSBCS(const ACase: TUniConvCase; const AIndex: Integer): PUniConvB_B; overload;
+    function FromSBCS(const ASource: PUniConvSBCSLookup; const ACase: TUniConvCase = uccOriginal): PUniConvB_B;
   end;
 
-
 var
-  // fast ucs2 upper/lower lookup tables
-  uniconv_lookup_ucs2_lower: TUniConvW_W;
-  uniconv_lookup_ucs2_upper: TUniConvW_W;
-
-  // UTF8 character size by first Byte
-  uniconv_lookup_UTF8_size: TUniConvB_B;
-
-  // single byte encodings lookups:
-  // sbcs --> ucs2, sbcs --> UTF8, ucs2 --> sbcs, sbcs --> sbcs
-  //
-  //(1) 874 – Thai
-  //(2) 1250 – Central and East European Latin
-  //(3) 1251 – Cyrillic
-  //(4) 1252 – West European Latin
-  //(5) 1253 – Greek
-  //(6) 1254 – Turkish
-  //(7) 1255 – Hebrew
-  //(8) 1256 – Arabic
-  //(9) 1257 – Baltic
-  //(10) 1258 – Vietnamese
-  //(11) 866 - Cyrillic (OEM)
-  //(12) 28592 - Central European (iso-8859-2)
-  //(13) 28593 - Latin 3 (iso-8859-3)
-  //(14) 28594 - Baltic (iso-8859-4)
-  //(15) 28595 - Cyrillic (iso-8859-5)
-  //(16) 28596 - Arabic (iso-8859-6)
-  //(17) 28597 - Greek (iso-8859-7)
-  //(18) 28598 - Hebrew (iso-8859-8)
-  //(19) 28600 - Nordic (iso-8859-10)
-  //(20) 28603 - Estonian (iso-8859-13)
-  //(21) 28604 - Celtic (iso-8859-14)
-  //(22) 28605 - Latin-9 (iso-8859-15)
-  //(23) 28606 - South-Eastern European (iso-8859-16)
-  //(24) 20866 - Cyrillic (koi8-r)
-  //(25) 21866 - Ukrainian (koi8-u)
-  //(26) 10000 - Western European (Mac)
-  //(27) 10007 - Cyrillic (Mac)
-  //
-  uniconv_lookup_sbcs: array[1..27] of TUniConvSBCSLookup;
   default_lookup_sbcs: PUniConvSBCSLookup;
   default_lookup_sbcs_index: Integer = 1;
+  uniconv_lookup_sbcs: array[0..27] of TUniConvSBCSLookup;
+
+(*  uniconv_lookup_sbcs_hash: array[0..1] of packed record
+    Lookup: PUniConvSBCSLookup;
+    Next: Pointer;
+  end =
+  (
+    (Lookup: @uniconv_lookup_sbcs[1]; Next: nil),
+    (Lookup: @uniconv_lookup_sbcs[2]; Next: nil)
+  ); *)
+
 
   // find single byte encoding index
   // positive if detected
@@ -801,21 +794,6 @@ end;
 var
   InternalLookups: Pointer = nil;
 
-procedure InternalLookupsFinalize;
-var
-  Lookup, Next: Pointer;
-begin
-  Lookup := InternalLookups;
-
-  while (Lookup <> nil) do
-  begin
-    Next := pPointer(Lookup)^;
-    FreeMem(Lookup);
-
-    Lookup := Next;
-  end;
-end;
-
 function InternalLookupAlloc(const Size: NativeInt): Pointer; {$ifdef INLINESUPPORT}inline;{$endif}
 begin
   GetMem(Result, SizeOf(Pointer) + Size);
@@ -843,6 +821,21 @@ begin
   end;
 end;
 
+procedure InternalLookupsFinalize;
+var
+  Lookup, Next: Pointer;
+begin
+  Lookup := InternalLookups;
+
+  while (Lookup <> nil) do
+  begin
+    Next := pPointer(Lookup)^;
+    FreeMem(Lookup);
+
+    Lookup := Next;
+  end;
+end;
+
 
 {$ifdef MSWINDOWS}
 function GetACP: Cardinal; external 'kernel32.dll' name 'GetACP';
@@ -855,8 +848,8 @@ type
 procedure InternalLookupsInitialize;
 const
   SBCS_CODE_PAGES: array[Low(uniconv_lookup_sbcs)..High(uniconv_lookup_sbcs)] of Word  = 
-  (874,1250,1251,1252,1253,1254,1255,1256,1257,1258,866,28592,28593,28594,28595,
-   28596,28597,28598,28600,28603,28604,28605,28606,20866,21866,10000,10007);
+  ($FFFF,874,1250,1251,1252,1253,1254,1255,1256,1257,1258,866,28592,28593,28594,
+   28595,28596,28597,28598,28600,28603,28604,28605,28606,20866,21866,10000,10007);
 
   CHARS_TABLE: array[0..12-1+1] of Cardinal  = 
   (
@@ -1135,7 +1128,6 @@ begin
     uniconv_lookup_ucs2_upper[L] := U;
     Inc(L);
   end;
-
 
   // uniconv_lookup_UTF8_size
   begin
@@ -1515,10 +1507,10 @@ begin
   else Result := TUniConvCase(Ret);
 end;
 
-
+{$ifdef undef}{$REGION 'TUniConvSBCSLookup ROUTINE'}{$endif}
 const
   SBCS_UCS2_OFFSETS: array[Low(uniconv_lookup_sbcs)..High(uniconv_lookup_sbcs)] of Word = (
-                     0,123,353,495,584,707,814,965,1111,1365,1496,1682,1854,1960,2111,
+                     0,0,123,353,495,584,707,814,965,1111,1365,1496,1682,1854,1960,2111,
                      2134,2287,2332,2458,2693,2862,2944,2967,3082,3316,3583,3917);
 
   SBCS_UCS2: array[0..4101-1] of Byte = (
@@ -1731,19 +1723,32 @@ const
 
 { TUniConvSBCSLookup }
 
-procedure TUniConvSBCSLookup.FillUCS2(const ACase: TUniConvCase; var Buffer: TUniConvW_B; const AIndex: Integer); {static}
+procedure TUniConvSBCSLookup.FillUCS2(var Buffer: TUniConvW_B; const ACase: TUniConvCase);
 var
   P: PByte;
-
-  Base, Count, Value: Cardinal;
+  Base, Count, Value: NativeUInt;
   Destination: PWord;
   Lookup: PUniConvW_W;
+  PackedChars: PByte;
 begin
+  // store packed chars pointer
+  if (@Self = @uniconv_lookup_sbcs[0]) then
+  begin
+    PackedChars := nil;
+  end else
+  begin
+    PackedChars := @SBCS_UCS2[SBCS_UCS2_OFFSETS[Self.Index]];
+  end;
+
   // fill by default characters
   Base := $00010000;
   for Count := 0 to 127{255} do
   begin
-    PCardinal(@Buffer[Count*2])^ := Base;
+    {$ifdef CPUX86}
+    PCardinal(@Buffer[Count * 2])^ := Base;
+    {$else}
+    PUniConvD_B(@Buffer)^[Count] := Base;
+    {$endif}
     Inc(Base, $00020002);
   end;
 
@@ -1751,30 +1756,54 @@ begin
   case ACase of
     uccUpper:
     begin
-      Lookup := @uniconv_lookup_ucs2_upper;
-      Destination := @Buffer[$61{Ord('a')}];
+      // a..z --> A..Z
       Base := $00420041;
+      for Count := $61 to $61 + (26 div 2) - 1 do
+      begin
+        {$ifdef CPUX86}
+        PCardinal(@Buffer[Count * 2])^ := Base;
+        {$else}
+        PUniConvD_B(@Buffer)^[Count] := Base;
+        {$endif}
+        Inc(Base, $00020002);
+      end;
+
+      Lookup := @uniconv_lookup_ucs2_upper;
     end;
     uccLower:
     begin
-      Lookup := @uniconv_lookup_ucs2_lower;
-      Destination := @Buffer[$41{Ord('A')}];
+      // A..Z --> a..z
       Base := $00620061;
+      for Count := $41 to $41 + (26 div 2) - 1 do
+      begin
+        {$ifdef CPUX86}
+        PCardinal(@Buffer[Count * 2])^ := Base;
+        {$else}
+        PUniConvD_B(@Buffer)^[Count] := Base;
+        {$endif}
+        Inc(Base, $00020002);
+      end;
+
+      Lookup := @uniconv_lookup_ucs2_lower;
     end;
   else
     Lookup := nil;
-    Destination := nil{warnings off};
   end;
-  if (Lookup <> nil) then
-  for Count := 0 to (26 div 2)-1 do
+
+  // raw data
+  P := PackedChars;
+  if (P = nil) then
   begin
-    PCardinal(Destination)^ := Base;
-    Inc(Destination, 2);
-    Inc(Base, $00020002);
+    if (Lookup <> nil) then
+    for Count := 128 to 255 do
+    begin
+      Buffer[Count] := Lookup[Count];
+    end;
+
+    Exit;
   end;
 
   // unpack encoding characters
-  P := @SBCS_UCS2[SBCS_UCS2_OFFSETS[AIndex]];
   Count := Cardinal(P^) shl 8;
   Inc(P);
   repeat
@@ -1798,14 +1827,23 @@ begin
 
       if (Value <> Ord('?')) then
       begin
-        repeat
-          if (Lookup = nil) then Destination^ := Value
-          else Destination^ := Lookup[Value];
-
-          Dec(Count);
-          Inc(Destination);
-          Inc(Value);
-        until (Count and $ff = 0);
+        if (Lookup = nil) then
+        begin
+          repeat
+            Destination^ := Value;
+            Dec(Count);
+            Inc(Destination);
+            Inc(Value);
+          until (Count and $ff = 0);
+        end else
+        begin
+          repeat
+            Destination^ := Lookup[Value];
+            Dec(Count);
+            Inc(Destination);
+            Inc(Value);
+          until (Count and $ff = 0);
+        end;
       end else
       begin
         repeat
@@ -1818,19 +1856,26 @@ begin
   until (Count = 0)
 end;
 
-procedure TUniConvSBCSLookup.FillUTF8(const ACase: TUniConvCase; var Buffer: TUniConvD_B; const AIndex: Integer); {static}
-var
-  MySelf: PUniConvSBCSLookup;
-  Ucs2Chars: PUniConvW_B;
-  Lookup: PUniConvW_W;
-
-  i, X: Cardinal;
-  P: PCardinal;
+function TUniConvSBCSLookup.AllocFillUCS2(var Buffer: PUniConvW_B; const ACase: TUniConvCase): PUniConvW_B;
 begin
-  // Ucs2Chars := Self.UCS2
-  MySelf := @uniconv_lookup_sbcs[AIndex];
-  Ucs2Chars := MySelf.FUCS2;
-  if (Ucs2Chars = nil) then Ucs2Chars := MySelf.FillUCS2(uccOriginal, MySelf.FUCS2); // Alloc and Fill
+  Result := Buffer;
+  if (Result = nil) then
+  begin
+    Result := InternalLookupAlloc(SizeOf(TUniConvW_B));
+    FillUCS2(Result^, ACase);
+    Result := InternalLookupFill(Pointer(Buffer), Result);
+  end;
+end;
+
+procedure TUniConvSBCSLookup.FillUTF8(var Buffer: TUniConvD_B; const ACase: TUniConvCase);
+var
+  UCS2Chars: PUniConvW_B;
+  Lookup: PUniConvW_W;
+  i, X, Y: NativeUInt;
+  P: PCardinal;
+ begin
+  UCS2Chars := Self.FUCS2;
+  if (UCS2Chars = nil) then UCS2Chars := Self.AllocFillUCS2(Self.FUCS2, uccOriginal); // Alloc and Fill
 
   // fill first 128 characters
   P := Pointer(@Buffer);
@@ -1861,7 +1906,7 @@ begin
     P := nil{warnings off};
   end;
   if (Lookup <> nil) then
-  for i := 0 to (26 div 2)-1 do
+  for i := 0 to (26 div 2) - 1 do
   begin
     P^ := X;
     Inc(P);
@@ -1869,33 +1914,47 @@ begin
   end;
 
   // fill last 128 characters
+  P := @Buffer[128];
   for i := 128 to 255 do
   begin
-    X := Ucs2Chars[i];
+    X := UCS2Chars[i];
     if (Lookup <> nil) then X := Lookup[X];
 
     if (X <= $7ff) then
     begin
-      if (X >= $80) then
+      if (X > $7f) then
       begin
-        X := $020080c0 or ((X and $3f) shl 8) or (X shr 6);
+        Y := (X and $3f) shl 8;
+        X := (X shr 6) + $020080c0;
+        Inc(X, Y);
       end else
       begin
-        X := X or $01000000;
+        X := X + $01000000;
       end;
     end else
     begin
-      X := $038080E0 or
-         ((X and $3f) shl 16) or
-         ((X and ($3f shl 6)) shl (8-6)) or
-         (X shr 12);
+      Y := ((X and $3f) shl 16) + ((X and ($3f shl 6)) shl (8-6));
+      X := (X shr 12) + $038080E0;
+      Inc(X, Y);
     end;
 
-    Buffer[i] := X;
+    P^ := X;
+    Inc(P);
   end;
 end;
 
-procedure FillBytesArrayDefault(Bytes: Pointer; Size: Integer);
+function TUniConvSBCSLookup.AllocFillUTF8(var Buffer: PUniConvD_B; const ACase: TUniConvCase): PUniConvD_B;
+begin
+  Result := Buffer;
+  if (Result <> nil) then
+  begin
+    Result := InternalLookupAlloc(SizeOf(TUniConvD_B));
+    FillUTF8(Result^, ACase);
+    Result := InternalLookupFill(Pointer(Buffer), Result);
+  end;
+end;
+
+procedure FillBytesArrayDefault(Bytes: Pointer; Size: NativeInt);
 label
   fill_default;
 {$ifdef LARGEINT}
@@ -1941,7 +2000,7 @@ fill_default:
   {$else}
     X := $3f3f3f3f;
   {$endif}
-  for i := 0 to Size - 1 do
+  for i := 1 to Size do
   begin
     PNativeInt(Bytes)^ := X;
     Inc(NativeInt(Bytes), SizeOf(NativeInt));
@@ -2133,29 +2192,24 @@ const
   $007AFF5A,$007BFF5B,$007CFF5C,$007DFF5D,$007EFF5E,$00A2FFE0,$00A3FFE1,$00ACFFE2,
   $00A6FFE4, {fake}0);
 
-procedure TUniConvSBCSLookup.FillSBCS(var Buffer: TUniConvB_W; const AIndex: Integer); {static}
-label
-  loop;
+procedure TUniConvSBCSLookup.FillSBCS(var Buffer: TUniConvB_W);
 var
-  _Self: PUniConvSBCSLookup;
-  Ucs2Chars: PUniConvW_B;
-  S, D, i: Cardinal;
+  UCS2Chars: PUniConvW_B;
+  S, D, i: NativeUInt;
 
   BESTFIT: PCardinal;
   {$ifNdef CPUX86}
   TOP_BESTFIT: PCardinal;
   {$endif}
 begin
-  // Ucs2Chars := Self.UCS2
-  _Self := @uniconv_lookup_sbcs[AIndex];
-  Ucs2Chars := _Self.FUCS2;
-  if (Ucs2Chars = nil) then Ucs2Chars := _Self.FillUCS2(uccOriginal, _Self.FUCS2); // Alloc and Fill
+  UCS2Chars := Self.FUCS2;
+  if (UCS2Chars = nil) then UCS2Chars := Self.AllocFillUCS2(Self.FUCS2, uccOriginal); // Alloc and Fill
 
   // fill basic chars
   FillBytesArrayDefault(@Buffer, SizeOf(Buffer));
   for i := 128 to 255 do
   begin
-    S := Ucs2Chars[i];
+    S := UCS2Chars[i];
     if (S <> $3f) then Buffer[S] := i;
   end;
 
@@ -2165,87 +2219,74 @@ begin
   TOP_BESTFIT := Pointer(@SBCS_BESTFITS[High(SBCS_BESTFITS)]);
   {$endif}
   // for each F in SBCS_BESTFITS do
-  loop:
-  begin
+  repeat
     S := BESTFIT^;
     Inc(BESTFIT);
-    D := S shr 16;    // to (unicode)
-    S := S and $ffff; // from (unicode)
+    D := S shr 16; // to (unicode)
+    S := Word(S);  // from (unicode)
 
     {$ifdef CPUX86}
-      if (Ucs2Chars[Buffer[D]] = Word(D)) and (Buffer[S] = $3f) then
+      if (UCS2Chars[Buffer[D]] = Word(D)) and (Buffer[S] = $3f) then
         Buffer[S] := Buffer[D];
     {$else}
       i := Buffer[D];
-      if (Ucs2Chars[i] = Word(D)) and (Buffer[S] = $3f) then Buffer[S] := i;
+      if (UCS2Chars[i] = Word(D)) and (Buffer[S] = $3f) then Buffer[S] := i;
     {$endif}
+  until (BESTFIT = {$ifNdef CPUX86} TOP_BESTFIT {$else}
+            Pointer(@SBCS_BESTFITS[High(SBCS_BESTFITS)]){$endif});
+end;
 
-    if (BESTFIT <> {$ifNdef CPUX86} TOP_BESTFIT {$else}
-                   Pointer(@SBCS_BESTFITS[High(SBCS_BESTFITS)]){$endif}) then goto loop;
+function TUniConvSBCSLookup.AllocFillSBCS(var Buffer: PUniConvB_W): PUniConvB_W;
+begin
+  Result := Buffer;
+  if (Result <> nil) then
+  begin
+    Result := InternalLookupAlloc(SizeOf(TUniConvB_W));
+    FillSBCS(Result^);
+    Result := InternalLookupFill(Pointer(Buffer), Result);
   end;
-end;
-
-function TUniConvSBCSLookup.FillUCS2(const ACase: TUniConvCase; var Buffer: PUniConvW_B): PUniConvW_B;
-begin
-  Result := InternalLookupAlloc(SizeOf(TUniConvW_B));
-  PUniConvSBCSLookup(nil).FillUCS2(ACase, Result^, Self.Index);
-  Result := InternalLookupFill(Pointer(Buffer), Result);
-end;
-
-function TUniConvSBCSLookup.FillUTF8(const ACase: TUniConvCase; var Buffer: PUniConvD_B): PUniConvD_B;
-begin
-  Result := InternalLookupAlloc(SizeOf(TUniConvD_B));
-  PUniConvSBCSLookup(nil).FillUTF8(ACase, Result^, Self.Index);
-  Result := InternalLookupFill(Pointer(Buffer), Result);
-end;
-
-function TUniConvSBCSLookup.FillSBCS({const ACase: TUniConvCase;} var Buffer: PUniConvB_W): PUniConvB_W;
-begin
-  Result := InternalLookupAlloc(SizeOf(TUniConvB_W));
-  Self.FillSBCS(Result^, Self.Index);
-  Result := InternalLookupFill(Pointer(Buffer), Result);
 end;
 
 function TUniConvSBCSLookup.GetUCS2: PUniConvW_B;
 begin
   Result := Self.FUCS2;
-  if (Result = nil) then Result := FillUCS2(uccOriginal, Self.FUCS2);
+  if (Result = nil) then Result := AllocFillUCS2(Self.FUCS2, uccOriginal);
 end;
 
 function TUniConvSBCSLookup.GetUpperCaseUCS2: PUniConvW_B;
 begin
   Result := Self.FUpperCaseUCS2;
-  if (Result = nil) then Result := FillUCS2(uccUpper, Self.FUpperCaseUCS2);
+  if (Result = nil) then Result := AllocFillUCS2(Self.FUpperCaseUCS2, uccUpper);
 end;
 
 function TUniConvSBCSLookup.GetLowerCaseUCS2: PUniConvW_B;
 begin
   Result := Self.FLowerCaseUCS2;
-  if (Result = nil) then Result := FillUCS2(uccLower, Self.FLowerCaseUCS2);
+  if (Result = nil) then Result := AllocFillUCS2(Self.FLowerCaseUCS2, uccLower);
 end;
 
 function TUniConvSBCSLookup.GetUTF8: PUniConvD_B;
 begin
   Result := Self.FUTF8;
-  if (Result = nil) then Result := FillUTF8(uccOriginal, Self.FUTF8);
+  if (Result = nil) then Result := AllocFillUTF8(Self.FUTF8, uccOriginal);
 end;
 
 function TUniConvSBCSLookup.GetUpperCaseUTF8: PUniConvD_B;
-begin                                    
+begin
   Result := Self.FUpperCaseUTF8;
-  if (Result = nil) then Result := FillUTF8(uccUpper, Self.FUpperCaseUTF8);
+  if (Result = nil) then Result := AllocFillUTF8(Self.FUpperCaseUTF8, uccUpper);
 end;
 
 function TUniConvSBCSLookup.GetLowerCaseUTF8: PUniConvD_B;
 begin
   Result := Self.FLowerCaseUTF8;
-  if (Result = nil) then Result := FillUTF8(uccLower, Self.FLowerCaseUTF8);
+  if (Result = nil) then Result := AllocFillUTF8(Self.FLowerCaseUTF8, uccLower);
 end;
 
 function TUniConvSBCSLookup.GetSBCS: PUniConvB_W;
 begin
   Result := Self.FSBCS;
-  if (Result = nil) then Result := FillSBCS(Self.FSBCS);
+  if (Result = nil) then Result := AllocFillSBCS(Self.FSBCS);
 end;
 
 function TUniConvSBCSLookup.GetUpperCase: PUniConvB_B;
@@ -2253,7 +2294,7 @@ begin
   Result := FUpperCase;
 
   if (Result = nil) then
-    Result := FromSBCS(uccUpper, Self.Index);
+    Result := FromSBCS(@Self, uccUpper);
 end;
 
 function TUniConvSBCSLookup.GetLowerCase: PUniConvB_B;
@@ -2261,15 +2302,10 @@ begin
   Result := FLowerCase;
 
   if (Result = nil) then
-    Result := FromSBCS(uccLower, Self.Index);
+    Result := FromSBCS(@Self, uccLower);
 end;
 
-function TUniConvSBCSLookup.FromSBCS(const AIndex: Integer): PUniConvB_B;
-begin
-  Result := FromSBCS(uccOriginal, AIndex);
-end;
-
-procedure FillTable_CaseSBCS(var Table: TUniConvB_B; const Index: Integer; const Upper: Boolean);
+procedure FillTable_CaseSBCS(var Table: TUniConvB_B; const Index: NativeInt; const Upper: Boolean);
 type
   THashItem = packed record
     UCS2: Word;
@@ -2289,7 +2325,7 @@ var
   X, Count, Value: Cardinal;
 
   _Self: PUniConvSBCSLookup;
-  Ucs2Chars: PUniConvW_B;
+  UCS2Chars: PUniConvW_B;
   Lookup: PUniConvW_W;  
   HashArray: array[0..63] of Byte;
   HashItems: array[0..127] of THashItem;
@@ -2328,7 +2364,7 @@ begin
 
     if (X < 128) then
     begin
-      if (P^ = Ord('?')) then Table[X+128] := Ord('?');
+      if (P^ = Ord('?')) then Table[X + 128] := Ord('?');
       Inc(P, 2);
     end else
     begin
@@ -2374,10 +2410,10 @@ begin
     else Table[189] := Ord('?');
   end;
 
-  // Ucs2Chars := Self.UCS2
+  // UCS2Chars := Self.UCS2
   _Self := @uniconv_lookup_sbcs[Index];
-  Ucs2Chars := _Self.FUCS2;
-  if (Ucs2Chars = nil) then Ucs2Chars := _Self.FillUCS2(uccOriginal, _Self.FUCS2); // Alloc and Fill
+  UCS2Chars := _Self.FUCS2;
+  if (UCS2Chars = nil) then UCS2Chars := _Self.AllocFillUCS2(_Self.FUCS2, uccOriginal); // Alloc and Fill
 
   // fill hash table
   P := @HashArray[0];
@@ -2390,7 +2426,7 @@ begin
   Count := 0;
   for i := 128 to 255 do
   begin
-    X := Ucs2Chars[i];
+    X := UCS2Chars[i];
     Value := Lookup[X];
     if (Value = X) or (Value = Ord('?')) then continue;
 
@@ -2407,7 +2443,7 @@ begin
   if (Upper) then Lookup := @uniconv_lookup_ucs2_upper else Lookup := @uniconv_lookup_ucs2_lower;
   for i := 128 to 255 do
   begin
-    X := Ucs2Chars[i];
+    X := UCS2Chars[i];
     Value := Lookup[X];
     if (Value = X) or (Value = Ord('?')) then continue;
 
@@ -2417,7 +2453,7 @@ begin
       if (HashItems[X].UCS2 = Value) then
       begin
         Table[i] := HashItems[X].Value;
-        break;
+        Break;
       end;
 
       X := HashItems[X].Next;
@@ -2485,7 +2521,7 @@ procedure FillTable_SBCSFromSBCS(var Table: TUniConvB_B; const DestIndex: Intege
 var
   DestSBCS: TUniConvB_W;
 begin
-  PUniConvSBCSLookup(nil).FillSBCS(DestSBCS, DestIndex);
+  uniconv_lookup_sbcs[DestIndex].FillSBCS(DestSBCS);
   FillTable_SBCSFromSBCS(Table, DestSBCS, SourceUCS2, ACase);
 end;
 
@@ -2498,14 +2534,15 @@ type
     Table: TUniConvB_B;
   end;
 
-function TUniConvSBCSLookup.FromSBCS(const ACase: TUniConvCase; const AIndex: Integer): PUniConvB_B;
+function TUniConvSBCSLookup.FromSBCS(const ASource: PUniConvSBCSLookup; const ACase: TUniConvCase): PUniConvB_B;
 var
-  Value: Integer;
+  AIndex, Value: Integer;
   First, Item, ResultItem: PTable_SBCSItem;
 
   Lookup, InternalPtr: Pointer;
   SourceUCS2: PUniConvW_B;
 begin
+  AIndex := ASource.Index;
   if (AIndex = Self.Index) and (ACase <> uccOriginal) then
   begin
     if (ACase = uccUpper) then Result := FUpperCase
@@ -2586,7 +2623,7 @@ begin
     until (Lookup = AtomicCmpExchange(InternalLookups, InternalPtr, Lookup));
   end;
 end;
-
+{$ifdef undef}{$ENDREGION}{$endif}
 
 type
   TWordTable = array[0..0] of Word;
@@ -2609,7 +2646,6 @@ type
   end;
   PWordHash = ^TWordHash;
 
-  
 var
   table_jisx0208: PWordTable;
   table_jisx0212: PWordTable;
@@ -2849,7 +2885,7 @@ encoding_options:
     // ENC_SINGLEBYTE_LOW..ENC_SINGLEBYTE_HIGH
     Lookup := @uniconv_lookup_sbcs[DST_ENC - ENC_MODIFIER];
     FWriter := Lookup.FSBCS;
-    if (FWriter = nil) then FWriter := Lookup.FillSBCS(Lookup.FSBCS);
+    if (FWriter = nil) then FWriter := Lookup.AllocFillSBCS(Lookup.FSBCS);
   end;
 
   
@@ -2944,17 +2980,17 @@ encoding_options:
     if {(Flags and f_src_sgml <> 0) or} (Flags and f_case_changing = 0) then
     begin
       FReader := Lookup.FUCS2;
-      if (FReader = nil) then FReader := Lookup.FillUCS2(uccOriginal, Lookup.FUCS2);
+      if (FReader = nil) then FReader := Lookup.AllocFillUCS2(Lookup.FUCS2, uccOriginal);
     end else
     begin
       if (Flags and f_lower = 0) then
       begin
         FReader := Lookup.FUpperCaseUCS2;
-        if (FReader = nil) then FReader := Lookup.FillUCS2(uccUpper, Lookup.FUpperCaseUCS2);
+        if (FReader = nil) then FReader := Lookup.AllocFillUCS2(Lookup.FUpperCaseUCS2, uccUpper);
       end else
       begin
         FReader := Lookup.FLowerCaseUCS2;
-        if (FReader = nil) then FReader := Lookup.FillUCS2(uccLower, Lookup.FLowerCaseUCS2);
+        if (FReader = nil) then FReader := Lookup.AllocFillUCS2(Lookup.FLowerCaseUCS2, uccLower);
       end;
 
       Flags := Flags and (not f_case_changing);
@@ -3667,10 +3703,7 @@ convert_finish:
   Result := src_size;
 end;
 
-
-
-// ----- difficult double/multy-byte encodings conversion callbacks -----
-
+{$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
 function TUniConvContext.UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
 const
   U: array[0..256-1] of Byte = (
@@ -4932,7 +4965,7 @@ const
   BOCU1_RESET       = $FF;
   BOCU1_COUNT       = (BOCU1_MAX_LEAD - BOCU1_MIN + 1);
   BOCU1_TRAIL_CONTROLS_COUNT = 20;
-  BOCU1_TRAIL_Byte_OFFSET    = (BOCU1_MIN - BOCU1_TRAIL_CONTROLS_COUNT);
+  BOCU1_TRAIL_BYTE_OFFSET    = (BOCU1_MIN - BOCU1_TRAIL_CONTROLS_COUNT);
   BOCU1_TRAIL_COUNT = ((BOCU1_MAX_TRAIL - BOCU1_MIN + 1) + BOCU1_TRAIL_CONTROLS_COUNT);
   BOCU1_SINGLE = 64;
   BOCU1_LEAD_2 = 43;
@@ -5056,7 +5089,7 @@ loop:
     if (t > $13{ = $ff}) then goto unknown;
   end else
   begin
-    t := t - BOCU1_TRAIL_Byte_OFFSET;
+    t := t - BOCU1_TRAIL_BYTE_OFFSET;
   end;
 
   case Count of
@@ -5193,7 +5226,7 @@ begin
         m := m + BOCU1_TRAIL_COUNT;
       end;
 
-      if (m >= BOCU1_TRAIL_CONTROLS_COUNT) then dest^ := m + BOCU1_TRAIL_Byte_OFFSET
+      if (m >= BOCU1_TRAIL_CONTROLS_COUNT) then dest^ := m + BOCU1_TRAIL_BYTE_OFFSET
       else dest^ := BOCU1_TRAIL_TO_Byte[m];
 
       Dec(dest);
@@ -6880,10 +6913,9 @@ begin
     Result := 1;
   end;
 end;
+{$ifdef undef}{$ENDREGION}{$endif}
 
-
-
-
+{$ifdef undef}{$REGION 'SYSTEM STRING TYPES ROUTINE'}{$endif}
 type
   TDynArrayRec = packed record
     RefCount: Integer;
@@ -7096,7 +7128,6 @@ begin
   {$ifend}
 end;
 {$endif}
-
 
 
 function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
@@ -7428,9 +7459,9 @@ asm
   jmp SysReAllocStringLen
 end;
 {$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
 
-
-
+{$ifdef undef}{$REGION 'HIEROGLYPH LOOKUPS'}{$endif}
 const
   offsets_gb18030_data: array[0..25-1] of Cardinal = (
   $5081007f,$dfc11650,$50604213,$c0635063,$0570813f,$24cbcbc1,$83000f81,$dd005b8c,$4c33c9c9,$56810f24,
@@ -9493,7 +9524,6 @@ begin
   Result := universal_table_alloc(offsets_gb18030, 206, @offsets_gb18030_data);
 end;
 
-
 procedure generate_hash_jisx0208;
 begin
   universal_hash_alloc(hash_jisx0208, 6879, 94, table_jisx0208, generate_table_jisx0208);
@@ -9543,6 +9573,7 @@ procedure generate_hash_big5;
 begin
   universal_hash_alloc(hash_big5, 19302, 190, table_big5, generate_table_big5);
 end;
+{$ifdef undef}{$ENDREGION}{$endif}
 
 initialization
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)

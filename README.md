@@ -1,4 +1,2 @@
 # UniConv
-Universal text conversion library (Delphi)
-
-TestCharacters
+UniConv is one of the fastest, the most compact and powerful free cross-platform libraries (thread-safe lock-free, optimized at low level for each supported cpu: x86, x64, ARM) for text comparison, case changing and conversion among many unicode and single/double/multy byte encodings, according to the latest unicode standards.
