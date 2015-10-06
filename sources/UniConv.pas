@@ -259,7 +259,7 @@ const
 var
   // non-unicode code page specified by system as default (initialized later)
   // you may use const "0" to make conversions with default non-unicode encoding
-  CODEPAGE_DEFAULT: Word = 1252;
+  CODEPAGE_DEFAULT: Word;
 
 const
   // BOM <--> Unicode <--> CodePage
@@ -281,7 +281,7 @@ const
                      CODEPAGE_UTF32, CODEPAGE_UTF32BE, 0, 0, 0, CODEPAGE_UTF7, 0, 0, 0);
 
   // make internal encoding format
-  function UniConvEncoding(const BOM: TBOM;
+(*  function UniConvEncoding(const BOM: TBOM;
                            const ACase: TUniConvCase = uccOriginal): TUniConvEncoding; overload;
 
   function UniConvEncoding(const Unicode: TUniConvUnicode;
@@ -294,7 +294,7 @@ const
   function UniConvUnicode(const Encoding: TUniConvEncoding): TUniConvUnicode;
   function UniConvCodePage(const Encoding: TUniConvEncoding): Word;
   function UniConvCase(const Encoding: TUniConvEncoding): TUniConvCase;
-
+*)
 
 
 type
@@ -530,8 +530,8 @@ var
   uniconv_lookup_ucs2_lower: TUniConvW_W;
   uniconv_lookup_ucs2_upper: TUniConvW_W;
 
-  // UTF8 character size by first Byte
-  uniconv_lookup_UTF8_size: TUniConvB_B;
+  // UTF8 character size by first byte
+  uniconv_lookup_utf8_size: TUniConvB_B;
 
 type
   // single byte encodings lookups:
@@ -636,27 +636,55 @@ type
 
 var
   default_lookup_sbcs: PUniConvSBCSLookup;
-  default_lookup_sbcs_index: Integer = 1;
+  default_lookup_sbcs_index: NativeUInt;
   uniconv_lookup_sbcs: array[0..27] of TUniConvSBCSLookup;
+  uniconv_lookup_sbcs_hash: array[0..31] of packed record
+    CP: Word;
+    Index: Byte;
+    Next: Byte;
+  end = (
+    {00} (CP:     0; Index:$ff; Next: 31),
+    {01} (CP:   866; Index: 11; Next: 13),
+    {02} (CP:  1250; Index:  2; Next: 01),
+    {03} (CP:  1251; Index:  3; Next: 31),
+    {04} (CP:  1252; Index:  4; Next: 31),
+    {05} (CP:  1253; Index:  5; Next: 31),
+    {06} (CP:  1254; Index:  6; Next: 31),
+    {07} (CP:  1255; Index:  7; Next: 31),
+    {08} (CP:  1256; Index:  8; Next: 31),
+    {09} (CP:  1257; Index:  9; Next: 31),
+    {10} (CP:  1258; Index: 10; Next: 11),
+    {11} (CP:   874; Index:  1; Next: 12),
+    {12} (CP: 21866; Index: 25; Next: 31),
+    {13} (CP: 20866; Index: 24; Next: 31),
+    {14} (CP: $ffff; Index:  0; Next: $80),
+    {15} (CP: 10000; Index: 26; Next: 31),
+    {16} (CP: 28592; Index: 12; Next: 15),
+    {17} (CP: 28593; Index: 13; Next: 31),
+    {18} (CP: 28594; Index: 14; Next: 31),
+    {19} (CP: 28595; Index: 15; Next: 31),
+    {20} (CP: 28596; Index: 16; Next: 31),
+    {21} (CP: 28597; Index: 17; Next: 31),
+    {22} (CP: 28598; Index: 18; Next: 31),
+    {23} (CP: 10007; Index: 27; Next: 31),
+    {24} (CP: 28600; Index: 19; Next: 31),
+    {25} (CP: $ffff; Index:  0; Next: $80),
+    {26} (CP: $ffff; Index:  0; Next: $80),
+    {27} (CP: 28603; Index: 20; Next: 31),
+    {28} (CP: 28604; Index: 21; Next: 31),
+    {29} (CP: 28605; Index: 22; Next: 31),
+    {30} (CP: 28606; Index: 23; Next: 31),
+    {31} (CP: $ffff; Index:  0; Next: $80)
+  );
 
-(*  uniconv_lookup_sbcs_hash: array[0..1] of packed record
-    Lookup: PUniConvSBCSLookup;
-    Next: Pointer;
-  end =
-  (
-    (Lookup: @uniconv_lookup_sbcs[1]; Next: nil),
-    (Lookup: @uniconv_lookup_sbcs[2]; Next: nil)
-  ); *)
 
+// get single byte encoding lookup index
+// 0 if not found of raw data (CP $ffff)
+function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
 
-  // find single byte encoding index
-  // positive if detected
-  function UniConvSBCSIndex(const CodePage: Word): Integer;
-
-  // get single byte encoding lookup
-  // not nil if detected
-  function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup;
-
+// get single byte encoding lookup
+// uniconv_lookup_sbcs[0] if not found of raw data (CP $ffff)
+function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup; {$ifdef INLINESUPPORT}inline;{$endif}
 
 
 // todo
@@ -963,10 +991,7 @@ const
 {$ifend}
 var
   P1, P2: PNativeInt;
-  X, Y: NativeInt;
-
   i, L, U, C: NativeInt;
-
   Arr: PNativeIntArray;
 begin
   // basic sbcs(ansi) information
@@ -977,86 +1002,73 @@ begin
   end;
 
   // default code page
-  C := GetACP;
-  L := UniConvSBCSIndex(C);
-  if (L > 0) then
-  begin
-    CODEPAGE_DEFAULT := C;
-    default_lookup_sbcs := @uniconv_lookup_sbcs[L];
-  end else
-  {if (L < -Ord(High(TUniConvUnicode))) then
-  begin
-    CODEPAGE_DEFAULT := C;
-    default_lookup_sbcs := nil;
-  end else}
-  begin
-    // CODEPAGE_DEFAULT := 1252;
-    default_lookup_sbcs := @uniconv_lookup_sbcs[4{1252}];
-  end;
+  CODEPAGE_DEFAULT := GetACP;
+  default_lookup_sbcs := UniConvSBCSLookup(CODEPAGE_DEFAULT);
   default_lookup_sbcs_index := default_lookup_sbcs.Index;
+  uniconv_lookup_sbcs_hash[0].Index := default_lookup_sbcs_index;
 
   // fill by default chars: uniconv_lookup_ucs2_lower & uniconv_lookup_ucs2_upper
   P1 := Pointer(@uniconv_lookup_ucs2_lower);
   P2 := Pointer(@uniconv_lookup_ucs2_upper);
   {$ifdef LARGEINT}
-    X := $0003000200010000;
+    U := $0003000200010000;
     ucs2_increment := $0004000400040004;
     ucs2_done := NativeInt($fffffffefffdfffc)+ucs2_increment;
   {$else}
-    X := $00010000;
+    U := $00010000;
     {$ifdef CPUARM}
     ucs2_increment := $00020002;
     ucs2_done := Integer($fffffffe)+ucs2_increment;
     {$endif}
   {$endif}
   repeat
-    P1^ := X;
-    P2^ := X;
-    Inc(X, ucs2_increment);
+    P1^ := U;
+    P2^ := U;
+    Inc(U, ucs2_increment);
     Inc(P1);
     Inc(P2);
 
-    P1^ := X;
-    P2^ := X;
-    Inc(X, ucs2_increment);
+    P1^ := U;
+    P2^ := U;
+    Inc(U, ucs2_increment);
     Inc(P1);
     Inc(P2);
 
-    P1^ := X;
-    P2^ := X;
-    Inc(X, ucs2_increment);
+    P1^ := U;
+    P2^ := U;
+    Inc(U, ucs2_increment);
     Inc(P1);
     Inc(P2);
 
-    P1^ := X;
-    P2^ := X;
-    Inc(X, ucs2_increment);
+    P1^ := U;
+    P2^ := U;
+    Inc(U, ucs2_increment);
     Inc(P1);
     Inc(P2);
-  until (X = ucs2_done);
+  until (U = ucs2_done);
 
   // fill upper and lower for a..z/A..Z
   P1 := Pointer(@uniconv_lookup_ucs2_lower[$41{Ord('A')}]);
   P2 := Pointer(@uniconv_lookup_ucs2_upper[$61{Ord('a')}]);
   {$ifdef LARGEINT}
-    X := $0064006300620061;
-    Y := $0044004300420041;
+    U := $0064006300620061;
+    L := $0044004300420041;
   {$else}
-    X := $00620061;
-    Y := $00420041;
+    U := $00620061;
+    L := $00420041;
   {$endif}
   for i := 0 to (26 * SizeOf(Word) div SizeOf(NativeInt))-1 do
   begin
-    P1^ := X;
-    P2^ := Y;
+    P1^ := U;
+    P2^ := L;
     Inc(P1);
     Inc(P2);
-    Inc(X, ucs2_increment);
-    Inc(Y, ucs2_increment);
+    Inc(U, ucs2_increment);
+    Inc(L, ucs2_increment);
   end;
   {$ifdef LARGEINT}
-  PInteger(P1)^ := X;
-  PInteger(P2)^ := Y;
+  PInteger(P1)^ := U;
+  PInteger(P2)^ := L;
   {$endif}
 
   // many upper and lower chars
@@ -1129,38 +1141,38 @@ begin
     Inc(L);
   end;
 
-  // uniconv_lookup_UTF8_size
+  // uniconv_lookup_utf8_size
   begin
-    Arr := Pointer(@uniconv_lookup_UTF8_size);
+    Arr := Pointer(@uniconv_lookup_utf8_size);
 
     // 0..127
-    X := {$ifdef LARGEINT}$0101010101010101{$else}$01010101{$endif};
+    U := {$ifdef LARGEINT}$0101010101010101{$else}$01010101{$endif};
     for i := 0 to 128 div SizeOf(NativeInt) - 1 do
-    Arr[i] := X;
+    Arr[i] := U;
 
     // 128..191 (64) fail (0)
     Inc(NativeInt(Arr), 128);
-    X := 0;
+    U := 0;
     for i := 0 to 64 div SizeOf(NativeInt) - 1 do
-    Arr[i] := X;
+    Arr[i] := U;
 
     // 192..223 (32)
     Inc(NativeInt(Arr), 64);
-    X := {$ifdef LARGEINT}$0202020202020202{$else}$02020202{$endif};
+    U := {$ifdef LARGEINT}$0202020202020202{$else}$02020202{$endif};
     for i := 0 to 32 div SizeOf(NativeInt) - 1 do
-    Arr[i] := X;
+    Arr[i] := U;
 
     // 224..239 (16)
     Inc(NativeInt(Arr), 32);
-    X := {$ifdef LARGEINT}$0303030303030303{$else}$03030303{$endif};
+    U := {$ifdef LARGEINT}$0303030303030303{$else}$03030303{$endif};
     {$ifdef LARGEINT}
-      Arr[0] := X;
-      Arr[1] := X;
+      Arr[0] := U;
+      Arr[1] := U;
     {$else}
-      Arr[0] := X;
-      Arr[1] := X;
-      Arr[2] := X;
-      Arr[3] := X;
+      Arr[0] := U;
+      Arr[1] := U;
+      Arr[2] := U;
+      Arr[3] := U;
     {$endif}
 
     // 240..247 (8)
@@ -1247,7 +1259,41 @@ begin
   end;
 end;
 
-const
+// get single byte encoding lookup index
+// 0 if not found of raw data (CP $ffff)
+function UniConvSBCSIndex(const CodePage: Word): NativeUInt;
+var
+  Index: NativeUInt;
+  Value: Integer;
+begin
+  Index := NativeUInt(CodePage);
+  Value := Integer(uniconv_lookup_sbcs_hash[Index and High(uniconv_lookup_sbcs_hash)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(uniconv_lookup_sbcs_hash[NativeUInt(Value) shr 24]);
+  until (False);
+
+  Result := Byte(Value shr 16);
+end;
+
+// get single byte encoding lookup
+// uniconv_lookup_sbcs[0] if not found of raw data (CP $ffff)
+function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup;
+var
+  Index: NativeUInt;
+  Value: Integer;
+begin
+  Index := NativeUInt(CodePage);
+  Value := Integer(uniconv_lookup_sbcs_hash[Index and High(uniconv_lookup_sbcs_hash)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(uniconv_lookup_sbcs_hash[NativeUInt(Value) shr 24]);
+  until (False);
+
+  Result := @uniconv_lookup_sbcs[Byte(Value shr 16)];
+end;
+
+(*const
   ENC_UNICODE_LOW = Cardinal(Ord(ucuUCS2)); // 1
   ENC_UNICODE_HIGH_NONE_CALLBACK = Cardinal(Ord(ucuUCS3412)); // 8
   ENC_UNICODE_HIGH = Cardinal(Ord(High(TUniConvUnicode))); // 13
@@ -1409,15 +1455,6 @@ begin
     goto done;
   end;
 
-(*  if (Sgml > High(TUniConvSgml)) then
-  begin
-    Ret := -1;
-    goto done;
-  end else
-  begin
-    Ret := Ret or (Ord(Sgml) shl OFFS_SGML);
-  end; *)
-
   if (ACase > High(TUniConvCase)) then
   begin
     Ret := -1;
@@ -1445,15 +1482,6 @@ begin
   else Ret := CodePage;
 
   Inc(Ret, ENC_ID_OFFSETED_VALUE);
-
-(*  if (Sgml > High(TUniConvSgml)) then
-  begin
-    Ret := -1;
-    goto done;
-  end else
-  begin
-    Ret := Ret or (Ord(Sgml) shl OFFS_SGML);
-  end; *)
 
   if (ACase > High(TUniConvCase)) then
   begin
@@ -1505,7 +1533,8 @@ begin
 
   if (Ret > Ord(High(TUniConvCase))) then Result := uccOriginal
   else Result := TUniConvCase(Ret);
-end;
+end;   *)
+
 
 {$ifdef undef}{$REGION 'TUniConvSBCSLookup ROUTINE'}{$endif}
 const
@@ -2714,20 +2743,14 @@ begin
 end;
 
 function TUniConvContext.Initialize(const ADestinationEncoding, ASourceEncoding: TUniConvEncoding): Boolean;
+begin
+  Result := False;
+end;
+
+(*function TUniConvContext.Initialize(const ADestinationEncoding, ASourceEncoding: TUniConvEncoding): Boolean;
 label
   encoding_options, done, fail;
 const
-  (*
-     SrcMode:4: TUniConvUnicode;
-     _:1: Boolean;
-     _:1: Boolean;
-     CaseChanging:1: Boolean;
-     ModeFinalize:1: Boolean;
-     StatesNeeded:1: Boolean;
-     DestMode:4: TUniConvUnicode;
-     _:3: TMappedSgml;
-  *)
-
 //  f_src_sgml = 1 shl 4;
 //  f_src_sgml_html = 1 shl 5;
   f_case_changing = 1 shl 6;
@@ -3006,7 +3029,7 @@ fail:
   Result := False;
   F.Value := 0;
   FConvertProc := Pointer(@TUniConvContext.convert_fail);
-end;
+end;    *)
 
 procedure TUniConvContext.SetDestinationEncoding(const Value: TUniConvEncoding);
 begin
@@ -3020,7 +3043,7 @@ end;
 
 function TUniConvContext.Initialize(const ADestinationBOM, ASourceBOM: TBOM): Boolean;
 begin
-  Result := Initialize(UniConvEncoding(ADestinationBOM), UniConvEncoding(ASourceBOM));
+  Result := False;//Initialize(UniConvEncoding(ADestinationBOM), UniConvEncoding(ASourceBOM));
   {todo}
 end;
 
@@ -3234,7 +3257,7 @@ char_read:
         goto char_read_done;
       end else
       begin
-        Y := uniconv_lookup_UTF8_size[Byte(X)];
+        Y := uniconv_lookup_utf8_size[Byte(X)];
         Dec(src_size, Y);
         Inc(NativeInt(src), Y);
         if (NativeInt(src_size) < 0) then goto convert_finish;
