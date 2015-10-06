@@ -28,11 +28,10 @@ unit UniConv;
 {******************************************************************************}
 
 
-
 {  --------------------- SUPPORTED UNICODE ENCODINGS ----------------------  }
 (*
      UTF-8
-     UTF-16(LE)
+     UTF-16(LE) ~ UCS2
      UTF-16BE
      UTF-32(LE) = UCS4
      UTF-32BE
@@ -92,17 +91,6 @@ unit UniConv;
          51949 - EUC Korean (euc-kr)
 *)
 
-
-(*
-todo заложиться на то, что в NEXTGEN и LARGEINT длина AnsiString/WideString
-     может быть восьмибайтовым
-
-const
-  STR_OFFSET_LENGTH = 4;
-  STR_OFFSET_REFCOUNT = 8;
-  STR_OFFSET_CODEPAGE = 12;
-
-*)
 
 // compiler directives
 {$ifdef FPC}
@@ -192,6 +180,10 @@ type
   PUnicodeString = ^TUnicodeString;
 
 type
+  // case sensitive
+  TUniConvCase = (uccOriginal, uccLower, uccUpper);
+  PUniConvCase = ^TUniConvCase;
+
   // byte order mark
   TBOM = (bomNone,
           bomUTF8, bomUTF16, bomUTF16BE, bomUTF32, bomUTF32BE, bomUCS2143, bomUCS3412,
@@ -201,31 +193,57 @@ type
   // byte order mark detection
   function DetectBOM(const Data: Pointer; const Size: NativeInt = 4): TBOM;
 
+var
+  // non-unicode code page specified by system as default (initialized later)
+  // you may use const "0" to make conversions with default non-unicode encoding
+  CODEPAGE_DEFAULT: Word;
+
 const
+  // unicode code page identifiers
+  CODEPAGE_UTF7 = 65000;
+  CODEPAGE_UTF8 = 65001;
+  CODEPAGE_UTF16 = 1200;
+  CODEPAGE_UTF16BE = 1201;
+  CODEPAGE_UTF32 = 12000;
+  CODEPAGE_UTF32BE = 12001;
+
+  // non-defined (fake) code page identifiers
+  CODEPAGE_UCS2143 = 12002;
+  CODEPAGE_UCS3412 = 12003;
+  CODEPAGE_UTF1 = 65002;
+  CODEPAGE_UTFEBCDIC = 65003;
+  CODEPAGE_SCSU = 65004;
+  CODEPAGE_BOCU1 = 65005;
+
   // byte order mark information
   BOM_INFO: array[TBOM] of
   record
     Value: Cardinal;
     Size: Cardinal;
+    CodePage: Word;
   end = (
-    (Value: $00000000; Size: 0), // none
-    (Value: $00BFBBEF; Size: 3), // UTF-8:       EF BB BF
-    (Value: $0000FEFF; Size: 2), // UTF-16:      FF FE XX XX
-    (Value: $0000FFFE; Size: 2), // UTF-16BE:    FE FF XX XX
-    (Value: $0000FEFF; Size: 4), // UTF-32:      FF FE 00 00
-    (Value: $FFFE0000; Size: 4), // UTF-32BE:    00 00 FE FF
-    (Value: $FEFF0000; Size: 4), // UCS(4)_2143: 00 00 FF FE
-    (Value: $0000FFFE; Size: 4), // UCS(4)_3412: FE FF 00 00
-    (Value: $004C64F7; Size: 3), // UTF-1:       F7 64 4C
-    (Value: $00762F2B; Size: 3), // UTF-7:       2B 2F 76 + 38/39/2B/2F
-    (Value: $736673DD; Size: 4), // UTF-EBCDIC:  DD 73 66 73
-    (Value: $00FFFE0E; Size: 3), // SCSU:        0E FE FF
-    (Value: $0028EEFB; Size: 3), // BOCU-1:      FB EE 28
-    (Value: $33953184; Size: 4)  // GB-18030:    84 31 95 33
+    (Value: $00000000; Size: 0; CodePage: 0),                  // none
+    (Value: $00BFBBEF; Size: 3; CodePage: CODEPAGE_UTF8),      // EF BB BF
+    (Value: $0000FEFF; Size: 2; CodePage: CODEPAGE_UTF16),     // FF FE XX XX
+    (Value: $0000FFFE; Size: 2; CodePage: CODEPAGE_UTF16BE),   // FE FF XX XX
+    (Value: $0000FEFF; Size: 4; CodePage: CODEPAGE_UTF32),     // FF FE 00 00
+    (Value: $FFFE0000; Size: 4; CodePage: CODEPAGE_UTF32BE),   // 00 00 FE FF
+    (Value: $FEFF0000; Size: 4; CodePage: CODEPAGE_UCS2143),   // 00 00 FF FE
+    (Value: $0000FFFE; Size: 4; CodePage: CODEPAGE_UCS3412),   // FE FF 00 00
+    (Value: $004C64F7; Size: 3; CodePage: CODEPAGE_UTF1),      // F7 64 4C
+    (Value: $00762F2B; Size: 3; CodePage: CODEPAGE_UTF7),      // 2B 2F 76 + 38/39/2B/2F
+    (Value: $736673DD; Size: 4; CodePage: CODEPAGE_UTFEBCDIC), // DD 73 66 73
+    (Value: $00FFFE0E; Size: 3; CodePage: CODEPAGE_SCSU),      // 0E FE FF
+    (Value: $0028EEFB; Size: 3; CodePage: CODEPAGE_BOCU1),     // FB EE 28
+    (Value: $33953184; Size: 4; CodePage: {GB-18030}54936)     // 84 31 95 33
   );
 
-
 type
+  // todo?
+  TUniConvEncoding = Integer;
+  PUniConvEncoding = ^TUniConvEncoding;
+
+(*type
   // unicode mode
   TUniConvUnicode  = 
   (
@@ -239,27 +257,12 @@ type
   );
   PUniConvUnicode = ^TUniConvUnicode;
 
-  // case correction
-  TUniConvCase = (uccOriginal, uccLower, uccUpper);
-  PUniConvCase = ^TUniConvCase;
+
 
   // internal encoding format
   TUniConvEncoding = array[1..SizeOf(Integer)] of Byte;
   PUniConvEncoding = ^TUniConvEncoding;
 
-const
-  // unicode code page indentifiers
-  CODEPAGE_UTF7 = 65000;
-  CODEPAGE_UTF8 = 65001;
-  CODEPAGE_UTF16 = 1200;
-  CODEPAGE_UTF16BE = 1201;
-  CODEPAGE_UTF32 = 12000;
-  CODEPAGE_UTF32BE = 12001;
-
-var
-  // non-unicode code page specified by system as default (initialized later)
-  // you may use const "0" to make conversions with default non-unicode encoding
-  CODEPAGE_DEFAULT: Word;
 
 const
   // BOM <--> Unicode <--> CodePage
@@ -361,6 +364,7 @@ type
     function convert_fail: NativeInt;
     function convert_copy: NativeInt;
     function convert_universal: NativeInt;
+    // function convert_most_frequently: NativeInt;
 
     // fast most frequently used conversions
     // todo
@@ -1292,248 +1296,6 @@ begin
 
   Result := @uniconv_lookup_sbcs[Byte(Value shr 16)];
 end;
-
-(*const
-  ENC_UNICODE_LOW = Cardinal(Ord(ucuUCS2)); // 1
-  ENC_UNICODE_HIGH_NONE_CALLBACK = Cardinal(Ord(ucuUCS3412)); // 8
-  ENC_UNICODE_HIGH = Cardinal(Ord(High(TUniConvUnicode))); // 13
-
-  ENC_MULTYBYTE_LOW = ENC_UNICODE_HIGH + 1; // 14
-  ENC_MULTYBYTE_GB2312 = ENC_MULTYBYTE_LOW + 0;
-  ENC_MULTYBYTE_GB18030 = ENC_MULTYBYTE_LOW + 1;
-  ENC_MULTYBYTE_HZGB2312 = ENC_MULTYBYTE_LOW + 2;
-  ENC_MULTYBYTE_BIG5 = ENC_MULTYBYTE_LOW + 3;
-  ENC_MULTYBYTE_SHIFT_JIS = ENC_MULTYBYTE_LOW + 4;
-  ENC_MULTYBYTE_EUC_JP = ENC_MULTYBYTE_LOW + 5;
-  ENC_MULTYBYTE_ISO2022JP = ENC_MULTYBYTE_LOW + 6;
-  ENC_MULTYBYTE_cp949 = ENC_MULTYBYTE_LOW + 7;
-  ENC_MULTYBYTE_EUC_KR = ENC_MULTYBYTE_LOW + 8;
-  ENC_MULTYBYTE_HIGH = ENC_MULTYBYTE_EUC_KR; // 22
-
-  ENC_SINGLEBYTE_LOW = ENC_MULTYBYTE_HIGH + 1; // 23
-  ENC_SINGLEBYTE_HIGH = ENC_SINGLEBYTE_LOW + Length(uniconv_lookup_sbcs) - 1; // 49
-
-  ENC_MODIFIER = ENC_SINGLEBYTE_LOW-1;
-
-  OFFS_CODE_PAGE = 0; // code page (16 bits: 0..15)
-  OFFS_INDEX = 16; // internal encoding index (6 bits: 16..21)
-  OFFS_INDEX_MASK = (1 shl 6) - 1;
-  // todo
-  OFFS_SGML = OFFS_INDEX + 5; // sgml mode (3 bits: 22..24)
-  OFFS_SGML_MASK = (1 shl 3) - 1;
-  OFFS_CASE = OFFS_SGML + 2; // case sensitive (2 bits: 25..26)
-  OFFS_CASE_MASK = (1 shl 2) - 1;
-
-  OFFS_ID = OFFS_CASE + 2; // id value (5 bits: 27..31)
-  ENC_ID_VALUE = $15; // 15h = 10101b
-  ENC_ID_OFFSETED_VALUE = ENC_ID_VALUE shl OFFS_ID;
-
-
-// find single byte encoding index
-// positive if detected
-function UniConvSBCSIndex(const CodePage: Word): Integer;
-var
-  CP: Integer;
-begin
-  if (CodePage = 0) then Result{CP} := CODEPAGE_DEFAULT
-  else Result{CP} := CodePage;
-
-  case Result{CP} of
-    1250..1258: Dec(Result, 1250 - 2); // 2..10
-  28592..28598: Dec(Result, 28592 - 12); // 12..18
-  28603..28606: Dec(Result, 28603 - 20); // 20..23
-  else
-    CP := Result;
-    Result := 0;
-    case CP of
-      874: Inc(Result, 1);
-      866: Inc(Result, 11);
-    28600: Inc(Result, 19);
-    20866: Inc(Result, 24);
-    21866: Inc(Result, 25);
-    10000: Inc(Result, 26);
-    10007: Inc(Result, 27);
-
-     CODEPAGE_UTF8: Inc(Result, Ord(ucuUTF8) - ENC_MODIFIER);
-    CODEPAGE_UTF16: Inc(Result, Ord(ucuUTF16) - ENC_MODIFIER);
-  CODEPAGE_UTF16BE: Inc(Result, Ord(ucuUTF16BE) - ENC_MODIFIER);
-    CODEPAGE_UTF32: Inc(Result, Ord(ucuUTF32) - ENC_MODIFIER);
-  CODEPAGE_UTF32BE: Inc(Result, Ord(ucuUTF32BE) - ENC_MODIFIER);
-
-     CODEPAGE_UTF7: Inc(Result, Ord(ucuUTF7) - ENC_MODIFIER);
-
-      932: Inc(Result, ENC_MULTYBYTE_SHIFT_JIS - ENC_MODIFIER); // Japanese (shift_jis)
-      936: Inc(Result, ENC_MULTYBYTE_GB2312 - ENC_MODIFIER); // Simplified Chinese (gb2312)
-      949: Inc(Result, ENC_MULTYBYTE_cp949 - ENC_MODIFIER); // Korean (ks_c_5601-1987)
-      950: Inc(Result, ENC_MULTYBYTE_BIG5 - ENC_MODIFIER); // Traditional Chinese (big5)
-    54936: Inc(Result, ENC_MULTYBYTE_GB18030 - ENC_MODIFIER); // Simplified Chinese (gb18030)
-    52936: Inc(Result, ENC_MULTYBYTE_HZGB2312 - ENC_MODIFIER); // Simplified Chinese (hz-gb-2312)
-    20932: Inc(Result, ENC_MULTYBYTE_EUC_JP - ENC_MODIFIER); // Japanese (euc-jp)
-    50221: Inc(Result, ENC_MULTYBYTE_ISO2022JP - ENC_MODIFIER); // Japanese with halfwidth Katakana (iso-2022-jp)
-    51949: Inc(Result, ENC_MULTYBYTE_EUC_KR - ENC_MODIFIER); // EUC Korean (euc-kr)
-    else
-      Inc(Result, 0 - ENC_MODIFIER);
-    end;
-  end;
-end;
-
-// get single byte encoding lookup
-// not nil if detected
-function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup;
-begin
-  case CodePage of
-      874: Result := @uniconv_lookup_sbcs[1];
-     1250: Result := @uniconv_lookup_sbcs[2];
-     1251: Result := @uniconv_lookup_sbcs[3];
-     1252: Result := @uniconv_lookup_sbcs[4];
-     1253: Result := @uniconv_lookup_sbcs[5];
-     1254: Result := @uniconv_lookup_sbcs[6];
-     1255: Result := @uniconv_lookup_sbcs[7];
-     1256: Result := @uniconv_lookup_sbcs[8];
-     1257: Result := @uniconv_lookup_sbcs[9];
-     1258: Result := @uniconv_lookup_sbcs[10];
-      866: Result := @uniconv_lookup_sbcs[11];
-    28592: Result := @uniconv_lookup_sbcs[12];
-    28593: Result := @uniconv_lookup_sbcs[13];
-    28594: Result := @uniconv_lookup_sbcs[14];
-    28595: Result := @uniconv_lookup_sbcs[15];
-    28596: Result := @uniconv_lookup_sbcs[16];
-    28597: Result := @uniconv_lookup_sbcs[17];
-    28598: Result := @uniconv_lookup_sbcs[18];
-    28600: Result := @uniconv_lookup_sbcs[19];
-    28603: Result := @uniconv_lookup_sbcs[20];
-    28604: Result := @uniconv_lookup_sbcs[21];
-    28605: Result := @uniconv_lookup_sbcs[22];
-    28606: Result := @uniconv_lookup_sbcs[23];
-    20866: Result := @uniconv_lookup_sbcs[24];
-    21866: Result := @uniconv_lookup_sbcs[25];
-    10000: Result := @uniconv_lookup_sbcs[26];
-    10007: Result := @uniconv_lookup_sbcs[27];
-  else
-    if (CodePage <> 0) then Result := nil
-    else Result := default_lookup_sbcs;
-  end;
-end;
-
-// make internal unicode encoding
-function UniConvEncoding(const BOM: TBOM;
-                         const ACase: TUniConvCase = uccOriginal): TUniConvEncoding;
-begin
-  if (BOM = bomNone) or (BOM = bomGb18030) then
-  begin
-    Result := UniConvEncoding(CODEPAGE_FROM_BOM[BOM], ACase);
-  end else
-  begin
-    Result := UniConvEncoding(UNICODE_FROM_BOM[BOM], ACase);
-  end;
-
-  // todo
-end;
-
-// make internal unicode encoding
-function UniConvEncoding(const Unicode: TUniConvUnicode;
-                         const ACase: TUniConvCase = uccOriginal): TUniConvEncoding;
-label
-  done;
-//const
-//  ID_VALUE = ENC_ID_VALUE shl (OFFS_ID-OFFS_INDEX);
-var
-  Ret: Integer;
-begin
-  Ret := (Byte(Unicode) shl OFFS_INDEX) + ENC_ID_OFFSETED_VALUE;// (ENC_MODIFIER + ID_VALUE)) shl OFFS_INDEX;
-  case Unicode of
-   // ucuNone: {fail}
-     ucuUCS2,ucuUCS2143,ucuUCS3412,ucuUTF1, ucuUTFEBCDIC, ucuSCSU, ucuBOCU1: {done};
-     ucuUTF8: Inc(Ret, CODEPAGE_UTF8);
-     ucuUTF7: Inc(Ret, CODEPAGE_UTF7);
-    ucuUTF16: Inc(Ret, CODEPAGE_UTF16);
-  ucuUTF16be: Inc(Ret, CODEPAGE_UTF16BE);
-    ucuUTF32: Inc(Ret, CODEPAGE_UTF32);
-  ucuUTF32be: Inc(Ret, CODEPAGE_UTF32BE);
-  else
-    Ret := -1{fail};
-    goto done;
-  end;
-
-  if (ACase > High(TUniConvCase)) then
-  begin
-    Ret := -1;
-    goto done;
-  end else
-  begin
-    Ret := Ret or (Ord(ACase) shl OFFS_CASE);
-  end;
-
-  // Result
-done:
-  Integer(Result) := Ret;
-end;
-
-// make internal codepage encoding
-function UniConvEncoding(const CodePage: Word;
-                         const ACase: TUniConvCase = uccOriginal): TUniConvEncoding;
-label
-  done;
-var
-  Ret: Integer;
-  Index: Integer;
-begin
-  if (CodePage = 0) then Ret := CODEPAGE_DEFAULT
-  else Ret := CodePage;
-
-  Inc(Ret, ENC_ID_OFFSETED_VALUE);
-
-  if (ACase > High(TUniConvCase)) then
-  begin
-    Ret := -1;
-    goto done;
-  end else
-  begin
-    Ret := Ret or (Ord(ACase) shl OFFS_CASE);
-  end;
-
-  Index := UniConvSBCSIndex(CodePage) + ENC_MODIFIER;
-  if (Index = 0) then
-  begin
-    Ret := -1;
-    goto done;
-  end else
-  begin
-    Ret := Ret or (Index shl OFFS_INDEX);
-  end;
-
-  // Result
-done:
-  Integer(Result) := Ret;
-end;
-
-// retreave unicode mode from internal encoding
-function UniConvUnicode(const Encoding: TUniConvEncoding): TUniConvUnicode;
-var
-  Ret: Integer;
-begin
-  Ret := (Integer(Encoding) shr OFFS_INDEX) and OFFS_INDEX_MASK;
-
-  if (Ret > Ord(High(TUniConvUnicode))) then Result := ucuNone
-  else Result := TUniConvUnicode(Ret);
-end;
-
-// retreave codepage from internal encoding
-function UniConvCodePage(const Encoding: TUniConvEncoding): Word;
-begin
-  Result := Integer(Encoding);
-end;
-
-// retreave case sensitive from internal encoding
-function UniConvCase(const Encoding: TUniConvEncoding): TUniConvCase;
-var
-  Ret: Integer;
-begin
-  Ret := (Integer(Encoding) shr OFFS_CASE) and OFFS_CASE_MASK;
-
-  if (Ret > Ord(High(TUniConvCase))) then Result := uccOriginal
-  else Result := TUniConvCase(Ret);
-end;   *)
 
 
 {$ifdef undef}{$REGION 'TUniConvSBCSLookup ROUTINE'}{$endif}
@@ -2654,6 +2416,79 @@ begin
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
+const
+  ENC_SBCS = 0;
+  ENC_UTF8 = 1;
+  ENC_UTF16 = 2;
+  ENC_UTF16BE = 3;
+  ENC_UTF32 = 4;
+  ENC_UTF32BE = 5;
+  ENC_UCS2143 = 6;
+  ENC_UCS3412 = 7;
+  ENC_UTF1 = 8;
+  ENC_UTF7 = 9;
+  ENC_UTFEBCDIC = 10;
+  ENC_SCSU = 11;
+  ENC_BOCU1 = 12;
+  ENC_GB2312 = 13;
+  ENC_GB18030 = 14;
+  ENC_HZGB2312 = 15;
+  ENC_BIG5 = 16;
+  ENC_SHIFT_JIS = 17;
+  ENC_EUC_JP = 18;
+  ENC_ISO2022JP = 19;
+  ENC_CP949 = 20;
+  ENC_EUC_KR = 21;
+
+function CodePageEncoding(const CodePage: Word): Cardinal{Word};
+var
+  Index: NativeUInt;
+  Value: Integer;
+begin
+  // UniConvSBCSIndex
+  Index := NativeUInt(CodePage);
+  Value := Integer(uniconv_lookup_sbcs_hash[Index and High(uniconv_lookup_sbcs_hash)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(uniconv_lookup_sbcs_hash[NativeUInt(Value) shr 24]);
+  until (False);
+
+  // detect unicode/multy-byte
+  // convert to internal format
+  if (Value < 0) and (CodePage <> $ffff) then
+  begin
+    Value := CodePage;
+    Result := 0; // undefined --> raw data (ENC_SBCS, Index 0)
+    case Value{CodePage} of
+       CODEPAGE_UTF8: begin Inc(Result, ENC_UTF8); Exit; end;
+      CODEPAGE_UTF16: begin Inc(Result, ENC_UTF16); Exit; end;
+    CODEPAGE_UTF16BE: begin Inc(Result, ENC_UTF16BE); Exit; end;
+      CODEPAGE_UTF32: begin Inc(Result, ENC_UTF32); Exit; end;
+    CODEPAGE_UTF32BE: begin Inc(Result, ENC_UTF32BE); Exit; end;
+    CODEPAGE_UCS2143: begin Inc(Result, ENC_UCS2143); Exit; end;
+    CODEPAGE_UCS3412: begin Inc(Result, ENC_UCS3412); Exit; end;
+       CODEPAGE_UTF1: begin Inc(Result, ENC_UTF1); Exit; end;
+       CODEPAGE_UTF7: begin Inc(Result, ENC_UTF7); Exit; end;
+  CODEPAGE_UTFEBCDIC: begin Inc(Result, ENC_UTFEBCDIC); Exit; end;
+       CODEPAGE_SCSU: begin Inc(Result, ENC_SCSU); Exit; end;
+      CODEPAGE_BOCU1: begin Inc(Result, ENC_BOCU1); Exit; end;
+                 932: begin Inc(Result, ENC_SHIFT_JIS); Exit; end;// Japanese (shift_jis)
+                 936: begin Inc(Result, ENC_GB2312); Exit; end;   // Simplified Chinese (gb2312)
+                 949: begin Inc(Result, ENC_CP949); Exit; end;    // Korean (ks_c_5601-1987)
+                 950: begin Inc(Result, ENC_BIG5); Exit; end;     // Traditional Chinese (big5)
+               54936: begin Inc(Result, ENC_GB18030); Exit; end;  // Simplified Chinese (gb18030)
+               52936: begin Inc(Result, ENC_HZGB2312); Exit; end; // Simplified Chinese (hz-gb-2312)
+               20932: begin Inc(Result, ENC_EUC_JP); Exit; end;   // Japanese (euc-jp)
+               50221: begin Inc(Result, ENC_ISO2022JP); Exit; end;// Japanese with halfwidth Katakana (iso-2022-jp)
+               51949: begin Inc(Result, ENC_EUC_KR); Exit; end;   // EUC Korean (euc-kr)
+    end;
+  end else
+  begin
+    // Low: ENC_SBCS; High: Index;
+    Result := (Value shr 8) and $ff00;
+  end;
+end;
+
 type
   TWordTable = array[0..0] of Word;
   PWordTable = ^TWordTable;
@@ -3217,7 +3052,7 @@ char_read_normal:
 
 char_read:
   case {SrcMode}(Flags and $f) of
-    Ord(ucuNone){Single-byte: AnsiChar, AnsiString}:
+    ENC_SBCS{Single-byte: AnsiChar, AnsiString}:
     begin
       // don't need to compare source size
       X := PUniConvW_B({$ifdef CPUX86}FStore.reader{$else}Self.FReader{$endif})[Byte(X)];
@@ -3225,15 +3060,7 @@ char_read:
       Dec(src_size, 1);
       goto char_read_done;
     end;
-    Ord(ucuUCS2){WideChar, WideString, UnicodeString}:
-    begin
-      X := Word(X);
-      Dec(src_size, 2);
-      Inc(NativeInt(src), 2);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
-      goto char_read_done;
-    end;
-    Ord(ucuUTF8){UTF8Char, UTF8String}:
+    ENC_UTF8{UTF8Char, UTF8String}:
     begin
       if (X and $80 = 0) then
       begin
@@ -3300,7 +3127,7 @@ char_read:
         end;
       end;
     end;
-    Ord(ucuUTF16):
+    ENC_UTF16{WideChar, WideString, UnicodeString}:
     begin
       Y := Word(X);
       Dec(src_size, 2);
@@ -3337,7 +3164,7 @@ char_read:
         goto char_read_done;
       end;
     end;
-    Ord(ucuUTF16BE):
+    ENC_UTF16BE:
     begin
       Y := Word(X);
       Dec(src_size, 2);
@@ -3377,14 +3204,14 @@ char_read:
         goto char_read_done;
       end;
     end;
-    Ord(ucuUTF32):
+    ENC_UTF32:
     begin
       {none}
       Dec(src_size, 4);
       Inc(NativeInt(src), 4);
       if (NativeInt(src_size) < 0) then goto convert_finish;
     end;
-    Ord(ucuUTF32BE):
+    ENC_UTF32BE:
     begin
       // 0123 --> 3210
       //X := (Swap(X){32} shl 16) or Swap(X shr 16){10};
@@ -3397,7 +3224,7 @@ char_read:
       Inc(X, Y);
       if (NativeInt(src_size) < 0) then goto convert_finish;
     end;
-    Ord(ucuUCS2143):
+    ENC_UCS2143:
     begin
       // 1032 --> 3210
       // X := (X shr 16) or (X shl 16);
@@ -3408,7 +3235,7 @@ char_read:
       Inc(X, Y);
       if (NativeInt(src_size) < 0) then goto convert_finish;
     end;
-    Ord(ucuUCS3412):
+    ENC_UCS3412:
     begin
       // 2301 --> 3210
       // X := (Swap(X shr 16){32} shl 16) or Swap(X);
@@ -3422,7 +3249,7 @@ char_read:
       if (NativeInt(src_size) < 0) then goto convert_finish;
     end;
   else
-    {MULTY-BYTE ENCODING with callback}
+    { Multy-byte encoding callback }
     {$ifdef CPUX86}
     FStore.dest := dest;
     FStore.src := src;
@@ -3465,7 +3292,7 @@ char_write:
   Dec(dest_size, NativeInt(dest));
 
   case ((Flags shr 9) and $f) of
-    Ord(ucuNone){SBCS/MBCS: AnsiChar, AnsiString}:
+    ENC_SBCS{Single-byte: AnsiChar, AnsiString}:
     begin
       if (dest_size = 0{<1}) then goto dest_too_small;
 
@@ -3474,16 +3301,7 @@ char_write:
 
       Inc(NativeInt(dest));
     end;
-    Ord(ucuUCS2){WideChar, WideString, UnicodeString}:
-    begin
-      if (dest_size < 2) then goto dest_too_small;
-
-      if (X > $ffff) then PWord(dest)^ := UNKNOWN_CHAR
-      else PWord(dest)^ := X;
-      
-      Inc(NativeInt(dest), 2);
-    end;
-    Ord(ucuUTF8){UTF8Char, UTF8String}:
+    ENC_UTF8{UTF8Char, UTF8String}:
     begin
       if (X <= $7f) then
       begin
@@ -3538,7 +3356,7 @@ char_write:
         Inc(NativeInt(dest), 4);
       end;
     end;
-    Ord(ucuUTF16):
+    ENC_UTF16{WideChar, WideString, UnicodeString}:
     begin
       if (dest_size < 2) then goto dest_too_small;
       if (X <= $ffff) then
@@ -3558,7 +3376,7 @@ char_write:
         Inc(NativeInt(dest), 4);
       end;
     end;
-    Ord(ucuUTF16BE):
+    ENC_UTF16BE:
     begin
       if (dest_size < 2) then goto dest_too_small;
       if (X <= $ffff) then
@@ -3578,13 +3396,13 @@ char_write:
         Inc(NativeInt(dest), 4);
       end;
     end;
-    Ord(ucuUTF32):
+    ENC_UTF32:
     begin
       if (dest_size < 4) then goto dest_too_small;
       PCardinal(dest)^ := X;
       Inc(NativeInt(dest), 4);
     end;
-    Ord(ucuUTF32BE):
+    ENC_UTF32BE:
     begin
       if (dest_size < 4) then goto dest_too_small;
       // 3210 --> 0123
@@ -3598,7 +3416,7 @@ char_write:
       PCardinal(dest)^ := X;
       Inc(NativeInt(dest), 4);
     end;
-    Ord(ucuUCS2143):
+    ENC_UCS2143:
     begin
       if (dest_size < 4) then goto dest_too_small;
       // 3210 --> 1032
@@ -3610,7 +3428,7 @@ char_write:
       PCardinal(dest)^ := X;
       Inc(NativeInt(dest), 4);
     end;
-    Ord(ucuUCS3412):
+    ENC_UCS3412:
     begin
       if (dest_size < 4) then goto dest_too_small;
       // 3210 --> 2301
@@ -3625,7 +3443,7 @@ char_write:
       Inc(NativeInt(dest), 4);
     end;
   else
-    {MULTY-BYTE ENCODING with callback}
+    { Multy-byte encoding callback }
     if (dest_size = 0{<1}) then goto dest_too_small;
     {$ifdef CPUX86}
     FStore.dest := dest;
@@ -3715,7 +3533,7 @@ convert_finish:
      ((src_size <> 0) or ({not F.ModeFinalize}Flags and (1 shl 7) = 0)) then
   begin
     {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.WR := FStore.WR;
-    if (Integer(Flags and $f) = Ord(ucuScsu)) then
+    if (Integer(Flags and $f) = ENC_SCSU) then
     begin
       Move(FStore.scsu_read_windows, {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.scsu_read_windows, 32);
     end;
@@ -9599,6 +9417,7 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 initialization
+  CodePageEncoding(0);
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
   System.GetMemoryManager(MemoryManager);
   InternalLookupsInitialize;
