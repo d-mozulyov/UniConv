@@ -354,20 +354,27 @@ type
 
     FReader: Pointer; // PUniConvW_B/TReaderProc/(optional PUniConvB_B)
     FWriter: Pointer; // PUniConvB_W/TWriterProc
-    FWriterUCS2: Pointer; // PUniConvW_B for sgml&sbcs destination mode only???
-    FCaseLookup: Pointer; // PUniConvW_W;
+    FLookup: Pointer; // PUniConvW_W ???;
 
     FDestinationWritten: NativeUInt;
     FSourceRead: NativeUInt;
     FConvertProc: PUniConvContextProc;
 
+    // default conversions
     function convert_fail: NativeInt;
     function convert_copy: NativeInt;
     function convert_universal: NativeInt;
-    // function convert_most_frequently: NativeInt;
 
     // fast most frequently used conversions
-    // todo
+    function convert_sbcs_from_sbcs: NativeInt;
+    function convert_utf8_from_utf8: NativeInt;
+    function convert_utf16_from_utf16: NativeInt;
+    function convert_utf8_from_sbcs: NativeInt;
+    function convert_sbcs_from_utf8: NativeInt;
+    function convert_utf16_from_sbcs: NativeInt;
+    function convert_sbcs_from_utf16: NativeInt;
+    function convert_utf8_from_utf16: NativeInt;
+    function convert_utf16_from_utf8: NativeInt;
 
     // difficult double/multy-byte encodings conversion callbacks
     function UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
@@ -689,6 +696,55 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
 // get single byte encoding lookup
 // uniconv_lookup_sbcs[0] if not found of raw data (CP $ffff)
 function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup; {$ifdef INLINESUPPORT}inline;{$endif}
+
+
+//type
+//  TUniConvSimple???
+// comment todo
+
+// result = length
+procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+
+// result = min: length/3*2; max: length*3/2
+function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+
+// result = length
+procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+
+// result = min: length; max: length*2
+function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+
+// result = min: length/6; max: length
+function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+
+// result = length
+procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+
+// result = min: length/2; max: length
+function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+
+// result = min: length; max: length*3
+function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+
+// result = min: length/3; max: length
+function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+
 
 
 // todo
@@ -2416,6 +2472,7 @@ begin
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
+
 const
   ENC_SBCS = 0;
   ENC_UTF8 = 1;
@@ -2957,20 +3014,40 @@ end;
 
 function TUniConvContext.convert_copy: NativeInt;
 var
-  src_size: NativeUInt;
-  dest_size: NativeUInt;
+  Src, Dest: PByte;
+  SrcSize, DestSize: NativeUInt;
+  Size, S: NativeUInt;
 begin
-  src_size := Self.SourceSize;
-  dest_size := Self.DestinationSize;
-  if (dest_size{size} > src_size) then dest_size{size} := src_size;
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
 
-  Self.FSourceRead := dest_size{size};
-  Self.FDestinationWritten := dest_size{size};
-  Result := src_size - dest_size{size};
+  if (DestSize >= SrcSize) then
+  begin
+    Size := SrcSize;
+    Result := 0;
+  end else
+  begin
+    Size := DestSize;
+    Result := {remaining source bytes}(SrcSize - DestSize);
+  end;
+  Self.FSourceRead := Size;
+  Self.FDestinationWritten := Size;
 
-  if (dest_size{size} <> 0) then
-  {todo LARGEINT}
-  System.Move(Self.Source^, Self.Destination^, dest_size{size});
+  if (Size <> 0) then
+  begin
+    Src := Self.Source;
+    Dest := Self.Destination;
+
+    repeat
+      S := Size;
+      if (S > NativeUInt(High(Integer))) then S := NativeUInt(High(Integer));
+      System.Move(Src^, Dest^, S);
+
+      Dec(Size, S);
+      Inc(Src, S);
+      Inc(Dest, S);
+    until (Size = 0);
+  end;
 end;
 
 // Universal(basic) conversion way
@@ -3001,7 +3078,6 @@ var
     reader: Pointer;
     writer: Pointer;
     case_lookup: PUniConvW_W;
-    writer_ucs2: PUniConvW_B;
     {$endif}
 
     src_read: Cardinal;
@@ -3032,10 +3108,9 @@ begin
   FStore.dest_top := Pointer(NativeUInt(dest)+Self.DestinationSize);
 
   {$ifdef CPUX86}
-  FStore.case_lookup := Self.FCaseLookup;
+  FStore.case_lookup := Self.FLookup;
   FStore.reader := Self.FReader;
   FStore.writer := Self.FWriter;
-  FStore.writer_ucs2 := Self.FWriterUCS2;
   {$endif}
 
   FStore.stored_dest := dest;
@@ -3284,7 +3359,7 @@ char_read_done:
   // case conversion
   if ({F.CaseChanging}Flags and (1 shl 6) <> 0) and (X <= $ffff) then
   begin
-    X := {$ifdef CPUX86}FStore.case_lookup{$else}PUniConvW_W(Self.FCaseLookup){$endif}[X];
+    X := {$ifdef CPUX86}FStore.case_lookup{$else}PUniConvW_W(Self.FLookup){$endif}[X];
   end;
 
 char_write:
@@ -3543,6 +3618,250 @@ convert_finish:
   end;
   Result := src_size;
 end;
+
+
+{$ifdef undef}{$REGION 'FAST MOST FREQUENTLY USED CONVERSIONS'}{$endif}
+
+function TUniConvContext.convert_sbcs_from_sbcs: NativeInt;
+type
+  // result = length
+  TCallback = procedure(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+var
+  SrcSize, DestSize: NativeUInt;
+  Size: NativeUInt;
+begin
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+
+  if (DestSize >= SrcSize) then
+  begin
+    Size := SrcSize;
+    Result := 0;
+  end else
+  begin
+    Size := DestSize;
+    Result := {remaining source bytes}(SrcSize - DestSize);
+  end;
+  Self.FSourceRead := Size;
+  Self.FDestinationWritten := Size;
+
+  TCallback(Self.FReader)(Self.Destination, Self.Source, Size, Self.FLookup);
+end;
+
+// result = length
+procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+begin
+  {todo};
+end;
+
+// result = length
+procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+begin
+  {todo};
+end;
+
+// result = length
+procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
+begin
+  {todo};
+end;
+
+function TUniConvContext.convert_utf8_from_utf8: NativeInt;
+type
+  // result = min: length/3*2; max: length*3/2
+  TCallback = function(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/3*2; max: length*3/2
+function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/3*2; max: length*3/2
+function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+function TUniConvContext.convert_utf16_from_utf16: NativeInt;
+type
+  // result = length
+  TCallback = procedure(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+begin
+  Result := 0{todo};
+end;
+
+// result = length
+procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+begin
+  {todo};
+end;
+
+// result = length
+procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+begin
+  {todo};
+end;
+
+function TUniConvContext.convert_utf8_from_sbcs: NativeInt;
+type
+  // result = min: length; max: length*2
+  TCallback = function(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*2
+function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*2
+function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*2
+function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+function TUniConvContext.convert_sbcs_from_utf8: NativeInt;
+type
+  // result = min: length/6; max: length
+  TCallback = function(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/6; max: length
+function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/6; max: length
+function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/6; max: length
+function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+function TUniConvContext.convert_utf16_from_sbcs: NativeInt;
+type
+  // result = length
+  TCallback = procedure(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+begin
+  Result := 0{todo};
+end;
+
+// result = length
+procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+begin
+  {todo};
+end;
+
+// result = length
+procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+begin
+  {todo};
+end;
+
+// result = length
+procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+begin
+  {todo};
+end;
+
+function TUniConvContext.convert_sbcs_from_utf16: NativeInt;
+type
+  // result = min: length/2; max: length
+  TCallback = function(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/2; max: length
+function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/2; max: length
+function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/2; max: length
+function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+function TUniConvContext.convert_utf8_from_utf16: NativeInt;
+type
+  // result = min: length; max: length*3
+  TCallback = function(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*3
+function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*3
+function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length; max: length*3
+function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+function TUniConvContext.convert_utf16_from_utf8: NativeInt;
+type
+  // result = min: length/3; max: length
+  TCallback = function(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/3; max: length
+function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/3; max: length
+function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+
+// result = min: length/3; max: length
+function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+begin
+  Result := 0{todo};
+end;
+{$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
 function TUniConvContext.UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
@@ -9417,7 +9736,7 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 initialization
-  CodePageEncoding(0);
+  TUniConvContext(nil^).convert_sbcs_from_sbcs;
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
   System.GetMemoryManager(MemoryManager);
   InternalLookupsInitialize;
