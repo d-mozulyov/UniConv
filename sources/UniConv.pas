@@ -776,6 +776,9 @@ type
   T4Bytes = array[0..3] of Byte;
   P4Bytes = ^T4Bytes;
 
+  T8Bytes = array[0..7] of Byte;
+  P8Bytes = ^T8Bytes;
+
   {$ifNdef CPUX86}
     {$define MANY_REGS}
   {$else}
@@ -783,6 +786,8 @@ type
   {$endif}
 
 const
+  HIGH_NATIVE_BIT = {$ifdef SMALLINT}31{$else}63{$endif};
+
   MASK_80_SMALL = $80808080;
   MASK_80_LARGE = $8080808080808080;
   MASK_80_DEFAULT = {$ifdef SMALLINT}MASK_80_SMALL{$else}MASK_80_LARGE{$endif};
@@ -3074,7 +3079,7 @@ var
     //stored_state: Cardinal;
 
     {$ifdef CPUX86}
-    dest, src: Pointer;    
+    dest, src: Pointer;
     reader: Pointer;
     writer: Pointer;
     case_lookup: PUniConvW_W;
@@ -3622,30 +3627,145 @@ end;
 
 {$ifdef undef}{$REGION 'FAST MOST FREQUENTLY USED CONVERSIONS'}{$endif}
 
+const
+  HIGH_NATIVE_BIT_VALUE = (NativeUInt(1) shl HIGH_NATIVE_BIT);
+
+  DIV3_MAX_DIVIDEND = 98303;
+  DIV3_MUL_VALUE = 43691;
+  DIV3_SHIFT = 17;
+
+  MAX_UTF8CHAR_SIZE = 6;
+  MAX_UTF16CHAR_SIZE = 4;
+
+type
+  TExtendedConvertionOptions = record
+    // Most frequently used conversions
+    Source: Pointer;
+    Destination: Pointer;
+    Length: NativeUInt;
+    // Small convertion
+    SourceSize: NativeUInt;
+    DestinationSize: NativeUInt;
+    Callback: Pointer;
+    Lookup: Pointer;
+    CharBuffer: T8Bytes;
+  end;
+  PExtendedConvertionOptions = ^TExtendedConvertionOptions;
+
+const
+  FLAG_SOURCE_UTF16 = 1;
+  FLAG_DESTINATION_UTF16 = 2;
+  FLAG_USE_LOOKUP = 4;    
+  
+function SmallConvertion(var Options: TExtendedConvertionOptions; Length: NativeUInt;
+  Flags: NativeUInt): Boolean;
+label
+  _1;
+type
+  TConversionCallback1 = function(Dest, Src: Pointer; Length: NativeUInt): NativeUInt;
+  TConversionCallback2 = function(Dest, Src: Pointer; Length: NativeUInt; Lookup: Pointer): NativeUInt;  
+var
+  Size: NativeUInt;
+  NewSource: Pointer;
+  Value: NativeUInt;
+  Destination: PByte;
+  X: Cardinal;  
+begin
+  // source size
+  Size := Length;
+  if (Flags and FLAG_SOURCE_UTF16 <> 0) then Inc(Size, Length);
+  Value := Options.SourceSize - Size;
+  Options.SourceSize := Value;
+  if (NativeInt(Value) < 0) then
+  begin
+    Result := True;
+    Exit;
+  end;
+  NewSource := Pointer(NativeUInt(Options.Source) + Size);
+
+  // callback
+  if (Flags and FLAG_USE_LOOKUP = 0) then
+  begin
+    Size := TConversionCallback1(Options.Callback)(@Options.CharBuffer, Options.Source, Length);
+  end else
+  begin
+    Size := TConversionCallback2(Options.Callback)(@Options.CharBuffer, Options.Source, Length, Options.Lookup);
+  end;
+  if (Flags and FLAG_DESTINATION_UTF16 <> 0) then
+    Size := Size shl 1;
+
+  // destination size
+  Value := Options.DestinationSize - Size;
+  Options.DestinationSize := Value;
+  if (NativeInt(Value) < 0) then
+  begin
+    if (Options.SourceSize = 0) then Options.SourceSize := 1;    
+    Result := True;
+    Exit;
+  end;    
+    
+  // data copy  
+  Destination := Options.Destination;
+  X := PCardinal(@Options.CharBuffer[0])^;
+  if (Size >= SizeOf(Cardinal)) then
+  begin
+    PCardinal(Destination)^ := X;
+    Dec(Size, SizeOf(Cardinal));
+    Inc(Destination, SizeOf(Cardinal));
+    X := PCardinal(@Options.CharBuffer[4])^;
+  end;
+  case Size of
+    2:
+    begin
+      PWord(Destination)^ := X;
+      Inc(Destination, 2);
+    end;
+    3:
+    begin
+      PWord(Destination)^ := X;
+      X := X shr 16;
+      Inc(Destination, 2);
+      goto _1;
+    end;
+    1:
+    begin
+    _1:
+      PByte(Destination)^ := X;
+      Inc(Destination, 1);
+    end;
+  end;  
+  
+  // result
+  Options.Source := NewSource;
+  Options.Destination := Destination;
+  Result := (Options.SourceSize = 0);
+end;
+
+
 function TUniConvContext.convert_sbcs_from_sbcs: NativeInt;
 type
   // result = length
   TCallback = procedure(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
 var
-  SrcSize, DestSize: NativeUInt;
-  Size: NativeUInt;
+  SrcLength, DestLength: NativeUInt;
+  Length: NativeUInt;
 begin
-  SrcSize := Self.SourceSize;
-  DestSize := Self.DestinationSize;
+  SrcLength := Self.SourceSize;
+  DestLength := Self.DestinationSize;
 
-  if (DestSize >= SrcSize) then
+  if (DestLength >= SrcLength) then
   begin
-    Size := SrcSize;
+    Length := SrcLength;
     Result := 0;
   end else
   begin
-    Size := DestSize;
-    Result := {remaining source bytes}(SrcSize - DestSize);
+    Length := DestLength;
+    Result := NativeInt(SrcLength{SrcSize} - DestLength){remaining source bytes};
   end;
-  Self.FSourceRead := Size;
-  Self.FDestinationWritten := Size;
+  Self.FSourceRead := Length;
+  Self.FDestinationWritten := Length;
 
-  TCallback(Self.FReader)(Self.Destination, Self.Source, Size, Self.FLookup);
+  TCallback(Self.FReader)(Self.Destination, Self.Source, Length, Self.FLookup);
 end;
 
 // result = length
@@ -3670,28 +3790,185 @@ function TUniConvContext.convert_utf8_from_utf8: NativeInt;
 type
   // result = min: length/3*2; max: length*3/2
   TCallback = function(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_UTF8CHAR_SIZE;
+  SMALL_DEST_SIZE = (SMALL_SRC_SIZE * 3) div 2;
+  SMALL_CONVERSION_FLAGS = 0;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  // FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = (Destination Length * 2) div 3;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    if (DestSize > (DIV3_MAX_DIVIDEND shr 1)) then
+    begin
+      Length := DestSize shr 1;
+    end else
+    begin
+      Length := (NativeInt(DestSize) * (DIV3_MUL_VALUE * 2)) shr DIV3_SHIFT;
+    end;
+    if (Length > SrcSize) then
+    begin
+      FStore.Options.Length := SrcSize;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      Length := uniconv_lookup_utf8_size[PByte(FStore.Options.Source)^];
+      Done := SmallConvertion(FStore.Options, Length, SMALL_CONVERSION_FLAGS);
+      SrcSize := FStore.Options.SourceSize;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
 
 // result = min: length/3*2; max: length*3/2
 function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/3*2; max: length*3/2
 function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 function TUniConvContext.convert_utf16_from_utf16: NativeInt;
 type
   // result = length
   TCallback = procedure(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+var
+  SrcSize, DestSize: NativeUInt;
+  Size: NativeUInt;
 begin
-  Result := 0{todo};
+  SrcSize := Self.SourceSize{~ SrcLength * 2};
+  DestSize := Self.DestinationSize and -2{DestLength * 2};
+
+  if (DestSize >= SrcSize) then
+  begin
+    Size{Length * 2} := SrcSize and -2;
+    Result := -NativeInt(SrcSize and 1);
+  end else
+  begin
+    Size{Length * 2} := DestSize;
+    Result := NativeInt(SrcSize - DestSize){remaining source bytes};
+  end;
+  Self.FSourceRead := Size{Length * 2};
+  Self.FDestinationWritten := Size{Length * 2};
+
+  TCallback(Self.FReader)(Self.Destination, Self.Source, Size shr 1);
 end;
 
 // result = length
@@ -3742,28 +4019,139 @@ end;
 
 // result = min: length/6; max: length
 function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/6; max: length
 function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/6; max: length
 function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 function TUniConvContext.convert_utf16_from_sbcs: NativeInt;
 type
   // result = length
   TCallback = procedure(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvW_B);
+var
+  SrcLength, DestLength: NativeUInt;
+  Length: NativeUInt;
 begin
-  Result := 0{todo};
+  SrcLength := Self.SourceSize;
+  DestLength := Self.DestinationSize shr 1;
+
+  if (DestLength >= SrcLength) then
+  begin
+    Length := SrcLength;
+    Result := 0;
+  end else
+  begin
+    Length := DestLength;
+    Result := NativeInt(SrcLength{SrcSize} - DestLength){remaining source bytes};
+  end;
+  Self.FSourceRead := Length;
+  Self.FDestinationWritten := Length shl 1;
+
+  TCallback(Self.FReader)(Self.Destination, Self.Source, Length, Self.FLookup);
 end;
 
 // result = length
@@ -3794,20 +4182,113 @@ end;
 
 // result = min: length/2; max: length
 function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/2; max: length
 function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/2; max: length
 function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 function TUniConvContext.convert_utf8_from_utf16: NativeInt;
@@ -3820,20 +4301,113 @@ end;
 
 // result = min: length; max: length*3
 function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length; max: length*3
 function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length; max: length*3
 function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 function TUniConvContext.convert_utf16_from_utf8: NativeInt;
@@ -3846,22 +4420,116 @@ end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+var
+  Options: PExtendedConvertionOptions;
+  Store: record
+    Options: PExtendedConvertionOptions;
+    Dest: Pointer;
+  end;
 begin
-  Result := 0{todo};
+  // extended options
+  if (NativeInt(Length) < 0) then
+  begin
+    Length := Length and (HIGH_NATIVE_BIT_VALUE - 1);
+    Store.Options := PExtendedConvertionOptions(Length);
+    Length := PExtendedConvertionOptions(Length).Length;
+  end else
+  begin
+    Store.Dest := Dest;
+    Store.Options := nil;
+  end;
+
+  // todo
+
+  // result
+  Options := Store.Options;
+  if (Options <> nil) then
+  begin
+    Options.Source := Src;
+    {test}Options.Length := Length;
+    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Options.Destination := Dest;
+  end else
+  begin
+    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  end;
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
+
 
 {$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
 function TUniConvContext.UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
@@ -9736,7 +10404,6 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 initialization
-  TUniConvContext(nil^).convert_sbcs_from_sbcs;
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
   System.GetMemoryManager(MemoryManager);
   InternalLookupsInitialize;
