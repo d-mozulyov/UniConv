@@ -698,10 +698,6 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
 function UniConvSBCSLookup(const CodePage: Word): PUniConvSBCSLookup; {$ifdef INLINESUPPORT}inline;{$endif}
 
 
-//type
-//  TUniConvSimple???
-// comment todo
-
 // result = length
 procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
 procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvB_B);
@@ -715,7 +711,7 @@ function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUIn
 procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
 procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
 
-// result = min: length; max: length*2
+// result = min: length; max: length*3
 function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
 function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
 function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
@@ -1798,7 +1794,7 @@ end;
 function TUniConvSBCSLookup.AllocFillUTF8(var Buffer: PUniConvD_B; const ACase: TUniConvCase): PUniConvD_B;
 begin
   Result := Buffer;
-  if (Result <> nil) then
+  if (Result = nil) then
   begin
     Result := InternalLookupAlloc(SizeOf(TUniConvD_B));
     FillUTF8(Result^, ACase);
@@ -2091,7 +2087,7 @@ end;
 function TUniConvSBCSLookup.AllocFillSBCS(var Buffer: PUniConvB_W): PUniConvB_W;
 begin
   Result := Buffer;
-  if (Result <> nil) then
+  if (Result = nil) then
   begin
     Result := InternalLookupAlloc(SizeOf(TUniConvB_W));
     FillSBCS(Result^);
@@ -3634,6 +3630,7 @@ const
   DIV3_MUL_VALUE = 43691;
   DIV3_SHIFT = 17;
 
+  MAX_SBCSCHAR_SIZE = 1;
   MAX_UTF8CHAR_SIZE = 6;
   MAX_UTF16CHAR_SIZE = 4;
 
@@ -3857,7 +3854,7 @@ begin
     FStore.Options.DestinationSize := DestSize;
     repeat
       Length := uniconv_lookup_utf8_size[PByte(FStore.Options.Source)^];
-      Done := SmallConvertion(FStore.Options, Length, SMALL_CONVERSION_FLAGS);
+      Done := SmallConvertion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
       SrcSize := FStore.Options.SourceSize;
     until (Done);
   end;
@@ -3985,25 +3982,102 @@ end;
 
 function TUniConvContext.convert_utf8_from_sbcs: NativeInt;
 type
-  // result = min: length; max: length*2
+  // result = min: length; max: length*3
   TCallback = function(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_SBCSCHAR_SIZE;
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE * 3;
+  SMALL_CONVERSION_FLAGS = FLAG_USE_LOOKUP;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = (Destination Length) div 3;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    if (DestSize > DIV3_MAX_DIVIDEND) then
+    begin
+      Length := DestSize shr 2;
+    end else
+    begin
+      Length := (NativeInt(DestSize) * DIV3_MUL_VALUE) shr DIV3_SHIFT;
+    end;
+    if (Length > SrcSize) then
+    begin
+      FStore.Options.Length := SrcSize;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE,
+      FStore.Options.Lookup);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      Done := SmallConvertion(FStore.Options, 1{Length}, SMALL_CONVERSION_FLAGS);
+      SrcSize := FStore.Options.SourceSize;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
 
-// result = min: length; max: length*2
+// result = min: length; max: length*3
 function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
 begin
   Result := 0{todo};
 end;
 
-// result = min: length; max: length*2
+// result = min: length; max: length*3
 function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
 begin
   Result := 0{todo};
 end;
 
-// result = min: length; max: length*2
+// result = min: length; max: length*3
 function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Lookup: PUniConvD_B): NativeUInt;
 begin
   Result := 0{todo};
@@ -4013,8 +4087,80 @@ function TUniConvContext.convert_sbcs_from_utf8: NativeInt;
 type
   // result = min: length/6; max: length
   TCallback = function(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_UTF8CHAR_SIZE;
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE;
+  SMALL_CONVERSION_FLAGS = FLAG_USE_LOOKUP;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = Destination Length;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    Length := DestSize;
+    if (Length > SrcSize) then
+    begin
+      FStore.Options.Length := SrcSize;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE,
+      FStore.Options.Lookup);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      Length := uniconv_lookup_utf8_size[PByte(FStore.Options.Source)^];
+      Done := SmallConvertion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
+      SrcSize := FStore.Options.SourceSize;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
 
 // result = min: length/6; max: length
@@ -4176,9 +4322,90 @@ function TUniConvContext.convert_sbcs_from_utf16: NativeInt;
 type
   // result = min: length/2; max: length
   TCallback = function(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_UTF16CHAR_SIZE;
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE div SizeOf(TUnicodeChar);
+  SMALL_CONVERSION_FLAGS = FLAG_USE_LOOKUP or FLAG_SOURCE_UTF16;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = Destination Length;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    Length := DestSize shr 1;
+    if (Length > SrcSize) then
+    begin
+      FStore.Options.Length := SrcSize;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE,
+      FStore.Options.Lookup);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      if (SrcSize < SizeOf(TUnicodeChar)) then
+      begin
+        Dec(SrcSize, SizeOf(TUnicodeChar));
+        Done := True;
+      end else
+      begin
+        // if (Word(X) >= $d800) and (Word(X) < $dc00) then Length := 1;
+        Length := Byte(NativeUInt(PWord(FStore.Options.Source)^) - $d800 < ($dc00-$d800));
+        Done := SmallConvertion(FStore.Options, Length{0/1} + 1, SMALL_CONVERSION_FLAGS);
+        SrcSize := FStore.Options.SourceSize;
+      end;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
+
 
 // result = min: length/2; max: length
 function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Lookup: PUniConvB_W): NativeUInt;
@@ -4295,9 +4522,95 @@ function TUniConvContext.convert_utf8_from_utf16: NativeInt;
 type
   // result = min: length; max: length*3
   TCallback = function(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_UTF16CHAR_SIZE;
+  SMALL_DEST_SIZE = (MAX_UTF16CHAR_SIZE div SizeOf(TUnicodeChar)) * 3;
+  SMALL_CONVERSION_FLAGS = FLAG_SOURCE_UTF16;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  // FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = (Destination Length) div 3;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    if (DestSize > DIV3_MAX_DIVIDEND) then
+    begin
+      Length := DestSize shr 2;
+    end else
+    begin
+      Length := (NativeInt(DestSize) * DIV3_MUL_VALUE) shr DIV3_SHIFT;
+    end;
+    if (Length > SrcSize shr 1) then
+    begin
+      FStore.Options.Length := SrcSize shr 1;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      if (SrcSize < SizeOf(TUnicodeChar)) then
+      begin
+        Dec(SrcSize, SizeOf(TUnicodeChar));
+        Done := True;
+      end else
+      begin
+        // if (Word(X) >= $d800) and (Word(X) < $dc00) then Length := 1;
+        Length := Byte(NativeUInt(PWord(FStore.Options.Source)^) - $d800 < ($dc00-$d800));
+        Done := SmallConvertion(FStore.Options, Length{0/1} + 1, SMALL_CONVERSION_FLAGS);
+        SrcSize := FStore.Options.SourceSize;
+      end;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
+
 
 // result = min: length; max: length*3
 function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
@@ -4414,8 +4727,79 @@ function TUniConvContext.convert_utf16_from_utf8: NativeInt;
 type
   // result = min: length/3; max: length
   TCallback = function(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+const
+  SMALL_SRC_SIZE = MAX_UTF8CHAR_SIZE;
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE * SizeOf(TUnicodeChar);
+  SMALL_CONVERSION_FLAGS = FLAG_DESTINATION_UTF16;
+var
+  DestSize, SrcSize: NativeUInt;
+  Length, Value: NativeUInt;
+  {$ifdef CPUX86}
+  _Self: PUniConvContext;
+  {$endif}
+  Done: Boolean;
+
+  FStore: record
+    Options: TExtendedConvertionOptions;
+    SourceTop: Pointer;
+    {$ifdef CPUX86}
+    Self: PUniConvContext;
+    {$endif}
+  end;
 begin
-  Result := 0{todo};
+  // store parameters
+  {$ifdef CPUX86}
+  FStore.Self := @Self;
+  {$endif}
+  FStore.Options.Source := Self.Source;
+  FStore.Options.Destination := Self.Destination;
+  FStore.Options.Callback := Pointer(Self.FReader);
+  // FStore.Options.Lookup := Self.FLookup;
+
+  SrcSize := Self.SourceSize;
+  DestSize := Self.DestinationSize;
+  FStore.SourceTop := Pointer(NativeUInt(FStore.Options.Source) + SrcSize);
+
+  // large source/destination
+  // source length limit = Destination Length;
+  if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
+  repeat
+    Length := DestSize shr 1;
+    if (Length > SrcSize) then
+    begin
+      FStore.Options.Length := SrcSize;
+    end else
+    begin
+      FStore.Options.Length := Length;
+    end;
+
+    // execute conversion
+    Value := TCallback(FStore.Options.Callback)(
+      FStore.Options.Source, FStore.Options.Destination,
+      NativeUInt(@FStore.Options) + HIGH_NATIVE_BIT_VALUE);
+    Dec(DestSize, Value);
+    SrcSize := NativeUInt(FStore.SourceTop) - NativeUInt(FStore.Options.Source);
+  until (DestSize <= SMALL_DEST_SIZE) or (SrcSize <= SMALL_SRC_SIZE);
+
+  // small source/destination
+  if (SrcSize <> 0) then
+  begin
+    FStore.Options.SourceSize := SrcSize;
+    FStore.Options.DestinationSize := DestSize;
+    repeat
+      Length := uniconv_lookup_utf8_size[PByte(FStore.Options.Source)^];
+      Done := SmallConvertion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
+      SrcSize := FStore.Options.SourceSize;
+    until (Done);
+  end;
+
+  // result
+  {$ifdef CPUX86}_Self := FStore.Self;{$endif}
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten :=
+     NativeUInt(FStore.Options.Destination) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead :=
+     NativeUInt(FStore.Options.Source) - NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  Result := SrcSize;
 end;
 
 // result = min: length/3; max: length
