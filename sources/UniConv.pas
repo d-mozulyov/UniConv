@@ -141,7 +141,7 @@ unit UniConv;
 {$endif}
 
 interface
-  uses Types;
+
 
 type
   // standard types
@@ -220,22 +220,23 @@ const
   record
     Value: Cardinal;
     Size: Cardinal;
+    Name: string;
     CodePage: Word;
   end = (
-    (Value: $00000000; Size: 0; CodePage: 0),                  // none
-    (Value: $00BFBBEF; Size: 3; CodePage: CODEPAGE_UTF8),      // EF BB BF
-    (Value: $0000FEFF; Size: 2; CodePage: CODEPAGE_UTF16),     // FF FE XX XX
-    (Value: $0000FFFE; Size: 2; CodePage: CODEPAGE_UTF16BE),   // FE FF XX XX
-    (Value: $0000FEFF; Size: 4; CodePage: CODEPAGE_UTF32),     // FF FE 00 00
-    (Value: $FFFE0000; Size: 4; CodePage: CODEPAGE_UTF32BE),   // 00 00 FE FF
-    (Value: $FEFF0000; Size: 4; CodePage: CODEPAGE_UCS2143),   // 00 00 FF FE
-    (Value: $0000FFFE; Size: 4; CodePage: CODEPAGE_UCS3412),   // FE FF 00 00
-    (Value: $004C64F7; Size: 3; CodePage: CODEPAGE_UTF1),      // F7 64 4C
-    (Value: $00762F2B; Size: 3; CodePage: CODEPAGE_UTF7),      // 2B 2F 76 + 38/39/2B/2F
-    (Value: $736673DD; Size: 4; CodePage: CODEPAGE_UTFEBCDIC), // DD 73 66 73
-    (Value: $00FFFE0E; Size: 3; CodePage: CODEPAGE_SCSU),      // 0E FE FF
-    (Value: $0028EEFB; Size: 3; CodePage: CODEPAGE_BOCU1),     // FB EE 28
-    (Value: $33953184; Size: 4; CodePage: {GB-18030}54936)     // 84 31 95 33
+    (Value: $00000000; Size: 0; Name: ''          ; CodePage: 0),                  // none
+    (Value: $00BFBBEF; Size: 3; Name: 'UTF-8'     ; CodePage: CODEPAGE_UTF8),      // EF BB BF
+    (Value: $0000FEFF; Size: 2; Name: 'UTF-16 LE' ; CodePage: CODEPAGE_UTF16),     // FF FE XX XX
+    (Value: $0000FFFE; Size: 2; Name: 'UTF-16 BE' ; CodePage: CODEPAGE_UTF16BE),   // FE FF XX XX
+    (Value: $0000FEFF; Size: 4; Name: 'UTF-32 LE' ; CodePage: CODEPAGE_UTF32),     // FF FE 00 00
+    (Value: $FFFE0000; Size: 4; Name: 'UTF-32 BE' ; CodePage: CODEPAGE_UTF32BE),   // 00 00 FE FF
+    (Value: $FEFF0000; Size: 4; Name: 'UCS-2143'  ; CodePage: CODEPAGE_UCS2143),   // 00 00 FF FE
+    (Value: $0000FFFE; Size: 4; Name: 'UCS-3412'  ; CodePage: CODEPAGE_UCS3412),   // FE FF 00 00
+    (Value: $004C64F7; Size: 3; Name: 'UTF-1'     ; CodePage: CODEPAGE_UTF1),      // F7 64 4C
+    (Value: $00762F2B; Size: 3; Name: 'UTF-7'     ; CodePage: CODEPAGE_UTF7),      // 2B 2F 76 + 38/39/2B/2F
+    (Value: $736673DD; Size: 4; Name: 'UTF-EBCDIC'; CodePage: CODEPAGE_UTFEBCDIC), // DD 73 66 73
+    (Value: $00FFFE0E; Size: 3; Name: 'SCSU'      ; CodePage: CODEPAGE_SCSU),      // 0E FE FF
+    (Value: $0028EEFB; Size: 3; Name: 'BOCU-1'    ; CodePage: CODEPAGE_BOCU1),     // FB EE 28
+    (Value: $33953184; Size: 4; Name: 'GB-18030'  ; CodePage: 54936)               // 84 31 95 33
   );
 
 
@@ -277,7 +278,7 @@ type
             2: (B: Byte);
             3: (Bytes: array[0..3] of Byte);
           end);
-      1: (WR: Int64; scsu_read_windows: array[0..7] of Cardinal);
+      1: (WR: Int64; ScsuReadWindows: array[0..7] of Cardinal);
     end;
 
     FDestination: Pointer;
@@ -724,11 +725,6 @@ type
   T8Bytes = array[0..7] of Byte;
   P8Bytes = ^T8Bytes;
 
-  {$ifNdef CPUX86}
-    {$define MANY_REGS}
-  {$else}
-    {$undef MANY_REGS}
-  {$endif}
 
 const
   HIGH_NATIVE_BIT = {$ifdef SMALLINT}31{$else}63{$endif};
@@ -3325,36 +3321,35 @@ begin
 end;
 
 // Universal(basic) conversion way
-// SrcMode --> SrcSBTable/SrcProc/inline --> [Case] -->
-// --> DestMode --> DestSBTable/DestProc/inline
+// (SourceEncoding)SourceSBTable/SourceProc/inline -->
+// [CharCase] -->
+// (DestinationEncoding)DestinationSBTable/DestinationProc/inline
 function TUniConvContext.convert_universal: NativeInt;
 label
   char_read_normal, char_read, char_read_unknown, char_read_done, char_read_small,
   char_write, dest_too_small, convert_finish;
 type
-  TReaderProc = function(Context: PUniConvContext; src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-  TWriterProc = function(Context: PUniConvContext; X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+  TReaderProc = function(Context: PUniConvContext; SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+  TWriterProc = function(Context: PUniConvContext; X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 var
-  dest, src: Pointer;
-  src_size: NativeInt;
+  Dest, Src: PByte;
+  SrcSize: NativeUInt;
 
-  Flags: Cardinal;
+  Flags: NativeUInt;
   X, Y: NativeUInt;
-  dest_size: NativeInt;
+  DestSize: NativeUInt;
 
   FStore: record
-    dest_top: Pointer;
-    stored_dest, stored_src: Pointer;
-    //stored_state: Cardinal;
+    DestTop: Pointer;
+    StoredDest, StoredSrc: Pointer;
 
     {$ifdef CPUX86}
-    dest, src: Pointer;
-    reader: Pointer;
-    writer: Pointer;
-    case_lookup: PUniConvW_W;
+    Dest, Src: Pointer;
+    Reader: Pointer;
+    Writer: Pointer;
     {$endif}
 
-    src_read: Cardinal;
+    SrcRead: Cardinal;
 
     {$ifdef CPUX86}
     Self: PUniConvContext;
@@ -3368,54 +3363,53 @@ var
             2: (B: Byte);
             3: (Bytes: array[0..3] of Byte);
           end);
-      1: (WR: int64; scsu_read_windows: array[0..7] of Cardinal);
+      1: (WR: int64; ScsuReadWindows: array[0..7] of Cardinal);
   end;
 
   {$ifdef CPUX86}
   _Self: PUniConvContext;
-  {$endif}    
+  {$endif}
 begin
-  src := Self.Source;
-  src_size := Self.SourceSize;
-  dest := Self.Destination;
+  Src := Self.Source;
+  SrcSize := Self.SourceSize;
+  Dest := Self.Destination;
   Flags := Self.F.Flags;
-  FStore.dest_top := Pointer(NativeUInt(dest)+Self.DestinationSize);
+  FStore.DestTop := Pointer(NativeUInt(Dest) + Self.DestinationSize);
 
   {$ifdef CPUX86}
-  FStore.case_lookup := nil{todo};//Self.FLookup;
-  FStore.reader := nil{todo};//Self.FReader;
-  FStore.writer := nil{todo};//Self.FWriter;
+  FStore.Reader := Self.FCallbacks.Reader;
+  FStore.Writer := Self.FCallbacks.Writer;
   {$endif}
 
-  FStore.stored_dest := dest;
-  FStore.stored_src :=  src;
+  FStore.StoredDest := Dest;
+  FStore.StoredSrc := Src;
   FStore.WR := Self.FState.WR;
   {$ifdef CPUX86}
   FStore.Self := @Self;
   {$endif}
 
-if (src_size < 4) then goto char_read_small;
+  if (SrcSize < 4) then goto char_read_small;
 char_read_normal:
   // fill X as 4 Bytes from source
-  X := PCardinal(src)^;
+  X := PCardinal(Src)^;
 
 char_read:
-  case {SrcMode}(Flags and $f) of
+  case {SourceEncoding}(Flags and ENCODING_MASK) of
     ENC_SBCS{Single-byte: AnsiChar, AnsiString}:
     begin
       // don't need to compare source size
       // automatically char case conversion
-      X := PUniConvW_B({$ifdef CPUX86}FStore.reader{$else}Self.FCallbacks.Reader{$endif})[Byte(X)];
-      Inc(NativeInt(src), 1);
-      Dec(src_size, 1);
+      X := PUniConvW_B({$ifdef CPUX86}FStore.Reader{$else}Self.FCallbacks.Reader{$endif})[Byte(X)];
+      Inc(Src, 1);
+      Dec(SrcSize, 1);
       goto char_write;
     end;
     ENC_UTF8{UTF8Char, UTF8String}:
     begin
       if (X and $80 = 0) then
       begin
-        Inc(NativeInt(src), 1);
-        Dec(src_size, 1);
+        Inc(Src, 1);
+        Dec(SrcSize, 1);
         X := Byte(X);
         goto char_read_done;
       end else
@@ -3424,24 +3418,24 @@ char_read:
         // X := ((X and $1F) shl 6) or ((X shr 8) and $3F);
         Y := X;
         X := X and $1F;
-        Dec(src_size, 2);
+        Dec(SrcSize, 2);
         Y := Y shr 8;
-        Inc(NativeInt(src), 2);
+        Inc(Src, 2);
         X := X shl 6;
         Y := Y and $3F;
         Inc(X, Y);
-        if (NativeInt(src_size) < 0) then goto convert_finish;
+        if (NativeInt(SrcSize) < 0) then goto convert_finish;
         goto char_read_done;
       end else
       begin
         Y := uniconv_lookup_utf8_size[Byte(X)];
-        Dec(src_size, Y);
-        Inc(NativeInt(src), Y);
-        if (NativeInt(src_size) < 0) then goto convert_finish;
+        Dec(SrcSize, Y);
+        Inc(Src, Y);
+        if (NativeInt(SrcSize) < 0) then goto convert_finish;
         case Y of
           0: begin
-               Inc(NativeInt(src), 1);
-               Dec(src_size, 1);
+               Inc(Src, 1);
+               Dec(SrcSize, 1);
                goto char_read_unknown;
              end;
           3: begin
@@ -3480,19 +3474,19 @@ char_read:
     ENC_UTF16{WideChar, WideString, UnicodeString}:
     begin
       Y := Word(X);
-      Dec(src_size, 2);
-      Inc(NativeInt(src), 2);
+      Dec(SrcSize, 2);
+      Inc(Src, 2);
       Dec(Y, $d800);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
 
       //if (Word(X) >= $d800) and (Word(X) < $dc00) then
       if (Y < ($dc00-$d800)) then
       begin
         X := X shr 16;
-        Dec(src_size, 2);
-        Inc(NativeInt(src), 2);
+        Dec(SrcSize, 2);
+        Inc(Src, 2);
         Dec(X, $dc00);
-        if (NativeInt(src_size) < 0) then goto convert_finish;
+        if (NativeInt(SrcSize) < 0) then goto convert_finish;
 
         //if (X >= $dc00) and (X < $e000) then
         if (X < ($e000-$dc00)) then
@@ -3517,21 +3511,21 @@ char_read:
     ENC_UTF16BE:
     begin
       Y := Word(X);
-      Dec(src_size, 2);
+      Dec(SrcSize, 2);
       Y := Swap(Y);
-      Inc(NativeInt(src), 2);
+      Inc(Src, 2);
       Dec(Y, $d800);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
 
       //if (Word(X) >= $d800) and (Word(X) < $dc00) then
       if (Y < ($dc00-$d800)) then
       begin
         X := X shr 16;
-        Dec(src_size, 2);
+        Dec(SrcSize, 2);
         X := Swap(X);
-        Inc(NativeInt(src), 2);
+        Inc(Src, 2);
         Dec(X, $dc00);
-        if (NativeInt(src_size) < 0) then goto convert_finish;
+        if (NativeInt(SrcSize) < 0) then goto convert_finish;
 
         //if (X >= $dc00) and (X < $e000) then
         if (X < ($e000-$dc00)) then
@@ -3557,22 +3551,22 @@ char_read:
     ENC_UTF32:
     begin
       {none}
-      Dec(src_size, 4);
-      Inc(NativeInt(src), 4);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      Dec(SrcSize, 4);
+      Inc(Src, 4);
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
     end;
     ENC_UTF32BE:
     begin
       // 0123 --> 3210
-      //X := (Swap(X){32} shl 16) or Swap(X shr 16){10};
+      // X := (Swap(X){32} shl 16) or Swap(X shr 16){10};
       Y := X shr 16;
       X := Swap(X);
-      Dec(src_size, 4);
+      Dec(SrcSize, 4);
       Y := Swap(Y);
       X := X shl 16;
-      Inc(NativeInt(src), 4);
+      Inc(Src, 4);
       Inc(X, Y);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
     end;
     ENC_UCS2143:
     begin
@@ -3580,10 +3574,10 @@ char_read:
       // X := (X shr 16) or (X shl 16);
       Y := X shr 16;
       X := X shl 16;
-      Dec(src_size, 4);
-      Inc(NativeInt(src), 4);
+      Dec(SrcSize, 4);
+      Inc(Src, 4);
       Inc(X, Y);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
     end;
     ENC_UCS3412:
     begin
@@ -3591,36 +3585,36 @@ char_read:
       // X := (Swap(X shr 16){32} shl 16) or Swap(X);
       Y := X shr 16;
       X := Swap(X);
-      Dec(src_size, 4);
+      Dec(SrcSize, 4);
       Y := Swap(Y) shl 16;
       X := Word(X);
-      Inc(NativeInt(src), 4);
+      Inc(Src, 4);
       Inc(X, Y);
-      if (NativeInt(src_size) < 0) then goto convert_finish;
+      if (NativeInt(SrcSize) < 0) then goto convert_finish;
     end;
   else
-    { Multy-byte encoding callback }
+    // Multy-byte encoding callback
     {$ifdef CPUX86}
-    FStore.dest := dest;
-    FStore.src := src;
+    FStore.Dest := Dest;
+    FStore.Src := Src;
     {$endif}
-      FStore.src_read := 0;
-      X := TReaderProc({$ifdef CPUX86}FStore.reader{$else}Self.FCallbacks.Reader{$endif})({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, src_size, src, FStore.src_read);
+      FStore.SrcRead := 0;
+      X := TReaderProc({$ifdef CPUX86}FStore.Reader{$else}Self.FCallbacks.Reader{$endif})({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, SrcSize, Src, FStore.SrcRead);
     {$ifdef CPUX86}
-    dest := FStore.dest;
-    src := FStore.src;
+    Dest := FStore.Dest;
+    Src := FStore.Src;
     {$endif}
-    Y := FStore.src_read;
+    Y := FStore.SrcRead;
     if (Integer(Cardinal(Y)) < 0) then
     begin
       // mode finish
-      Inc(NativeInt(src), src_size);
-      src_size := 0;
+      // Inc(Src, SrcSize);
+      SrcSize := 0;
       goto convert_finish;
     end;
-    Dec(src_size, Y);
-    Inc(NativeInt(src), Y);
-    if (NativeInt(src_size) < 0) then goto convert_finish;
+    Dec(SrcSize, Y);
+    Inc(Src, Y);
+    if (NativeInt(SrcSize) < 0) then goto convert_finish;
   end;
 
   // decoded char range check
@@ -3628,40 +3622,41 @@ char_read:
   begin
 char_read_unknown:
     X := UNKNOWN_CHAR;
+    goto char_write;
   end;
 char_read_done:
 
-  // case conversion
-  if ({F.CaseChanging}Flags and (1 shl 6) <> 0) and (X <= $ffff) then
+  // char case conversion
+  if (((Flags and CHARCASE_MASK_ORIGINAL) or X) <= $ffff) then
   begin
-    X := {$ifdef CPUX86}FStore.case_lookup{$else}PUniConvW_W(Self.FCallbacks.Lookup){$endif}[X];
+    X := uniconv_lookup_ucs2_charcase.values[X + (Flags and CHARCASE_MASK) - $10000];
   end;
 
 char_write:
-  dest_size := NativeInt(FStore.dest_top);
-  Dec(dest_size, NativeInt(dest));
+  DestSize := NativeInt(FStore.DestTop);
+  Dec(DestSize, NativeInt(Dest));
 
-  case ((Flags shr 9) and $f) of
+  case {DestinationEncoding}(Flags shr ENCODING_DESTINATION_OFFSET) of
     ENC_SBCS{Single-byte: AnsiChar, AnsiString}:
     begin
-      if (dest_size = 0{<1}) then goto dest_too_small;
+      if (DestSize = 0{< 1}) then goto dest_too_small;
 
-      if (X > $ffff) then PByte(dest)^ := UNKNOWN_CHAR
-      else PByte(dest)^ := PUniConvB_W({$ifdef CPUX86}FStore.writer{$else}Self.FCallbacks.Writer{$endif})[X];
+      if (X > $ffff) then PByte(Dest)^ := UNKNOWN_CHAR
+      else PByte(Dest)^ := PUniConvB_W({$ifdef CPUX86}FStore.Writer{$else}Self.FCallbacks.Writer{$endif})[X];
 
-      Inc(NativeInt(dest));
+      Inc(Dest);
     end;
     ENC_UTF8{UTF8Char, UTF8String}:
     begin
       if (X <= $7f) then
       begin
-        if (dest_size = 0{<1}) then goto dest_too_small;
-        PByte(dest)^ := X;
-        Inc(NativeInt(dest));
+        if (DestSize = 0{< 1}) then goto dest_too_small;
+        PByte(Dest)^ := X;
+        Inc(Dest);
       end else
       if (X <= $7ff) then
       begin
-        if (dest_size < 2) then goto dest_too_small;
+        if (DestSize < 2) then goto dest_too_small;
 
         // X := (X shr 6) + ((X and $3f) shl 8) + $80C0;
         Y := X;
@@ -3669,14 +3664,14 @@ char_write:
         Y := (Y and $3f) shl 8;
         Inc(X, Y);
 
-        PWord(dest)^ := X;
-        Inc(NativeInt(dest), 2);
+        PWord(Dest)^ := X;
+        Inc(Dest, 2);
       end else
       if (X <= $ffff) then
       begin
-        if (dest_size < 3) then goto dest_too_small;
+        if (DestSize < 3) then goto dest_too_small;
 
-        //X := (X shr 12) + ((X and $0fc0) shl 2) + ((X and $3f) shl 16) + $8080E0;
+        // X := (X shr 12) + ((X and $0fc0) shl 2) + ((X and $3f) shl 16) + $8080E0;
         Y := X;
         X := (X and $0fc0) shl 2;
         Inc(X, (Y and $3f) shl 16);
@@ -3684,14 +3679,14 @@ char_write:
         Inc(X, $8080E0);
         Inc(X, Y);
 
-        PWord(dest)^ := X;
-        Inc(NativeInt(dest), 2);
+        PWord(Dest)^ := X;
+        Inc(Dest, 2);
         X := X shr 16;
-        PByte(dest)^ := X;
-        Inc(NativeInt(dest));
+        PByte(Dest)^ := X;
+        Inc(Dest);
       end else
       begin
-        if (dest_size < 4) then goto dest_too_small;
+        if (DestSize < 4) then goto dest_too_small;
 
         //X := (X shr 18) + ((X and $3f) shl 24) + ((X and $0fc0) shl 10) +
         //     ((X shr 4) and $3f00) + Integer($808080F0);
@@ -3700,61 +3695,61 @@ char_write:
         Y := Y + (X shr 18);
         X := (X shr 4) and $3f00;
         Inc(Y, Integer($808080F0));
-        Inc(X, Y);   
+        Inc(X, Y);
 
-        PCardinal(dest)^ := X;
-        Inc(NativeInt(dest), 4);
+        PCardinal(Dest)^ := X;
+        Inc(Dest, 4);
       end;
     end;
     ENC_UTF16{WideChar, WideString, UnicodeString}:
     begin
-      if (dest_size < 2) then goto dest_too_small;
+      if (DestSize < 2) then goto dest_too_small;
       if (X <= $ffff) then
       begin
-        if (X shr 11 = $1B) then PWord(dest)^ := $fffd
-        else PWord(dest)^ := X;
+        if (X shr 11 = $1B) then PWord(Dest)^ := $fffd
+        else PWord(Dest)^ := X;
 
-        Inc(NativeInt(dest), 2);
+        Inc(Dest, 2);
       end else
       begin
-        if (dest_size < 4) then goto dest_too_small;
+        if (DestSize < 4) then goto dest_too_small;
         Y := (X - $10000) shr 10 + $d800;
         X := (X - $10000) and $3ff + $dc00;
         X := (X shl 16) + Y;
 
-        PCardinal(dest)^ := X;
-        Inc(NativeInt(dest), 4);
+        PCardinal(Dest)^ := X;
+        Inc(Dest, 4);
       end;
     end;
     ENC_UTF16BE:
     begin
-      if (dest_size < 2) then goto dest_too_small;
+      if (DestSize < 2) then goto dest_too_small;
       if (X <= $ffff) then
       begin
-        if (X shr 11 = $1B) then PWord(dest)^ := $fdff
-        else PWord(dest)^ := Swap(X);
+        if (X shr 11 = $1B) then PWord(Dest)^ := $fdff
+        else PWord(Dest)^ := Swap(X);
 
-        Inc(NativeInt(dest), 2);
+        Inc(Dest, 2);
       end else
       begin
-        if (dest_size < 4) then goto dest_too_small;
+        if (DestSize < 4) then goto dest_too_small;
         Y := Swap((X - $10000) shr 10 + $d800);
         X := Swap((X - $10000) and $3ff + $dc00);
         X := (X shl 16) + Y;
 
-        PCardinal(dest)^ := X;
-        Inc(NativeInt(dest), 4);
+        PCardinal(Dest)^ := X;
+        Inc(Dest, 4);
       end;
     end;
     ENC_UTF32:
     begin
-      if (dest_size < 4) then goto dest_too_small;
-      PCardinal(dest)^ := X;
-      Inc(NativeInt(dest), 4);
+      if (DestSize < 4) then goto dest_too_small;
+      PCardinal(Dest)^ := X;
+      Inc(Dest, 4);
     end;
     ENC_UTF32BE:
     begin
-      if (dest_size < 4) then goto dest_too_small;
+      if (DestSize < 4) then goto dest_too_small;
       // 3210 --> 0123
       // X := (Swap(X){01} shl 16) or Swap(X shr 16){23};
       Y := X shr 16;
@@ -3763,24 +3758,24 @@ char_write:
       X := X shl 16;
       Inc(X, Y);
 
-      PCardinal(dest)^ := X;
-      Inc(NativeInt(dest), 4);
+      PCardinal(Dest)^ := X;
+      Inc(Dest, 4);
     end;
     ENC_UCS2143:
     begin
-      if (dest_size < 4) then goto dest_too_small;
+      if (DestSize < 4) then goto dest_too_small;
       // 3210 --> 1032
       // X := (X shr 16) or (X shl 16);
       Y := X shr 16;
       X := X shl 16;
       Inc(X, Y);
 
-      PCardinal(dest)^ := X;
-      Inc(NativeInt(dest), 4);
+      PCardinal(Dest)^ := X;
+      Inc(Dest, 4);
     end;
     ENC_UCS3412:
     begin
-      if (dest_size < 4) then goto dest_too_small;
+      if (DestSize < 4) then goto dest_too_small;
       // 3210 --> 2301
       // X := (Swap(X shr 16){23} shl 16) or Swap(X);
       Y := X shr 16;
@@ -3789,31 +3784,31 @@ char_write:
       X := Word(X);
       Inc(X, Y);
 
-      PCardinal(dest)^ := X;
-      Inc(NativeInt(dest), 4);
+      PCardinal(Dest)^ := X;
+      Inc(Dest, 4);
     end;
   else
-    { Multy-byte encoding callback }
-    if (dest_size = 0{<1}) then goto dest_too_small;
+    // Multy-byte encoding callback
+    if (DestSize = 0{< 1}) then goto dest_too_small;
     {$ifdef CPUX86}
-    FStore.dest := dest;
-    FStore.src := src;
+    FStore.Dest := Dest;
+    FStore.Src := Src;
     {$endif}
       X := TWriterProc({$ifdef CPUX86}FStore.writer{$else}Self.FCallbacks.Writer{$endif})
-           ({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, X, dest, dest_size,
-           (src_size = 0) and ({F.ModeFinalize}Flags and (1 shl 7) <> 0));
+           ({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, X, Dest, DestSize,
+           (SrcSize = 0) and (Flags and FLAG_MODE_FINALIZE <> 0));
     {$ifdef CPUX86}
-    dest := FStore.dest;
-    src := FStore.src;
+    Dest := FStore.Dest;
+    Src := FStore.Src;
     {$endif}
     if (X = 0) then goto dest_too_small;
-    Inc(NativeUInt(dest), X);
+    Inc(Dest, X);
   end;
 
   // store correct converted Pointers
-  FStore.stored_dest := dest;
-  FStore.stored_src := src;
-  if ({F.StatesNeeded}Flags and (1 shl 8) <> 0) then
+  FStore.StoredDest := Dest;
+  FStore.StoredSrc := Src;
+  if (Flags and FLAGS_STATE_NEEDED <> 0) then
   begin
     {$ifdef LARGEINT}
        Y := Self.FState.WR;
@@ -3833,67 +3828,66 @@ char_write:
       if (Y and (1 shl (30{$ifdef LARGEINT}+32{$endif})) <> 0) then
       begin
         {$ifdef CPUX86}
-        FStore.src := src;
+        FStore.Src := Src;
         {$endif}
-          Move({$ifdef CPUX86}_Self{$else}Self{$endif}.FState.scsu_read_windows, FStore.scsu_read_windows, 32);
+          Move({$ifdef CPUX86}_Self{$else}Self{$endif}.FState.ScsuReadWindows, FStore.ScsuReadWindows, 32);
         {$ifdef CPUX86}
-        src := FStore.src;
+        Src := FStore.Src;
         {$endif}
       end else
       begin
-        {$ifNdef CPUX86}{MANY_REGS}
+        {$ifNdef CPUX86}
           {$ifdef LARGEINT}Y := Y shr 32;{$endif}
           Y := Byte(Y);
         {$endif}
-        X := {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.scsu_read_windows[{$ifdef CPUX86}FStore.Write.B{$else}Y{$endif}];
-        FStore.scsu_read_windows[{$ifdef CPUX86}FStore.Write.B{$else}Y{$endif}] := X;
+        X := {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.ScsuReadWindows[{$ifdef CPUX86}FStore.Write.B{$else}Y{$endif}];
+        FStore.ScsuReadWindows[{$ifdef CPUX86}FStore.Write.B{$else}Y{$endif}] := X;
       end;
     end;
   end;
 
   // next interation
-  if (src_size >= 4) then goto char_read_normal;
+  if (SrcSize >= 4) then goto char_read_normal;
 char_read_small:
-  case src_size of
+  case SrcSize of
     0: goto convert_finish;
     1: begin
-         X := PByte(src)^;
+         X := PByte(Src)^;
          goto char_read;
        end;
     2: begin
-         X := PWord(src)^;
+         X := PWord(Src)^;
          goto char_read;
        end;
     3: begin
-         X := P4Bytes(src)[2];
-         Y := PWord(src)^;
+         X := P4Bytes(Src)[2];
+         Y := PWord(Src)^;
          X := (X shl 16) or Y;
          goto char_read;
        end;
   end;
 
 dest_too_small:
-  Inc(src_size, Ord(src_size = 0));
+  Inc(SrcSize, Ord(SrcSize = 0));
 
 convert_finish:
   {$ifdef CPUX86}_Self := FStore.Self;{$endif}
-  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten := NativeUInt(FStore.stored_dest)-NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
-  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead := NativeUInt(FStore.stored_src)-NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
-  if ({F.StatesNeeded}Flags and (1 shl 8) <> 0) and
-     ((src_size <> 0) or ({not F.ModeFinalize}Flags and (1 shl 7) = 0)) then
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FDestinationWritten := NativeUInt(FStore.StoredDest)-NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FDestination);
+  {$ifdef CPUX86}_Self{$else}Self{$endif}.FSourceRead := NativeUInt(FStore.StoredSrc)-NativeUInt({$ifdef CPUX86}_Self{$else}Self{$endif}.FSource);
+  if (Flags and FLAGS_STATE_NEEDED <> 0) and
+     ((SrcSize <> 0) or ({not F.ModeFinalize}Flags and FLAG_MODE_FINALIZE = 0)) then
   begin
     {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.WR := FStore.WR;
-    if (Integer(Flags and $f) = ENC_SCSU) then
+    if (Flags and ENCODING_MASK = ENC_SCSU) then
     begin
-      Move(FStore.scsu_read_windows, {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.scsu_read_windows, 32);
+      Move(FStore.ScsuReadWindows, {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.ScsuReadWindows, 32);
     end;
   end else
   begin
     {$ifdef CPUX86}_Self{$else}Self{$endif}.FState.WR := 0;
   end;
-  Result := src_size;
+  Result := SrcSize;
 end;
-
 
 {$ifdef undef}{$REGION 'FAST MOST FREQUENTLY USED CONVERSIONS'}{$endif}
 
@@ -5187,7 +5181,6 @@ begin
   end;
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
-
 
 {$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
 function TUniConvContext.UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
