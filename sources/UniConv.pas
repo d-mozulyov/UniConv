@@ -308,34 +308,34 @@ type
     function convert_utf16_from_utf8: NativeInt;
 
     // difficult double/multy-byte encodings conversion callbacks
-    function UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function UTF1_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function UTF7_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function UTF7_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function UTF_ebcdic_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function UTF_ebcdic_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function scsu_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function scsu_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function bocu1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function bocu1_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function gb2312_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function gb2312_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function gb18030_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function gb18030_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function hzgb2312_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function hzgb2312_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function big5_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function big5_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function shift_jis_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function shift_jis_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function euc_jp_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function euc_jp_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function iso2022jp_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function iso2022jp_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function cp949_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function cp949_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
-    function euc_kr_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
-    function euc_kr_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+    function utf1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function utf1_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function utf7_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function utf7_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function utf_ebcdic_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function utf_ebcdic_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function scsu_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function scsu_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function bocu1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function bocu1_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function gb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function gb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function gb18030_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function gb18030_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function hzgb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function hzgb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function big5_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function big5_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function shift_jis_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function shift_jis_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function euc_jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function euc_jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function iso2022jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function iso2022jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function cp949_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function cp949_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
+    function euc_kr_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+    function euc_kr_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 
    // property ReadState: Byte read F.ReadState write F.ReadState;
    // property WriteState: Byte read F.WriteState write F.WriteState;
@@ -2137,7 +2137,7 @@ begin
   begin
     X := UCS2Chars[i];
     Value := CharCaseLookup[X];
-    if (Value = X) or (Value = Ord('?')) then continue;
+    if (Value = X) or (Value = Ord('?')) then Continue;
 
     HashItems[Count].UCS2 := X;
     HashItems[Count].Value := i;
@@ -2504,9 +2504,9 @@ const
   CHARCASE_MASK_ORIGINAL = $1 shl 24;
   CHARCASE_FLAGS: array[TCharCase] of Cardinal =
   (
-     CHARCASE_MASK_ORIGINAL,
-     Ord(ccLower) shl 16,
-     Ord(ccUpper) shl 16
+     CHARCASE_MASK_ORIGINAL or FLAG_MODE_FINALIZE,
+     (Ord(ccLower) shl 16) or FLAG_MODE_FINALIZE,
+     (Ord(ccUpper) shl 16) or FLAG_MODE_FINALIZE
   );
 
 function CodePageEncoding(const CodePage: Word): Cardinal{Word};
@@ -2527,6 +2527,7 @@ begin
   if (Value < 0) and (CodePage <> $ffff) then
   begin
     Value := CodePage;
+    if (CodePage = 0) then Value := CODEPAGE_DEFAULT;
     Result := 0; // undefined --> raw data (ENC_SBCS, Index 0)
     case Value{CodePage} of
        CODEPAGE_UTF8: begin Inc(Result, ENC_UTF8); Exit; end;
@@ -2704,16 +2705,16 @@ begin
     end;
     ENC_UTF1:
     begin
-      FCallbacks.Reader := @TUniConvContext.UTF1_reader;
+      FCallbacks.Reader := @TUniConvContext.utf1_reader;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
-      FCallbacks.Reader := @TUniConvContext.UTF7_reader;
+      FCallbacks.Reader := @TUniConvContext.utf7_reader;
     end;
     ENC_UTFEBCDIC:
     begin
-      FCallbacks.Reader := @TUniConvContext.UTF_ebcdic_reader;
+      FCallbacks.Reader := @TUniConvContext.utf_ebcdic_reader;
     end;
     ENC_SCSU:
     begin
@@ -2794,16 +2795,16 @@ begin
     end;
     ENC_UTF1:
     begin
-      FCallbacks.Writer := @TUniConvContext.UTF1_writer;
+      FCallbacks.Writer := @TUniConvContext.utf1_writer;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
-      FCallbacks.Writer := @TUniConvContext.UTF7_writer;
+      FCallbacks.Writer := @TUniConvContext.utf7_writer;
     end;
     ENC_UTFEBCDIC:
     begin
-      FCallbacks.Writer := @TUniConvContext.UTF_ebcdic_writer;
+      FCallbacks.Writer := @TUniConvContext.utf_ebcdic_writer;
     end;
     ENC_SCSU:
     begin
@@ -2944,16 +2945,16 @@ begin
     end;
     ENC_UTF1:
     begin
-      FCallbacks.Reader := @TUniConvContext.UTF1_reader;
+      FCallbacks.Reader := @TUniConvContext.utf1_reader;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
-      FCallbacks.Reader := @TUniConvContext.UTF7_reader;
+      FCallbacks.Reader := @TUniConvContext.utf7_reader;
     end;
     ENC_UTFEBCDIC:
     begin
-      FCallbacks.Reader := @TUniConvContext.UTF_ebcdic_reader;
+      FCallbacks.Reader := @TUniConvContext.utf_ebcdic_reader;
     end;
     ENC_SCSU:
     begin
@@ -2986,16 +2987,16 @@ begin
     end;
     ENC_UTF1:
     begin
-      FCallbacks.Writer := @TUniConvContext.UTF1_writer;
+      FCallbacks.Writer := @TUniConvContext.utf1_writer;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
-      FCallbacks.Writer := @TUniConvContext.UTF7_writer;
+      FCallbacks.Writer := @TUniConvContext.utf7_writer;
     end;
     ENC_UTFEBCDIC:
     begin
-      FCallbacks.Writer := @TUniConvContext.UTF_ebcdic_writer;
+      FCallbacks.Writer := @TUniConvContext.utf_ebcdic_writer;
     end;
     ENC_SCSU:
     begin
@@ -5237,7 +5238,7 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
-function TUniConvContext.UTF1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.utf1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 const
   U: array[0..256-1] of Byte = (
   $be, $bf, $c0, $c1, $c2, $c3, $c4, $c5,
@@ -5279,8 +5280,8 @@ var
   Count: Cardinal;
 begin
   Count := 0;
-  Result := src^;
-  Inc(src);
+  Result := Src^;
+  Inc(Src);
 
   case Result of
     0..$A0-1:
@@ -5290,27 +5291,27 @@ begin
     $A0:
     begin
       Inc(Count, 2){2};
-      if (src_size < Count) then goto too_small;
+      if (SrcSize < Count) then goto too_small;
 
-      Result := src^;
+      Result := Src^;
     end;
     $A1..$F6-1:
     begin
       Inc(Count, 2){2};
-      if (src_size < Count) then goto too_small;
+      if (SrcSize < Count) then goto too_small;
       
-      Result := (Result-$A1)*$BE + U[src^] + $100;
+      Result := (Result-$A1)*$BE + U[Src^] + $100;
     end;
     $F6..$FC-1:
     begin
       Inc(Count, 3){3};
       Result := Result-$F6;
-      if (src_size < Count) then goto too_small;      
+      if (SrcSize < Count) then goto too_small;
 
       for i := 0 to 1 do
       begin
-        Result := Result * $BE + U[src^];
-        Inc(src);
+        Result := Result * $BE + U[Src^];
+        Inc(Src);
       end;
 
       Result := Result + $4016;
@@ -5318,12 +5319,12 @@ begin
   else
     Inc(Count, 5){5};
     Result := Result-$FC;
-    if (src_size < Count) then goto too_small;    
+    if (SrcSize < Count) then goto too_small;
 
     for i := 0 to 3 do
     begin
-      Result := Result * $BE + U[src^];
-      Inc(src);
+      Result := Result * $BE + U[Src^];
+      Inc(Src);
     end;
 
     Result := Result + $38E2E;
@@ -5331,10 +5332,10 @@ begin
 
 too_small:
 done:
-  src_read := Count;
+  SrcRead := Count;
 end;
 
-function TUniConvContext.UTF1_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.utf1_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   fail;
 const
@@ -5372,71 +5373,71 @@ const
   $90, $91, $92, $93, $94, $95, $96, $97,
   $98, $99, $9a, $9b, $9c, $9d, $9e, $9f);
 var
-  y, d: Cardinal;
+  Y, D: Cardinal;
 begin
   Result := 2;
   case X of
     0..$A0-1:
     begin
-      dest^ := X;
+      Dest^ := X;
       Dec(Result);
     end;
     $A0..$100-1:
     begin
-      if (dest_size < Result{2}) then goto fail;
-      dest^ := $A0;
-      Inc(dest);
-      dest^ := X;
+      if (DestSize < Result{2}) then goto fail;
+      Dest^ := $A0;
+      Inc(Dest);
+      Dest^ := X;
     end;
     $100..$4016-1:
     begin
-      if (dest_size < Result{2}) then goto fail;
-      y := X - $100;
-      d := (y*$158ee) shr 24;
+      if (DestSize < Result{2}) then goto fail;
+      Y := X - $100;
+      D := (y*$158ee) shr 24;
 
-      dest^ := $A1 + d;
-      Inc(dest);
-      dest^ := T[y - d*$BE];
+      Dest^ := $A1 + D;
+      Inc(Dest);
+      Dest^ := T[Y - D*$BE];
     end;
     $4016..$38E2E-1:
     begin
       Inc(Result);
-      if (dest_size < Result{3}) then goto fail;
-      y := X - $4016;
+      if (DestSize < Result{3}) then goto fail;
+      Y := X - $4016;
 
-      dest^ := $F6 + y div ($BE*$BE);
-      Inc(dest);
+      Dest^ := $F6 + Y div ($BE*$BE);
+      Inc(Dest);
 
-      d := y div $BE;
-      dest^ := T[d - ((d*$158ee) shr 24)*$BE];
-      Inc(dest);
-      dest^ := T[y - d*$BE];
+      D := Y div $BE;
+      Dest^ := T[D - ((D*$158ee) shr 24)*$BE];
+      Inc(Dest);
+      Dest^ := T[Y - D*$BE];
     end;
   else
     Inc(Result, 3);
-    if (dest_size < Result{5}) then
+    if (DestSize < Result{5}) then
     begin
     fail:
       Result := 0;
       Exit;
     end;
-    y := X - $38E2E;
+    Y := X - $38E2E;
 
-    dest^ := $FC + y div ($BE*$BE*$BE*$BE);
-    Inc(dest);
+    Dest^ := $FC + Y div ($BE*$BE*$BE*$BE);
+    Inc(Dest);
 
-    dest^ := T[(y div ($BE*$BE*$BE)) mod $BE];
-    Inc(dest);
-    dest^ := T[(y div ($BE*$BE)) mod $BE];
-    Inc(dest);
-    dest^ := T[(y div $BE) mod $BE];
-    Inc(dest);
+    Dest^ := T[(Y div ($BE*$BE*$BE)) mod $BE];
+    Inc(Dest);
+    Dest^ := T[(Y div ($BE*$BE)) mod $BE];
+    Inc(Dest);
+    Dest^ := T[(Y div $BE) mod $BE];
+    Inc(Dest);
 
-    dest^ := T[y mod $BE];
+    Dest^ := T[Y mod $BE];
   end;
 end;
 
-function TUniConvContext.UTF7_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.utf7_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 const
   direct_chars: array[0..128 div 8-1] of Byte = (
   $00, $26, $00, $00, $ff, $f7, $ff, $ff,
@@ -5447,8 +5448,8 @@ var
   State, Count: Cardinal;
   C: Cardinal;
 
-  kmax, k, base64count: Cardinal;
-  wc1, wc2: Cardinal;            
+  KMax, K, Base64Count: Cardinal;
+  WC1, WC2: Cardinal;
 begin
   State := Self.FState.Read.B;
   Result := 0;
@@ -5457,9 +5458,9 @@ begin
 
 inactive:
   Inc(Count);
-  if (src_size < Count) then goto too_small;
-  C := src^;
-  
+  if (SrcSize < Count) then goto too_small;
+  C := Src^;
+
   //if (isdirect(C)) then
   if (C <= 127) and ((direct_chars[C shr 3] shr (C and 7)) and 1 <> 0) then
   begin
@@ -5468,10 +5469,10 @@ inactive:
   end;
   if (C <> Ord('+')) then goto unknown;
   Inc(Count);
-  if (src_size < Count) then goto too_small;
+  if (SrcSize < Count) then goto too_small;
 
-  Inc(src);
-  if (src^ = Ord('-')) then
+  Inc(Src);
+  if (Src^ = Ord('-')) then
   begin
     Result := Ord('+');
     goto done;
@@ -5481,12 +5482,12 @@ inactive:
   State := 1;
 
 active:
-  kmax := 2;
-  k := 0;
-  base64count := 0; 
+  KMax := 2;
+  K := 0;
+  Base64Count := 0;
 
   repeat
-    C := src^; 
+    C := Src^;
 
     case C of
       Ord('A')..Ord('Z'): C{i} := C - Ord('A');
@@ -5495,25 +5496,25 @@ active:
       Ord('+'): C := 62;
       Ord('/'): C := 63;
     else
-      if (State and -4 <> 0) or (base64count <> 0) then
+      if (State and -4 <> 0) or (Base64Count <> 0) then
       begin
-        Inc(Count, base64count);
+        Inc(Count, Base64Count);
         goto unknown;
-      end;  
+      end;
 
       if (C = Ord('-')) then
       begin
-        Inc(src);
+        Inc(Src);
         Inc(Count);
       end;
 
       State := 0;
-      if (Count = src_size) then goto none;
+      if (Count = SrcSize) then goto none;
       goto inactive;
     end;
 
-    Inc(src);
-    Inc(base64count);
+    Inc(Src);
+    Inc(Base64Count);
 
     case (State and 3) of
       1:
@@ -5523,48 +5524,48 @@ active:
       0:
       begin
         Result := (Result shl 8) + (State and -4) + (C shr 4);
-        Inc(k);
+        Inc(K);
         State  := ((C and 15) shl 4) + 2;
       end;
       2:
       begin
         Result := (Result shl 8) + (State and -4) + (C shr 2);
-        Inc(k);
+        Inc(K);
         State := ((C and 3) shl 6) + 3;
       end;
       3:
       begin
         Result := (Result shl 8) or (State and -4) or C;
-        Inc(k);
+        Inc(K);
         State := 1;
       end;
     end;
-    if (k = kmax) then
+    if (K = KMax) then
     begin
-      if (kmax = 2) and (Result shr 11 = $1B{UTF-16}) then kmax := 4
+      if (KMax = 2) and (Result shr 11 = $1B{UTF-16}) then KMax := 4
       else
-      break;
+      Break;
     end;
 
-    if (src_size < Count+base64count+1) then
+    if (SrcSize < Count+Base64Count+1) then
     begin
-      Count := Count+base64count+1;
+      Count := Count+Base64Count+1;
       goto too_small;
     end;
   until False;
 
-  if (kmax = 4) then
+  if (KMax = 4) then
   begin
-    wc1 := Result shr 16;
-    wc2 := Result and $ffff;
+    WC1 := Result shr 16;
+    WC2 := Result and $ffff;
 
-    if (wc1 < $d800) or (wc1 >= $dc00) then goto unknown;
-    if (wc2 < $dc00) or (wc2 >= $e000) then goto unknown;
+    if (WC1 < $d800) or (WC1 >= $dc00) then goto unknown;
+    if (WC2 < $dc00) or (WC2 >= $e000) then goto unknown;
 
-    Result := ((wc1 - $d800) shl 10) + (wc2 - $dc00) + $10000;
+    Result := ((WC1 - $d800) shl 10) + (WC2 - $dc00) + $10000;
   end;
 
-  Count := Count + base64count;
+  Count := Count + Base64Count;
   goto done;
 
 none:
@@ -5575,11 +5576,11 @@ unknown:
 too_small:
 done:
   Self.FState.Read.B := State;
-  src_read := Count;
+  SrcRead := Count;
 end;
 
 
-function TUniConvContext.UTF7_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.utf7_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 const
   direct_chars: array[0..128 div 8-1] of Byte = (
   $00, $26, $00, $00, $81, $f3, $ff, $87,
@@ -5615,17 +5616,17 @@ begin
     //if (isdirect(X)) then
     if (State and (1 shl 8) <> 0) then
     begin
-      PByte(dest)^ := C{X};
+      PByte(Dest)^ := C{X};
       Exit;
     end;
 
-    dest^ := Ord('+');
-    Inc(dest);
+    Dest^ := Ord('+');
+    Inc(Dest);
     if (C{X} = Ord('+')) then
     begin
-      if (dest_size < 2) then goto fail;
+      if (DestSize < 2) then goto fail;
 
-      dest^ := Ord('-');
+      Dest^ := Ord('-');
       Inc(Result{ := 2});
       Exit;
     end;
@@ -5639,7 +5640,7 @@ begin
     Inc(Result);
     Inc(Result, (State shr 1) and 1);
     Inc(Result, (State shr 9) {and 1});
-    if (dest_size < Result) then goto fail;
+    if (DestSize < Result) then goto fail;
 
     //if ((State and 3) >= 2) then
     if (State and 2 <> 0) then
@@ -5656,18 +5657,18 @@ begin
       else
       {if (C = 63) then} Dec(C, 63-Ord('/'));
 
-      dest^ := C;
-      Inc(dest);
+      Dest^ := C;
+      Inc(Dest);
     end;
 
     //if (isxbase64(X)) then
     if (State and (2 shl 8) <> 0) then
     begin
-      dest^ := Ord('-');
-      Inc(dest);
+      Dest^ := Ord('-');
+      Inc(Dest);
     end;
 
-    dest^ := X;
+    Dest^ := X;
     State := 0;
   end else
   begin
@@ -5686,7 +5687,7 @@ begin
       X := (($d800 + ((C{X} - $10000) shr 10)) shl 16) or ($dc00 + ((C{X} - $10000) and $3ff));
       Inc(State, ((4*8) shl 8)); // k := 4;
     end;
-    if (dest_size < Result) then goto fail;
+    if (DestSize < Result) then goto fail;
 
     repeat
       case (State and 3) of
@@ -5735,16 +5736,16 @@ begin
       else
       {if (C = 63) then} Dec(C, 63-Ord('/'));
 
-      PByte(dest)^ := C;
-      Inc(NativeInt(dest));
+      PByte(Dest)^ := C;
+      Inc(NativeInt(Dest));
     until ({k}State and $ff00 = 0) and (State and 3 <> 0);
   end;
 
 //done:  
-  if (mode_final) and (State and 3 <> 0) then
+  if (ModeFinal) and (State and 3 <> 0) then
   begin
     Result := Result + (((State and 2) shr 1) + 1);
-    if (dest_size < Result) then goto fail;
+    if (DestSize < Result) then goto fail;
 
     //if ((State and 3) >= 2) then
     if (State and 2 <> 0) then
@@ -5761,17 +5762,17 @@ begin
       else
       {if (C = 63) then} Dec(C, 63-Ord('/'));
 
-      dest^ := C;
-      Inc(dest);
+      Dest^ := C;
+      Inc(Dest);
     end;
 
     State := 0;
-    dest^ := Ord('-');
+    Dest^ := Ord('-');
   end;
   Self.FState.Write.B := State;
 end;
 
-function TUniConvContext.UTF_ebcdic_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.utf_ebcdic_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 const
   UTFEBCDICToI8Table: array[Byte] of Byte = (
   $00, $01, $02, $03, $9C, $09, $86, $7F, $97, $8D, $8E, $0B, $0C, $0D, $0E, $0F,
@@ -5795,14 +5796,14 @@ label
 var
   X, Count: Cardinal;
 begin
-  Result := UTFEBCDICToI8Table[src^];
+  Result := UTFEBCDICToI8Table[Src^];
   Count := 1;
-  Inc(src);
+  Inc(Src);
 
   case Result of
     0..$9F:
     begin
-      src_read := Count;
+      SrcRead := Count;
       Exit;
     end;
     $C0..$DF:
@@ -5829,13 +5830,13 @@ begin
     goto unknown;
   end;
 
-  src_read := Count;
-  if (src_size < Count) then Exit;
+  SrcRead := Count;
+  if (SrcSize < Count) then Exit;
 
   Dec(Count);
   repeat
-    X := UTFEBCDICToI8Table[src^];
-    Inc(src);
+    X := UTFEBCDICToI8Table[Src^];
+    Inc(Src);
     if (X shr 5 <> 5) then
     begin
     unknown:
@@ -5849,7 +5850,7 @@ begin
   until (Count = 0);
 end;
 
-function TUniConvContext.UTF_ebcdic_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.utf_ebcdic_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 const
   MASKS: array[2..5] of Byte = ($C0, $E0, $F0, $F8);
 
@@ -5878,7 +5879,7 @@ begin
   case X of
     0..$9F:
     begin
-      dest^ := I8ToUTFEBCDICTable[X];
+      Dest^ := I8ToUTFEBCDICTable[X];
       Exit{1};
     end;
     $9F+1..$3FF:
@@ -5897,22 +5898,22 @@ begin
     Inc(Result, 4){5};
   end;
 
-  if (dest_size < Result) then
+  if (DestSize < Result) then
   begin
     Result := 0;
     Exit;
   end;
 
   Shift := (Result-1)*5;
-  dest^ := I8ToUTFEBCDICTable[MASKS[Result] + (X shr Shift)];  
+  Dest^ := I8ToUTFEBCDICTable[MASKS[Result] + (X shr Shift)];
   repeat
     Dec(Shift, 5);
-    Inc(dest);
-    dest^ := I8ToUTFEBCDICTable[((X shr Shift) and $1F) + $A0];
+    Inc(Dest);
+    Dest^ := I8ToUTFEBCDICTable[((X shr Shift) and $1F) + $A0];
   until (Shift = 0);
 end;
 
-function TUniConvContext.scsu_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.scsu_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 const
   SQ0 = $01; { Quote from window pair 0 }
   SQ7 = $08; { Quote from window pair 7 }
@@ -5999,7 +6000,7 @@ label
 var
   State: ^TSCSUReaderState;
   Count, Value: Cardinal;
-  p_src: PByte;
+  PSrc: PByte;
   FirstUTF16Word: Cardinal;
   (*
     Result: packed record
@@ -6019,7 +6020,7 @@ begin
   end;
 
   Count := 0;
-  p_src := src;
+  PSrc := Src;
   FirstUTF16Word := Count{0};
 
   if (State.Mode = modeSingleByte) then
@@ -6027,8 +6028,8 @@ begin
     fastSingle:
     begin
       Inc(Count);
-      if (src_size < Count) then goto too_small;
-      Result := p_src^;
+      if (SrcSize < Count) then goto too_small;
+      Result := PSrc^;
 
       if (Result >= $20) then
       begin
@@ -6047,9 +6048,9 @@ begin
     singleByteMode:
     begin
       Inc(Count);
-      if (src_size < Count) then goto too_small;
-      Inc(Result, p_src^);
-      Inc(p_src);
+      if (SrcSize < Count) then goto too_small;
+      Inc(Result, PSrc^);
+      Inc(PSrc);
 
       case (Result shr 24){Mode} of
         readCommand:
@@ -6163,17 +6164,17 @@ begin
     fastUnicode:
     begin
       Inc(Count);
-      if (src_size < Count) then goto too_small;
-      Result := p_src^;
+      if (SrcSize < Count) then goto too_small;
+      Result := PSrc^;
 
       if (Cardinal(Result-UC0)>(Urs-UC0)) then
       begin
         Inc(Count);
-        Inc(p_src);
-        if (src_size < Count) then goto too_small;
+        Inc(PSrc);
+        if (SrcSize < Count) then goto too_small;
 
-        Result := (Result shl 8) + p_src^;
-        Inc(p_src);
+        Result := (Result shl 8) + PSrc^;
+        Inc(PSrc);
         goto done_UTF16;
       end else
       begin
@@ -6185,9 +6186,9 @@ begin
     unicodeByteMode:
     begin
       Inc(Count);
-      if (src_size < Count) then goto too_small;
-      Inc(Result, p_src^);
-      Inc(p_src);
+      if (SrcSize < Count) then goto too_small;
+      Inc(Result, PSrc^);
+      Inc(PSrc);
 
       case (Result shr 24){Mode} of
         readCommand:
@@ -6264,10 +6265,10 @@ done_UTF16:
     end;
   end;
 done:
-  src_read := Count;
+  SrcRead := Count;
 end;
 
-function TUniConvContext.scsu_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.scsu_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   ascii, unicode, done_x_correct, done, fill_four;
 const
@@ -6310,7 +6311,7 @@ const
 
 var
   State, Y: Cardinal;
-  p_dest: PByte;
+  PDest: PByte;
   (*
     State: packed record
       current_window: Byte:3;
@@ -6338,7 +6339,7 @@ begin
     ascii:
       if (State and is_unicode_mode = 0) then
       begin
-        dest^ := X;
+        Dest^ := X;
         Result := 1;
         Exit;
       end;
@@ -6449,7 +6450,7 @@ done:
   Result := ((State shr x_size_offset) and x_size_mask) +
             ((State shr data_size_offset) and data_size_mask);
 
-  if (dest_size < Result) then
+  if (DestSize < Result) then
   begin
     // too small
     Result := 0;
@@ -6457,33 +6458,33 @@ done:
   end;
 
   // write data
-  p_dest := dest;
+  PDest := Dest;
   if (State and (data_size_mask shl data_size_offset) <> 0) then
   begin
     if (State and (1 shl data_size_offset) = 0) then
     begin
-      PWord(p_dest)^ := State shr 16;
-      Inc(p_dest, 2);
+      PWord(PDest)^ := State shr 16;
+      Inc(PDest, 2);
     end else
     begin
-      p_dest^ := State shr 16;
-      Inc(p_dest);
+      PDest^ := State shr 16;
+      Inc(PDest);
     end;
   end;
 
   // write character data
-  if (dest_size >= 5) then goto fill_four;
+  if (DestSize >= 5) then goto fill_four;
   case ((State shr x_size_offset) and x_size_mask) of
-    1: PByte(p_dest)^ := X;
-    2: PWord(p_dest)^ := X;
+    1: PByte(PDest)^ := X;
+    2: PWord(PDest)^ := X;
     3: begin
-         PWord(p_dest)^ := X;
+         PWord(PDest)^ := X;
          X := X shr 16;
-         Byte(PByteArray(p_dest)[2]) := X;
+         Byte(PByteArray(PDest)[2]) := X;
        end;
     4: begin
        fill_four:
-         PCardinal(p_dest)^ := X;
+         PCardinal(PDest)^ := X;
        end;  
   end;
 end;
@@ -6517,7 +6518,7 @@ const
   BOCU1_START_NEG_3 = (BOCU1_START_NEG_2 - BOCU1_LEAD_2);
   BOCU1_START_NEG_4 = (BOCU1_START_NEG_3 - BOCU1_LEAD_3);
 
-  BOCU1_Byte_TO_TRAIL: array[0..BOCU1_MIN - 1] of Byte = (
+  BOCU1_BYTE_TO_TRAIL: array[0..BOCU1_MIN - 1] of Byte = (
     $FF, $00, $01, $02, $03, $04, $05, $FF, $FF, $FF, $FF,
     $FF, $FF, $FF, $FF, $FF, $06, $07, $08, $09, $0A, $0B,
     $0C, $0D, $0E, $0F, $FF, $FF, $10, $11, $12, $13, $FF);
@@ -6526,56 +6527,56 @@ const
     $01, $02, $03, $04, $05, $06, $10, $11, $12, $13,
     $14, $15, $16, $17, $18, $19, $1C, $1D, $1E, $1F);
 
-function TUniConvContext.bocu1_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.bocu1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   init_prev, loop,
   calc_prev, fill_prev, unknown, too_small, done;
 var
-  Ret, prev, t: Integer;
+  Ret, Prev, T: Integer;
   Count: Cardinal;
   PPrev: PInteger;
 begin
-  prev := FState.Read.I;
+  Prev := FState.Read.I;
   PPrev := @FState.Read.I;
-  Ret := src^;
+  Ret := Src^;
   Count := 1;
 
-  if (prev = 0) then
+  if (Prev = 0) then
   begin
   init_prev:
-    prev := BOCU1_ASCII_PREV;
+    Prev := BOCU1_ASCII_PREV;
     PPrev^ := prev;
   end;
 
   case Ret of
     0..$20:
     begin
-      src_read := Count;
+      SrcRead := Count;
       if (Ret < $20) then
       begin
-        prev := BOCU1_ASCII_PREV;
+        Prev := BOCU1_ASCII_PREV;
         goto fill_prev;
       end;
       goto done;
     end;
     BOCU1_START_NEG_2..BOCU1_START_POS_2-1:
     begin
-      Ret := Ret + prev;
+      Ret := Ret + Prev;
       Ret := Ret - BOCU1_MIDDLE;
-      src_read := Count;
+      SrcRead := Count;
       goto calc_prev;
     end;
     BOCU1_RESET:
     begin
       Inc(Count);
-      Inc(src);
-      if (src_size < Count) then goto too_small;
-      Ret := src^;
+      Inc(Src);
+      if (SrcSize < Count) then goto too_small;
+      Ret := Src^;
       goto init_prev;
     end;
   end;
 
-  t := 1;
+  T := 1;
   if (Ret >= BOCU1_START_NEG_2) then
   begin
     if (Ret < BOCU1_START_POS_3) then
@@ -6584,11 +6585,11 @@ begin
     end else
     if (Ret < BOCU1_START_POS_4) then
     begin
-      Inc(t);
+      Inc(T);
       Ret := (Ret*(BOCU1_TRAIL_COUNT*BOCU1_TRAIL_COUNT)) + (-BOCU1_START_POS_3*BOCU1_TRAIL_COUNT*BOCU1_TRAIL_COUNT + BOCU1_REACH_POS_2 + 1);
     end else
     begin
-      Inc(t, 2);
+      Inc(T, 2);
       Ret := BOCU1_REACH_POS_3 + 1;
     end;
   end else
@@ -6599,46 +6600,46 @@ begin
     end else
     if (Ret > BOCU1_MIN) then
     begin
-      Inc(t);
+      Inc(T);
       Ret := (Ret*(BOCU1_TRAIL_COUNT*BOCU1_TRAIL_COUNT)) + (-BOCU1_START_NEG_3*BOCU1_TRAIL_COUNT*BOCU1_TRAIL_COUNT + BOCU1_REACH_NEG_2);
     end else
     begin
-      Inc(t, 2);
+      Inc(T, 2);
       Ret := -BOCU1_TRAIL_COUNT * BOCU1_TRAIL_COUNT * BOCU1_TRAIL_COUNT + BOCU1_REACH_NEG_3;
     end;
   end;
 
-  Inc(Count, t);
-  src_read := Count;
-  if (src_size < Count) then goto too_small;
-  Count := t;
+  Inc(Count, T);
+  SrcRead := Count;
+  if (SrcSize < Count) then goto too_small;
+  Count := T;
 loop:
-  Inc(src);
-  t := src^;
+  Inc(Src);
+  T := Src^;
 
-  if (t <= $20) then
+  if (T <= $20) then
   begin
-    t := BOCU1_Byte_TO_TRAIL[t];
-    if (t > $13{ = $ff}) then goto unknown;
+    T := BOCU1_BYTE_TO_TRAIL[T];
+    if (T > $13{ = $ff}) then goto unknown;
   end else
   begin
-    t := t - BOCU1_TRAIL_BYTE_OFFSET;
+    T := T - BOCU1_TRAIL_BYTE_OFFSET;
   end;
 
   case Count of
     1:
     begin
-      Ret := Ret + t;
+      Ret := Ret + T;
       Ret := Ret + PPrev^;
       if (Cardinal(Ret) <= $10ffff) then goto calc_prev;
       unknown:
         Ret := UNKNOWN_CHAR;
-        prev := BOCU1_ASCII_PREV;
+        Prev := BOCU1_ASCII_PREV;
         goto fill_prev;
     end;
-    2: Ret := Ret + t * BOCU1_TRAIL_COUNT;
+    2: Ret := Ret + T * BOCU1_TRAIL_COUNT;
     else
-   {3:} Ret := Ret + t * (BOCU1_TRAIL_COUNT * BOCU1_TRAIL_COUNT);
+   {3:} Ret := Ret + T * (BOCU1_TRAIL_COUNT * BOCU1_TRAIL_COUNT);
   end;
 
   Dec(Count);
@@ -6646,24 +6647,24 @@ loop:
 
 calc_prev:
   case Ret of
-    $3040..$309f: prev := $3070;
-    $4e00..$9fa5: prev := $4e00 - BOCU1_REACH_NEG_2;
-    $ac00..$d7a3: prev := ($d7a3 + $ac00) div 2;
+    $3040..$309f: Prev := $3070;
+    $4e00..$9fa5: Prev := $4e00 - BOCU1_REACH_NEG_2;
+    $ac00..$d7a3: Prev := ($d7a3 + $ac00) div 2;
   else
-    prev := (Ret and (not $7f)) + BOCU1_ASCII_PREV;
+    Prev := (Ret and (not $7f)) + BOCU1_ASCII_PREV;
   end;
 fill_prev:
-  PPrev^ := prev;
+  PPrev^ := Prev;
 
 too_small:
 done:
   Result := Ret;
 end;
 
-function TUniConvContext.bocu1_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.bocu1_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 var
-  Diff, m: Integer;
-  saved_dest: PByte;
+  Diff, M: Integer;
+  SavedDest: PByte;
 begin
   Diff{last state} := FState.Write.I;
   if (Diff = 0) then
@@ -6675,7 +6676,7 @@ begin
   if (X <= $20) then
   begin
     if (X < $20) then FState.Write.I := BOCU1_ASCII_PREV;
-    dest^ := X;
+    Dest^ := X;
     Result := 1;
     Exit; // goto done;
   end else
@@ -6689,120 +6690,119 @@ begin
       FState.Write.I := (X and (not $7f)) + BOCU1_ASCII_PREV;
     end;
     Diff := -Diff;
-    saved_dest := dest;
+    SavedDest := Dest;
 
     if (Diff >= BOCU1_REACH_NEG_1) then
     begin
       if (Diff <= BOCU1_REACH_POS_1) then
       begin
-        dest^ := (Diff+BOCU1_MIDDLE);
+        Dest^ := (Diff+BOCU1_MIDDLE);
         Result := 1;
         Exit;
       end else
       if (Diff <= BOCU1_REACH_POS_2) then
       begin
         Diff := Diff - (BOCU1_REACH_POS_1 + 1);
-        dest^{lead} := BOCU1_START_POS_2;
-        Inc(dest);
+        Dest^{lead} := BOCU1_START_POS_2;
+        Inc(Dest);
       end else
       if (Diff <= BOCU1_REACH_POS_3) then
       begin
         Diff := Diff - (BOCU1_REACH_POS_2 + 1);
-        dest^{lead} := BOCU1_START_POS_3;
-        Inc(dest, 2);
+        Dest^{lead} := BOCU1_START_POS_3;
+        Inc(Dest, 2);
       end else
       begin
         Diff := Diff - (BOCU1_REACH_POS_3 + 1);
-        dest^{lead} := BOCU1_START_POS_4;
-        Inc(dest, 3);
+        Dest^{lead} := BOCU1_START_POS_4;
+        Inc(Dest, 3);
       end;
     end else
     begin
       if (Diff >= BOCU1_REACH_NEG_2) then
       begin
         Diff := Diff - BOCU1_REACH_NEG_1;
-        dest^{lead} := BOCU1_START_NEG_2;
-        Inc(dest);
+        Dest^{lead} := BOCU1_START_NEG_2;
+        Inc(Dest);
       end else
       if (Diff >= BOCU1_REACH_NEG_3) then
       begin // three Bytes
         Diff := Diff - BOCU1_REACH_NEG_2;
-        dest^{lead} := BOCU1_START_NEG_3;
-        Inc(dest, 2);
+        Dest^{lead} := BOCU1_START_NEG_3;
+        Inc(Dest, 2);
       end else
       begin // four Bytes */
         Diff := Diff - BOCU1_REACH_NEG_3;
-        dest^{lead} := BOCU1_START_NEG_4;
-        Inc(dest, 3);
+        Dest^{lead} := BOCU1_START_NEG_4;
+        Inc(Dest, 3);
       end;
     end;
 
-    Result := (PByteArray(dest)-PByteArray(saved_dest))+1;
-    if (dest_size < Result) then
+    Result := (PByteArray(Dest)-PByteArray(SavedDest))+1;
+    if (DestSize < Result) then
     begin
       // too_small
       Result := 0;
       Exit;
     end;
-    dest_size := Result;
+    DestSize := Result;
 
-    while (saved_dest <> dest) do
+    while (SavedDest <> Dest) do
     begin
-      // m := Diff mod BOCU1_TRAIL_COUNT;
+      // M := Diff mod BOCU1_TRAIL_COUNT;
       // Diff := Diff div BOCU1_TRAIL_COUNT;
-      m := Diff;
+      M := Diff;
       Diff := Diff div BOCU1_TRAIL_COUNT;
-      Dec(m, Diff*BOCU1_TRAIL_COUNT);
-      if (m < 0) then
+      Dec(M, Diff*BOCU1_TRAIL_COUNT);
+      if (M < 0) then
       begin
         Dec(Diff);
-        m := m + BOCU1_TRAIL_COUNT;
+        M := M + BOCU1_TRAIL_COUNT;
       end;
 
-      if (m >= BOCU1_TRAIL_CONTROLS_COUNT) then dest^ := m + BOCU1_TRAIL_BYTE_OFFSET
-      else dest^ := BOCU1_TRAIL_TO_Byte[m];
+      if (M >= BOCU1_TRAIL_CONTROLS_COUNT) then Dest^ := M + BOCU1_TRAIL_BYTE_OFFSET
+      else Dest^ := BOCU1_TRAIL_TO_Byte[m];
 
-      Dec(dest);
+      Dec(Dest);
     end;
 
-    Inc(dest^, Diff);
-    Result := dest_size;
+    Inc(Dest^, Diff);
+    Result := DestSize;
   end;
 end;
 
 
-function gbk_wctomb(X: Cardinal; buf: PByte): boolean;
+function gbk_wctomb(X: Cardinal; Buf: PByte): boolean;
 label
-  look_inv;
-var
-  W: Word;
-begin
-  if (X > $ffff) or (X = $fffd) then
-  begin
-    Result := False;
-    Exit;
-  end;
-
+  look_inv;
+var
+  W: Word;
+begin
+  if (X > $ffff) or (X = $fffd) then
+  begin
+    Result := False;
+    Exit;
+  end;
   Result := True;
-  if (X <> $30fb) and (X <> $2015)  then
-  begin
+  if (X <> $30fb) and (X <> $2015)  then
+  begin
     W := hash_gb2312.Find(X);
     if (W <> High(Word)) then
     begin
-      PWord(buf)^ := W + $a1a1;
+      PWord(Buf)^ := W + $a1a1;
       Exit;
     end;
   end;
 
   case X of
-    $0251: PWord(buf)^ := $bba8;
-    $0144: PWord(buf)^ := $bda8;
-    $0148: PWord(buf)^ := $bea8;
-    $0261: PWord(buf)^ := $c0a8;
+    $0251: PWord(Buf)^ := $bba8;
+    $0144: PWord(Buf)^ := $bda8;
+    $0148: PWord(Buf)^ := $bea8;
+    $0261: PWord(Buf)^ := $c0a8;
 
-    $00b7: PWord(buf)^ := $a4a1;
-    $2014: PWord(buf)^ := $aaa1;
-    $2170..$2179: PWord(buf)^ := (X-$2170) shl 8 + $a1a2;
+    $00b7: PWord(Buf)^ := $a4a1;
+    $2014: PWord(Buf)^ := $aaa1;
+    $2170..$2179: PWord(Buf)^ := (X-$2170) shl 8 + $a1a2;
   else
     if (X shr 8 <> $fe) then
     begin
@@ -6811,39 +6811,39 @@ label
       W := hash_gbkext1.Find(X);
       if (W <> High(Word)) then
       begin
-        PWord(buf)^ := W + $4081 + Ord(W >= $3f00) shl 8;
+        PWord(Buf)^ := W + $4081 + Ord(W >= $3f00) shl 8;
         Exit;
       end;
 
       W := hash_gbkext2.Find(X);
       if (W <> High(Word)) then
       begin
-        PWord(buf)^ := W + $40a8 + Ord(W >= $3f00) shl 8;
+        PWord(Buf)^ := W + $40a8 + Ord(W >= $3f00) shl 8;
         Exit;
       end;
       
       Result := False;
     end else
     case Byte(X) of
-      $35: PWord(buf)^ := $e0a6;
-      $36: PWord(buf)^ := $e1a6;
-      $39: PWord(buf)^ := $e2a6;
-      $3a: PWord(buf)^ := $e3a6;
-      $3f: PWord(buf)^ := $e4a6;
-      $40: PWord(buf)^ := $e5a6;
-      $3d: PWord(buf)^ := $e6a6;
-      $3e: PWord(buf)^ := $e7a6;
-      $41: PWord(buf)^ := $e8a6;
-      $42: PWord(buf)^ := $e9a6;
-      $43: PWord(buf)^ := $eaa6;
-      $44: PWord(buf)^ := $eba6;
-      $3b: PWord(buf)^ := $eea6;
-      $3c: PWord(buf)^ := $efa6;
-      $37: PWord(buf)^ := $f0a6;
-      $38: PWord(buf)^ := $f1a6;
-      $31: PWord(buf)^ := $f2a6;
-      $33: PWord(buf)^ := $f4a6;
-      $34: PWord(buf)^ := $f5a6;
+      $35: PWord(Buf)^ := $e0a6;
+      $36: PWord(Buf)^ := $e1a6;
+      $39: PWord(Buf)^ := $e2a6;
+      $3a: PWord(Buf)^ := $e3a6;
+      $3f: PWord(Buf)^ := $e4a6;
+      $40: PWord(Buf)^ := $e5a6;
+      $3d: PWord(Buf)^ := $e6a6;
+      $3e: PWord(Buf)^ := $e7a6;
+      $41: PWord(Buf)^ := $e8a6;
+      $42: PWord(Buf)^ := $e9a6;
+      $43: PWord(Buf)^ := $eaa6;
+      $44: PWord(Buf)^ := $eba6;
+      $3b: PWord(Buf)^ := $eea6;
+      $3c: PWord(Buf)^ := $efa6;
+      $37: PWord(Buf)^ := $f0a6;
+      $38: PWord(Buf)^ := $f1a6;
+      $31: PWord(Buf)^ := $f2a6;
+      $33: PWord(Buf)^ := $f4a6;
+      $34: PWord(Buf)^ := $f5a6;
     else
       goto look_inv;
     end;
@@ -6851,71 +6851,68 @@ label
 end;
 
 
-const
- table_cp936ext_1: array[0..21] of Word  = 
- ($fe35, $fe36, $fe39, $fe3a, $fe3f, $fe40, $fe3d, $fe3e,
-  $fe41, $fe42, $fe43, $fe44, $fffd, $fffd, $fe3b, $fe3c,
-  $fe37, $fe38, $fe31, $fffd, $fe33, $fe34);
+const
+  table_cp936ext_1: array[0..21] of Word  = 
+  ($fe35, $fe36, $fe39, $fe3a, $fe3f, $fe40, $fe3d, $fe3e,
+   $fe41, $fe42, $fe43, $fe44, $fffd, $fffd, $fe3b, $fe3c,
+   $fe37, $fe38, $fe31, $fffd, $fe33, $fe34);
+  table_cp936ext_2: array[0..5] of Word = 
+  ($0251, $fffd, $0144, $0148, $fffd, $0261);
 
- table_cp936ext_2: array[0..5] of Word   = 
- ($0251, $fffd, $0144, $0148, $fffd, $0261);
-
-
-function TUniConvContext.gb2312_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.gb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   look_gbkext, user_defined,
   unknown, fail, done;
 var
-  s1: Byte;
-  s2: Byte;
+  S1: Byte;
+  S2: Byte;
 begin
-  s1 := src^;
-  Inc(src);
+  S1 := Src^;
+  Inc(Src);
 
-  case s1 of
+  case S1 of
     0..$7f:
     begin
-      Result := s1;
-      src_read := 1;
+      Result := S1;
+      SrcRead := 1;
       Exit;
     end;
     $80:
     begin
       Result := $20ac;
-      src_read := 1;
+      SrcRead := 1;
       Exit;
     end;
     $ff: goto unknown;
   else
     // if (not gbk_mbtowc) then
     // user-defined characters;
-    if (src_size < 2) then goto fail;
-    s2 := src^;
+    if (SrcSize < 2) then goto fail;
+    S2 := Src^;
 
-    if not(s1 in [$a1..$f7]) then goto look_gbkext;
+    if not(S1 in [$a1..$f7]) then goto look_gbkext;
 
     // some consts
-    if (s1 = $a1) then
+    if (S1 = $a1) then
     begin
-      if (s2 = $a4) then
+      if (S2 = $a4) then
       begin
         Result := $00b7;
         goto done;
       end;
-      if (s2 = $aa) then
+      if (S2 = $aa) then
       begin
         Result := $2014;
         goto done;
       end;
     end;
 
-    if (s2 in [$a1..$fe]) then
+    if (S2 in [$a1..$fe]) then
     begin
       // gb2312_mbtowc
-      if (s1 in [$a1..$a9, $b0..$f7]) then
+      if (S1 in [$a1..$a9, $b0..$f7]) then
       begin
-        Result := 94 * (s1 - $a1) + (s2 - $a1);
-
+        Result := 94 * (S1 - $a1) + (S2 - $a1);
         Result := table_gb2312[Result];
 
         if (Result <> $fffd) then
@@ -6923,9 +6920,9 @@ begin
       end;
 
       // cp936ext_mbtowc
-      if (s1 in [$a6,$a8]) and (s2 in [$40..$7e, $80..$fe]) then
+      if (S1 in [$a6,$a8]) and (S2 in [$40..$7e, $80..$fe]) then
       begin
-        Result := 190*(s1-$81) + s2 - $40 - Ord(s2 >= $80);
+        Result := 190*(S1-$81) + S2 - $40 - Ord(S2 >= $80);
 
         case Result of
           7189..7210: Result := table_cp936ext_1[Result-7189];
@@ -6941,11 +6938,11 @@ begin
 
 
 look_gbkext:
-    if (s1 in [$81..$a0]) then
+    if (S1 in [$81..$a0]) then
     begin
-      if (s2 in [$40..$7e, $80..$fe]) then
+      if (S2 in [$40..$7e, $80..$fe]) then
       begin
-        Result := 190 * (s1 - $81) + s2 - $40 - Ord(s2>=$80);
+        Result := 190 * (S1 - $81) + S2 - $40 - Ord(S2>=$80);
 
         Result := table_gbkext1[Result];
         goto done;
@@ -6953,11 +6950,11 @@ look_gbkext:
 
       goto user_defined;
     end;
-    if (s1 in [$a8..$fe])then
+    if (S1 in [$a8..$fe])then
     begin
-      if (s2 in [$40..$7e, $80..$a0]) then
+      if (S2 in [$40..$7e, $80..$a0]) then
       begin
-        Result := 96 * (s1 - $a8) + s2 - $40 - Ord(s2>=$80);
+        Result := 96 * (S1 - $a8) + S2 - $40 - Ord(S2>=$80);
 
         Result := table_gbkext2[Result];
         goto done;
@@ -6965,153 +6962,153 @@ look_gbkext:
 
       goto user_defined;
     end;
-    if (s1 = $a2) and (s2 in [$a1..$aa]) then
+    if (S1 = $a2) and (S2 in [$a1..$aa]) then
     begin
-      Result := $2170+(s2-$a1);
+      Result := $2170+(S2-$a1);
       goto done;
     end;
 
 user_defined:    
     // User-defined characters
-    case s1 of
+    case S1 of
       $a1..$a2:
       begin
-        if (s2 in [$40..$7e, $80..$a0]) then
+        if (S2 in [$40..$7e, $80..$a0]) then
         begin
-          Result := $e4c6 + 96 * (s1 - $a1) + (s2 - $40 - Ord(s2 >= $80));
+          Result := $e4c6 + 96 * (S1 - $a1) + (S2 - $40 - Ord(S2 >= $80));
           goto done;
         end;
       end;
       $aa..$af,$f8..$fe:
       begin
-        if (s2 in [$a1..$fe]) then
+        if (S2 in [$a1..$fe]) then
         begin
-          if (s1 >= $f8) then Dec(s1, $f2) else Dec(s1, $aa);
-          Result := $e000 + 94 * (s1) + (s2 - $a1);
+          if (S1 >= $f8) then Dec(S1, $f2) else Dec(S1, $aa);
+          Result := $e000 + 94 * (S1) + (S2 - $a1);
           goto done;
         end;
       end;
     end;
 end;
 
-fail: // src_read := src_size+1;
+fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
   Result := UNKNOWN_CHAR;
 done:
-  src_read := 2;
+  SrcRead := 2;
 end;
 
 
-function TUniConvContext.gb2312_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.gb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 var
-  c1, c2: Cardinal;
+  C1, C2: Cardinal;
 begin
   Result := 1;
 
   if (X <= $7f) then
   begin
-    dest^ := X;
+    Dest^ := X;
     Exit;
   end;
   if (X = $20ac) then
   begin
-    dest^ := $80;
+    Dest^ := $80;
     Exit;
   end;
 
   Inc(Result){2};
-  if (dest_size < Result) then {too_small}
+  if (DestSize < Result) then {too_small}
   begin
     Result := 0;
     Exit;
   end;
 
-  if (gbk_wctomb(X, dest)) then Exit;
+  if (gbk_wctomb(X, Dest)) then Exit;
 
   if (X >= $e000) and (X < $e586) then
   begin
     if (X < $e4c6) then
     begin
       Dec(X, $e000);
-      c1 := (X * $2B932) shr 24;
-      c2 := X - c1 * 94;
-      if (c1 < 6) then Inc(c1, $aa) else Inc(c1, $f2);
+      C1 := (X * $2B932) shr 24;
+      C2 := X - C1 * 94;
+      if (C1 < 6) then Inc(C1, $aa) else Inc(C1, $f2);
 
-      dest^ := c1;
-      Inc(dest);
-      dest^ := c2 + $a1;
+      Dest^ := C1;
+      Inc(Dest);
+      Dest^ := C2 + $a1;
       Exit;
     end else
     begin
       Dec(X, $e4c6);
-      c1 := (X * $2AAAB) shr 24;
-      c2 := X - c1 * 96;
+      C1 := (X * $2AAAB) shr 24;
+      C2 := X - C1 * 96;
 
-      dest^ := c1 + $a1;
-      Inc(c2, Ord(c2 >= $3f));
-      Inc(dest);
-      dest^ := c2 + $40;
+      Dest^ := C1 + $a1;
+      Inc(C2, Ord(C2 >= $3f));
+      Inc(Dest);
+      Dest^ := C2 + $40;
       Exit;
     end;
   end;
 
   Dec(Result){1};
-  dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHAR;
 end;
 
-function TUniConvContext.gb18030_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.gb18030_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   look_gbkext, look_gb18030ext, unknown, fail;
 var
-  s1, s2, s3, s4: Byte;
-  k, k1, k2: Cardinal;
+  S1, S2, S3, S4: Byte;
+  K, K1, K2: Cardinal;
 begin
-  s1 := src^;
-  Inc(src);
+  S1 := Src^;
+  Inc(Src);
 
-  if (s1 <= $7f) then
+  if (S1 <= $7f) then
   begin
-    Result := s1;
-    src_read := 1;
+    Result := S1;
+    SrcRead := 1;
     Exit;
   end;
 
-  src_read := 2;
-  if (src_size < 2) then goto fail;
-  s2 := src^;
+  SrcRead := 2;
+  if (SrcSize < 2) then goto fail;
+  S2 := Src^;
 
-  if not(s1 in [$a1..$f7]) then goto look_gbkext;
+  if not(S1 in [$a1..$f7]) then goto look_gbkext;
 
   // some consts
-  if (s1 = $a1) then
+  if (S1 = $a1) then
   begin
-    if (s2 = $a4) then
+    if (S2 = $a4) then
     begin
       Result := $00b7;
       Exit;
     end;
-    if (s2 = $aa) then
+    if (S2 = $aa) then
     begin
       Result := $2014;
       Exit;
     end;
   end;
 
-  if (s2 in [$a1..$fe]) then
+  if (S2 in [$a1..$fe]) then
   begin
     // gb2312_mbtowc
-    if (s1 in [$a1..$a9, $b0..$f7]) then
+    if (S1 in [$a1..$a9, $b0..$f7]) then
     begin
-      Result := 94 * (s1 - $a1) + (s2 - $a1);
+      Result := 94 * (S1 - $a1) + (S2 - $a1);
 
       Result := table_gb2312[Result];
       if (Result <> $fffd) then Exit;
     end;
 
     // cp936ext_mbtowc
-    if (s1 in [$a6, $a8]) and (s2 in [$40..$7e, $80..$fe]) then
+    if (S1 in [$a6, $a8]) and (S2 in [$40..$7e, $80..$fe]) then
     begin
-      Result := 190 *(s1 - $81) + s2 - $40 - Ord(s2 >= $80);
+      Result := 190 *(S1 - $81) + S2 - $40 - Ord(S2 >= $80);
 
       case Result of
         7189..7210: Result := table_cp936ext_1[Result - 7189];
@@ -7127,11 +7124,11 @@ begin
 
 
 look_gbkext:
-  if (s1 in [$81..$a0]) then
+  if (S1 in [$81..$a0]) then
   begin
-    if (s2 in [$40..$7e, $80..$fe]) then
+    if (S2 in [$40..$7e, $80..$fe]) then
     begin
-      Result := 190 * (s1 - $81) + s2 - $40 - Ord(s2 > $7f);
+      Result := 190 * (S1 - $81) + S2 - $40 - Ord(S2 > $7f);
 
       Result := table_gbkext1[Result];
       Exit;
@@ -7139,11 +7136,11 @@ look_gbkext:
 
     goto look_gb18030ext;
   end;
-  if (s1 in [$a8..$fe])then
+  if (S1 in [$a8..$fe])then
   begin
-    if (s2 in [$40..$7e, $80..$a0]) then
+    if (S2 in [$40..$7e, $80..$a0]) then
     begin
-      Result := 96 * (s1 - $a8) + s2 - $40 - Ord(s2 > $7f);
+      Result := 96 * (S1 - $a8) + S2 - $40 - Ord(S2 > $7f);
 
       Result := table_gbkext2[Result];
       if (Result <> $fffd) then Exit;
@@ -7153,17 +7150,17 @@ look_gbkext:
 
     goto look_gb18030ext;
   end;
-  if (s1 = $a2) and (s2 in [$a1..$aa]) then
+  if (S1 = $a2) and (S2 in [$a1..$aa]) then
   begin
-    Result := s2 + ($2170 - $a1);
+    Result := S2 + ($2170 - $a1);
     Exit;
   end;
 
 look_gb18030ext:
-  if (s1 in [$a2, $a4..$a9, $d7, $fe]) and (s2 in [$40..$7e,$80..$fe]) then
+  if (S1 in [$a2, $a4..$a9, $d7, $fe]) and (S2 in [$40..$7e,$80..$fe]) then
   begin
-    if (s1 = $fe) then
-    case s2 of
+    if (S1 = $fe) then
+    case S2 of
       $51: begin Result := $20087; Exit; end;
       $52: begin Result := $20089; Exit; end;
       $53: begin Result := $200cc; Exit; end;
@@ -7172,71 +7169,71 @@ look_gb18030ext:
       $91: begin Result := $241fe; Exit; end;
     end;
 
-    case s1 of
+    case S1 of
       $a2: Result := 0;
-      $a4..$a9: Result := (s1 - $a4) + 1{7};
+      $a4..$a9: Result := (S1 - $a4) + 1{7};
       $d7: Result := 8;
     else
       Result := 9;
     end;
-    Result := 190 * Result + Cardinal(s2) - $40 - (s2 shr 7);
+    Result := 190 * Result + Cardinal(S2) - $40 - (S2 shr 7);
 
     Result := table_gb18030ext[Result];
     if (Result <> $fffd) then Exit;
   end;
 
-  if (s1 in [$aa..$af, $f8..$fe]) then
+  if (S1 in [$aa..$af, $f8..$fe]) then
   begin
-    if (s2 in [$a1..$fe]) then
+    if (S2 in [$a1..$fe]) then
     begin
-      if (s1 >= $f8) then Dec(s1, $f2) else Dec(s1, $aa);
-      Result := 94*s1 + s2 + ($e000 - $a1);
+      if (S1 >= $f8) then Dec(S1, $f2) else Dec(S1, $aa);
+      Result := 94*S1 + S2 + ($e000 - $a1);
       Exit;
     end;
   end else
-  if (s1 in [$a1..$a7]) and (s2 in [$40..$a1]) and (s2 <> $7f) then
+  if (S1 in [$a1..$a7]) and (S2 in [$40..$a1]) and (S2 <> $7f) then
   begin
-    Result := 96*(s1-$a1) + s2 - Ord(s2 > $7f) + ($e4c6 - $40);
+    Result := 96*(S1-$a1) + S2 - Ord(S2 > $7f) + ($e4c6 - $40);
     Exit;
   end;
 
-  src_read := 4;
-  if (src_size < 4) then goto fail;
-  Inc(src);
-  s3 := src^;
-  Inc(src);
-  s4 := src^;
+  SrcRead := 4;
+  if (SrcSize < 4) then goto fail;
+  Inc(Src);
+  S3 := Src^;
+  Inc(Src);
+  S4 := Src^;
 
-  if  (s1 >= $81) and (s1 <= $84)
-  and (s2 >= $30) and (s2 <= $39)
-  and (s3 >= $81) and (s3 <= $fe)
-  and (s4 >= $30) and (s4 <= $39) then
+  if  (S1 >= $81) and (S1 <= $84)
+  and (S2 >= $30) and (S2 <= $39)
+  and (S3 >= $81) and (S3 <= $fe)
+  and (S4 >= $30) and (S4 <= $39) then
   begin
-    Result := (((s1 - $81) * 10 + (s2 - $30)) * 126 + (s3 - $81)) * 10 + (s4 - $30);
+    Result := (((S1 - $81) * 10 + (S2 - $30)) * 126 + (S3 - $81)) * 10 + (S4 - $30);
     if (Result > 39419) then goto unknown;
 
-    k1 := 0;
-    k2 := 205;
-    while (k1 < k2) do
+    K1 := 0;
+    K2 := 205;
+    while (K1 < K2) do
     begin
-      k := (k1 + k2) shr 1;
-      if (Result <= range_gb18030_read[2*k+1]) then k2 := k
+      k := (K1 + K2) shr 1;
+      if (Result <= range_gb18030_read[2*k+1]) then K2 := k
       else
-      if (Result >= range_gb18030_read[2*k+2]) then k1 := k + 1
+      if (Result >= range_gb18030_read[2*k+2]) then K1 := k + 1
       else
       goto unknown;
     end;
 
-    Inc(Result, offsets_gb18030[k1]);
+    Inc(Result, offsets_gb18030[K1]);
     Exit;
   end;
 
-  if  (s1 >= $90) and (s1 <= $e3)
-  and (s2 >= $30) and (s2 <= $39)
-  and (s3 >= $81) and (s3 <= $fe)
-  and (s4 >= $30) and (s4 <= $39) then
+  if  (S1 >= $90) and (S1 <= $e3)
+  and (S2 >= $30) and (S2 <= $39)
+  and (S3 >= $81) and (S3 <= $fe)
+  and (S4 >= $30) and (S4 <= $39) then
   begin
-    Result := (((s1 - $90) * 10 + (s2 - $30)) * 126 + (s3 - $81)) * 10 + (s4 - $30);
+    Result := (((S1 - $90) * 10 + (S2 - $30)) * 126 + (S3 - $81)) * 10 + (S4 - $30);
     if (Result < $100000) then
     begin
       Inc(Result, $10000);
@@ -7250,7 +7247,7 @@ unknown:
 end;
 
 
-function TUniConvContext.gb18030_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.gb18030_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   done_2, write_4, fail;
 const
@@ -7267,21 +7264,21 @@ const
   $e831, $e832,  $fe6c, $e83b, $e83b,  $fe76, $e843, $e843,  $fe7e,
   $e854, $e855,  $fe90, $e864, $e864,  $fea0);
 var
-  k1, k2, k: Cardinal;
+  K1, K2, K: Cardinal;
   W: Word;
 begin
   if (X <= $7f) then
   begin
-    dest^ := X;
+    Dest^ := X;
     Result := 1;
     Exit;
   end;
 
-  if (dest_size < 2) then goto fail; {too_small}
+  if (DestSize < 2) then goto fail; {too_small}
 
   if (X shr 11 = $1b) then X := $fffd;
 
-  if (gbk_wctomb(X, dest)) then
+  if (gbk_wctomb(X, Dest)) then
   begin
   done_2:
     Result := 2;
@@ -7289,12 +7286,12 @@ begin
   end;
 
   case X of
-    $20087: begin PWord(dest)^ := $51fe; goto done_2; end;
-    $20089: begin PWord(dest)^ := $52fe; goto done_2; end;
-    $200cc: begin PWord(dest)^ := $53fe; goto done_2; end;
-    $215d7: begin PWord(dest)^ := $6cfe; goto done_2; end;
-    $2298f: begin PWord(dest)^ := $76fe; goto done_2; end;
-    $241fe: begin PWord(dest)^ := $91fe; goto done_2; end;
+    $20087: begin PWord(Dest)^ := $51fe; goto done_2; end;
+    $20089: begin PWord(Dest)^ := $52fe; goto done_2; end;
+    $200cc: begin PWord(Dest)^ := $53fe; goto done_2; end;
+    $215d7: begin PWord(Dest)^ := $6cfe; goto done_2; end;
+    $2298f: begin PWord(Dest)^ := $76fe; goto done_2; end;
+    $241fe: begin PWord(Dest)^ := $91fe; goto done_2; end;
   else
     if (X <= $ffff) and (X <> $fffd) then
     begin
@@ -7304,10 +7301,10 @@ begin
         if (W >= $3f00) then Inc(W, $0100);
 
         case Byte(W) of
-             0: PWord(dest)^ := W + $40a2;
-          1..7: PWord(dest)^ := W + $40a3;
-             8: PWord(dest)^ := W + $40cf;
-             9: PWord(dest)^ := W + $40f5;
+             0: PWord(Dest)^ := W + $40a2;
+          1..7: PWord(Dest)^ := W + $40a3;
+             8: PWord(Dest)^ := W + $40cf;
+             9: PWord(Dest)^ := W + $40f5;
         end;
 
         goto done_2;
@@ -7319,44 +7316,44 @@ begin
     $e000..$e4c5:
     begin
       Dec(X, $e000);
-      k := (X * $2b932) shr 24; // X div 94
-      X := (X - (k * 94)) shl 8 + $a100; // X mod 94;
+      K := (X * $2b932) shr 24; // X div 94
+      X := (X - (K * 94)) shl 8 + $a100; // X mod 94;
 
-      if (k < 6) then Inc(k, $aa) else Inc(k, $f2);
-      PWord(dest)^ := k+X;
+      if (K < 6) then Inc(K, $aa) else Inc(K, $f2);
+      PWord(Dest)^ := K+X;
       goto done_2;
     end;
     $e4c6..$e765:
     begin
       Dec(X, $e4c6);
-      k := (X * $2aaab) shr 24; // X div 96
-      X := X - (k * 96); // X mod 96;
+      K := (X * $2aaab) shr 24; // X div 96
+      X := X - (K * 96); // X mod 96;
 
-      Inc(k, $40a1);
-      PWord(dest)^ := ((X + Byte(X >= $3f)) shl 8) + k;
+      Inc(K, $40a1);
+      PWord(Dest)^ := ((X + Byte(X >= $3f)) shl 8) + K;
       goto done_2;
     end;
     $e766..$e864:
     begin
-      k1 := 0;
-      k2 := 32;
+      K1 := 0;
+      K2 := 32;
 
-      while (k1 < k2) do
+      while (K1 < K2) do
       begin
-        k := (k1 + k2) shr 1;
-        if (X < gb18030_range_values[k * 3+0]) then k2 := k
+        K := (K1 + K2) shr 1;
+        if (X < gb18030_range_values[K * 3+0]) then K2 := K
         else
-        if (X > gb18030_range_values[k * 3+1]) then k1 := k + 1
+        if (X > gb18030_range_values[K * 3+1]) then K1 := K + 1
         else
         begin
-          PWord(dest)^ := Swap(X - gb18030_range_values[k * 3 + 0] + gb18030_range_values[k * 3 + 2]);
+          PWord(Dest)^ := Swap(X - gb18030_range_values[K * 3 + 0] + gb18030_range_values[K * 3 + 2]);
           goto done_2;
         end;
       end;
     end;
   end;
 
-  if (dest_size < 4) then {too_small}
+  if (DestSize < 4) then {too_small}
   begin
   fail:
     Result := 0;
@@ -7365,80 +7362,80 @@ begin
 
   if (X <= $ffff) then
   begin
-    k1 := 0;
-    k2 := 205;
-    while (k1 < k2) do
+    K1 := 0;
+    K2 := 205;
+    while (K1 < K2) do
     begin
-      k := (k1 + k2) shr 1;
-      if (X <= range_gb18030_write[2 * k + 1]) then k2 := k
+      K := (K1 + K2) shr 1;
+      if (X <= range_gb18030_write[2 * K + 1]) then K2 := K
       else
-      if (X >= range_gb18030_write[2 * k + 2]) then k1 := k + 1
+      if (X >= range_gb18030_write[2 * K + 2]) then K1 := K + 1
       else
       begin
-        dest^ := UNKNOWN_CHAR;
+        Dest^ := UNKNOWN_CHAR;
         Result := 1;
         Exit;
       end;
     end;
 
-    Dec(X, offsets_gb18030[k1]);
-    k := $30813081;
+    Dec(X, offsets_gb18030[K1]);
+    K := $30813081;
 
     goto write_4;
   end else
   begin
     Dec(X, $10000);
-    k := $30813090;
+    K := $30813090;
 
   write_4:
-    k1 := X div 10;
-    Inc(k, (X - k1 * 10) shl 24);
+    K1 := X div 10;
+    Inc(K, (X - K1 * 10) shl 24);
 
-    if (k1 <> 0) then
+    if (K1 <> 0) then
     begin
-      X := k1;
-      k1 := X div 126;
-      Inc(k, (X - k1 * 126) shl 16);
+      X := K1;
+      K1 := X div 126;
+      Inc(K, (X - K1 * 126) shl 16);
 
-      if (k1 <> 0) then
+      if (K1 <> 0) then
       begin
-        X := k1;
-        k1 := X div 10;
-        Inc(k, k1);
-        Inc(k, (X - k1 * 10) shl 8);
+        X := K1;
+        K1 := X div 10;
+        Inc(k, K1);
+        Inc(k, (X - K1 * 10) shl 8);
       end;
     end;
 
-    PCardinal(dest)^ := k;
+    PCardinal(Dest)^ := K;
     Result := 4;
   end;
 end;
 
 
-function TUniConvContext.hzgb2312_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.hzgb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, too_small, done;
 var
   Count: Cardinal;
-  State, s2: Byte;
+  State, S2: Byte;
 begin
   State := Self.FState.Read.B;
 
-  Result := src^;
+  Result := Src^;
   Count := 1;
   while (Result = Ord('~')) do
   begin
     Inc(Count);
-    Inc(src);
-    if (src_size < Count) then goto too_small;
-    s2 := src^;
+    Inc(Src);
+    if (SrcSize < Count) then goto too_small;
+    S2 := Src^;
 
     if (State = 0) then
     begin
-       case s2 of
+       case S2 of
          Ord('~'):
          begin
-           //Result := s2;
+           //Result := S2;
            goto done;
          end;
          Ord('{'):
@@ -7450,32 +7447,32 @@ begin
          goto unknown;
        end;
     end else
-    if (s2 = Ord('}')) then
+    if (S2 = Ord('}')) then
     begin
       State := 0;
     end else
     goto unknown;
 
     Inc(Count);
-    Inc(src);
-    if (src_size < Count) then
+    Inc(Src);
+    if (SrcSize < Count) then
     begin
       if (State = 0) then Count := High(Cardinal){-1}; // goto none;
       goto too_small{/done};
     end;
-    Result := src^;
+    Result := Src^;
   end;
 
   if (State <> 0) then
   begin
     Inc(Count);
-    Inc(src);
-    if (src_size < Count) then goto too_small;
-    s2 := src^;
+    Inc(Src);
+    if (SrcSize < Count) then goto too_small;
+    S2 := Src^;
 
-    if (Result in [$21..$29, $30..$77]) and (s2 in [$21..$7e]) then
+    if (Result in [$21..$29, $30..$77]) and (S2 in [$21..$7e]) then
     begin
-      Result := 94 * (Integer(Result) - $21) + (s2 - $21);
+      Result := 94 * (Integer(Result) - $21) + (S2 - $21);
 
       Result := table_gb2312[Result];
     end else
@@ -7488,10 +7485,10 @@ begin
 too_small:
 done:
   Self.FState.Read.B := State;
-  src_read := Count;
+  SrcRead := Count;
 end;
 
-function TUniConvContext.hzgb2312_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.hzgb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   ascii, make_finalize, unknown, fail;
 var
@@ -7508,23 +7505,23 @@ begin
     if (State <> 0) then
     begin
       Inc(Result, 2){:= 3};
-      if (dest_size < 3) then goto fail;
+      if (DestSize < 3) then goto fail;
 
-      PWord(dest)^ := $7d7e;
-      Inc(dest, 2);
+      PWord(Dest)^ := $7d7e;
+      Inc(Dest, 2);
       Self.FState.Write.B := 0;
     end;
 
     if (X = Ord('~')) then
     begin
       Inc(Result){:= 2/4};
-      if (dest_size < Result) then goto fail;
+      if (DestSize < Result) then goto fail;
 
-      dest^ := X;
-      Inc(dest);
+      Dest^ := X;
+      Inc(Dest);
     end;
 
-    dest^ := X;
+    Dest^ := X;
     Exit;
   end;
 
@@ -7541,51 +7538,51 @@ begin
   Inc(W, $2121);
 
   Result := 4 - State * 2;
-  if (dest_size < Result) then goto fail;
+  if (DestSize < Result) then goto fail;
   if (State = 0) then
   begin
-    PWord(dest)^ := $7b7e;
-    Inc(dest, 2);
+    PWord(Dest)^ := $7b7e;
+    Inc(Dest, 2);
     Self.FState.Write.B := 1;
   end;
-  PWord(dest)^ := W;
+  PWord(Dest)^ := W;
   
-  if (mode_final) then
+  if (ModeFinal) then
   begin
     Inc(Result, 2);
-    Inc(dest, 2);
-    if (dest_size < Result) then {too_small}
+    Inc(Dest, 2);
+    if (DestSize < Result) then {too_small}
     begin
     fail:
       Result := 0;
       Exit;
     end;
-    PWord(dest)^ := $7d7e;
+    PWord(Dest)^ := $7d7e;
   end;
 end;
 
-function TUniConvContext.big5_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.big5_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   fail, unknown, done;
 var
-  s1, s2: Byte;
+  S1, S2: Byte;
 begin
-  s1 := src^;
-  Inc(src);
+  S1 := Src^;
+  Inc(Src);
 
-  if (s1 <= $7f) then
+  if (S1 <= $7f) then
   begin
-    Result := s1;
-    src_read := 1;
+    Result := S1;
+    SrcRead := 1;
     Exit;
   end;
 
-  if (s1 in [$80, $ff]) then goto unknown;
-  if (src_size < 2) then goto fail;
-  s2 := src^;
-  if (s2 in [$0..$39 ,$80, $ff]) then goto unknown;
+  if (S1 in [$80, $ff]) then goto unknown;
+  if (SrcSize < 2) then goto fail;
+  S2 := Src^;
+  if (S2 in [$0..$39 ,$80, $ff]) then goto unknown;
 
-  Result := 190 * (s1 - $80) + s2 - $40 - (s2 shr 7);
+  Result := 190 * (S1 - $80) + S2 - $40 - (S2 shr 7);
   Result := table_big5[Result];
   goto done;
 
@@ -7593,10 +7590,10 @@ fail:
 unknown:
   Result := UNKNOWN_CHAR;
 done:
-  src_read := 2;
+  SrcRead := 2;
 end;
 
-function TUniConvContext.big5_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: Boolean): Cardinal;
+function TUniConvContext.big5_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 label
   unknown, done_1, done;
 var  
@@ -7604,11 +7601,11 @@ var
 begin
   if (X <= $7f) then
   begin
-    dest^ := X;
+    Dest^ := X;
     goto done_1;
   end;
 
-  if (dest_size < 2) then {too_small}
+  if (DestSize < 2) then {too_small}
   begin
     Result := 0;
     Exit;
@@ -7616,7 +7613,7 @@ begin
 
   if (X = $a5) then
   begin
-    PWord(dest)^ := $44a2;
+    PWord(Dest)^ := $44a2;
     goto done;
   end;
 
@@ -7626,13 +7623,13 @@ begin
     if (W <> High(Word)) then
     begin
       if (W >= $3f00) then Inc(W, $0100);
-      PWord(dest)^ := W + $4080;
+      PWord(Dest)^ := W + $4080;
       goto done;
     end;
   end;
 
 unknown:
-  dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHAR;
 done_1:
   Result := 1;
   Exit;
@@ -7641,48 +7638,48 @@ done:
 end;
 
 
-function TUniConvContext.shift_jis_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.shift_jis_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, fail, done;
 var
-  s1: Byte;
-  s2: Byte;
+  S1: Byte;
+  S2: Byte;
 begin
-  s1 := src^;
-  Inc(src);
+  S1 := Src^;
+  Inc(Src);
 
-  case s1 of
+  case S1 of
     0..$7f:
     begin
-      if (s1 = $5c) then Result := $00a5
+      if (S1 = $5c) then Result := $00a5
       else
-      if (s1 = $7e) then Result := $203e
+      if (S1 = $7e) then Result := $203e
       else
-      Result := s1;
+      Result := S1;
 
-      src_read := 1;
+      SrcRead := 1;
       Exit;
     end;
     $a1..$df:
     begin
-      Result := s1 + $fec0;
-      src_read := 1;
+      Result := S1 + $fec0;
+      SrcRead := 1;
       Exit;
     end;
     $81..$9f, $e0..$ea:
     begin
-      if (src_size < 2) then goto fail;
-      s2 := src^;
-      if (s2 in [$40..$7e, $80..$fc]) then
+      if (SrcSize < 2) then goto fail;
+      S2 := Src^;
+      if (S2 in [$40..$7e, $80..$fc]) then
       begin
-        s1 := s1 - (Ord(s1 >= $e0) shl 6) - $81;
-        s2 := s2 - Ord(s2 >= $80) - ($40-$21);
-        s1 := 2*s1 + $21 + Ord(s2 >= ($5e+$21));
-        if (s2 >= ($5e+$21)) then Dec(s2, $5e);
+        S1 := S1 - (Ord(S1 >= $e0) shl 6) - $81;
+        S2 := S2 - Ord(S2 >= $80) - ($40-$21);
+        S1 := 2*S1 + $21 + Ord(S2 >= ($5e+$21));
+        if (S2 >= ($5e+$21)) then Dec(S2, $5e);
         
-        if (s1 in [$21..$28, $21..$7e]) then
+        if (S1 in [$21..$28, $21..$7e]) then
         begin
-          Result := 94 * (s1 - $21) + (s2 - $21);
+          Result := 94 * (S1 - $21) + (S2 - $21);
           Result := table_jisx0208[Result];
           goto done;
         end;
@@ -7690,27 +7687,27 @@ begin
     end;  
     $f0..$f9:
     begin
-      if (src_size < 2) then goto fail;
-      s2 := src^;
+      if (SrcSize < 2) then goto fail;
+      S2 := Src^;
 
-      if (s2 in [$40..$7e, $80..$fc]) then
+      if (S2 in [$40..$7e, $80..$fc]) then
       begin
-        Result := ($e000-$40) + 188*(s1 - $f0) + s2 - Ord(s2>$7f);
+        Result := ($e000-$40) + 188*(S1 - $f0) + S2 - Ord(S2>$7f);
         goto done;
       end;
     end;
   end;
 
   
-fail: // src_read := src_size+1;
+fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
   Result := UNKNOWN_CHAR;
 done:
-  src_read := 2;
+  SrcRead := 2;
 end;
 
 
-function TUniConvContext.shift_jis_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.shift_jis_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   not_jisx0201;
 var
@@ -7723,45 +7720,45 @@ begin
     0..$7f:
     begin
       if (X = $005c) or (X = $007e) then goto not_jisx0201;
-      dest^ := X;
+      Dest^ := X;
       Exit;
     end;
     $00a5:
     begin
-      dest^ := $5c;
+      Dest^ := $5c;
       Exit;
     end;
     $203e:
     begin
-      dest^ := $7e;
+      Dest^ := $7e;
       Exit;
     end;
     $ff61..$ff9f:
     begin
-      dest^ := X - $fec0;
+      Dest^ := X - $fec0;
       Exit;
     end;
     $e000..$e757:
     begin
       Inc(Result){2};
-      if (dest_size < 2) then Exit;
+      if (DestSize < 2) then Exit;
 
       Dec(X, $e000);
       C := (X*$15c99) shr 24; //X div 188;
 
-      dest^ := C+$f0;
+      Dest^ := C+$f0;
       C := X - (Cardinal(C)*188);
-      Inc(dest);
+      Inc(Dest);
       Inc(C, Ord(C >= $3f));
       Inc(C, $40);
-      dest^ := C;
+      Dest^ := C;
       Exit;
     end;
   end;
   
 not_jisx0201:
   Inc(Result){2};
-  if (dest_size < Result) then {too small}
+  if (DestSize < Result) then {too small}
   begin
     Result := 0;
     Exit;
@@ -7778,52 +7775,52 @@ not_jisx0201:
       if (C and 1 <> 0) then Inc(C2, $5e);
 
       C := C shr 1;
-      dest^ := C + (Ord(C >= $1f) shl 6) + $81;
+      Dest^ := C + (Ord(C >= $1f) shl 6) + $81;
 
       Inc(C2, Ord(C2 >= $3f));
-      Inc(dest);
+      Inc(Dest);
       Inc(C2, $40);
-      dest^ := C2;
+      Dest^ := C2;
       Exit;
     end;
   end;
 
-  dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHAR;
   Dec(Result);{1}
 end;
 
 
-function TUniConvContext.euc_jp_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.euc_jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, fail, done;
 var
-  s1: Byte;
-  s2: Byte;
+  S1: Byte;
+  S2: Byte;
 begin
-  s1 := src^;
-  Inc(src);
+  S1 := Src^;
+  Inc(Src);
 
-  case s1 of
+  case S1 of
     0..$7f:
     begin
-      Result := s1;
-      src_read := 1;
+      Result := S1;
+      SrcRead := 1;
       Exit;
     end;
     $a1..$fe:
     begin
-      if (src_size < 2) then goto fail;
-      s2 := src^;
-      if (s2 < $a1) or (s2 = $ff) then goto unknown;
+      if (SrcSize < 2) then goto fail;
+      S2 := Src^;
+      if (S2 < $a1) or (S2 = $ff) then goto unknown;
 
-      if (s1 >= $f5) then
+      if (S1 >= $f5) then
       begin
-        Result := $e000 + 94*(s1-$f5) + (s2-$a1);
+        Result := $e000 + 94*(S1-$f5) + (S2-$a1);
         goto done;
       end else
-      if not(s1 in [$a9..$af]) then
+      if not(S1 in [$a9..$af]) then
       begin
-        Result := 94 * (s1 - $a1) + (s2 - $a1);
+        Result := 94 * (S1 - $a1) + (S2 - $a1);
 
         Result := table_jisx0208[Result];
         goto done;
@@ -7831,32 +7828,32 @@ begin
     end;
     $8e:
     begin
-      if (src_size < 2) then goto fail;
-      s2 := src^;
+      if (SrcSize < 2) then goto fail;
+      S2 := Src^;
 
-      if (s2 >= $a1) and (s2 < $e0) then
+      if (S2 >= $a1) and (S2 < $e0) then
       begin
-        Result := s2 + $fec0;
+        Result := S2 + $fec0;
         goto done;
       end;
     end;
     $8f:
     begin
-      if (src_size < 3) then goto fail;
-      s1 := src^;
-      src_read := 3;
-      Inc(src);
-      if (s1 < $a1) or (s1 = $ff) then goto unknown;
-      s2 := src^;
+      if (SrcSize < 3) then goto fail;
+      S1 := Src^;
+      SrcRead := 3;
+      Inc(Src);
+      if (S1 < $a1) or (S1 = $ff) then goto unknown;
+      S2 := Src^;
 
-      if (s1 >= $f5) then
+      if (S1 >= $f5) then
       begin
-        Result := $e3ac + 94*(s1-$f5) + (s2-$a1);
+        Result := $e3ac + 94*(S1-$f5) + (S2-$a1);
         Exit;
       end else
-      if (s1 in [$a2, $a6..$a7, $a9..$ab, $b0..$ed]) then
+      if (S1 in [$a2, $a6..$a7, $a9..$ab, $b0..$ed]) then
       begin
-        Result := 94 * (s1 - $a1) + (s2 - $a1);
+        Result := 94 * (S1 - $a1) + (S2 - $a1);
 
         Result := table_jisx0212[Result];
         Exit;
@@ -7864,14 +7861,14 @@ begin
     end;
   end;
 
-fail: // src_read := src_size+1;
+fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
   Result := UNKNOWN_CHAR;
 done:
-  src_read := 2;
+  SrcRead := 2;
 end;
 
-function TUniConvContext.euc_jp_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: Boolean): Cardinal;
+function TUniConvContext.euc_jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 label
   fill_divided, fill_a1a1, unknown;
 var
@@ -7883,23 +7880,23 @@ begin
   case X of
     0..$7f:
     begin
-      dest^ := X;
+      Dest^ := X;
       Dec(Result){1};
     end;
     $00a5:
     begin
-      dest^ := $5c;
+      Dest^ := $5c;
       Dec(Result){1};
     end;
     $203e:
     begin
-      dest^ := $7e;
+      Dest^ := $7e;
       Dec(Result){1};
       Exit;
     end;
     $e000..$e3ab:
     begin
-      if (dest_size < Result{2}) then {too small}
+      if (DestSize < Result{2}) then {too small}
       begin
         Result := 0;
         Exit;
@@ -7910,27 +7907,27 @@ begin
     $e3ac..$e757:
     begin
       Inc(Result);
-      if (dest_size < Result{3}) then {too small}
+      if (DestSize < Result{3}) then {too small}
       begin
         Result := 0;
         Exit;
       end;
       Dec(X, $e3ac);
-      dest^ := $8f;
-      Inc(dest);
+      Dest^ := $8f;
+      Inc(Dest);
 
       fill_divided:
       C := (X*$2b932) shr 24; //X div 94;
-      PWord(dest)^ := ((X - C*94) shl 8) + C + $a1f5;
+      PWord(Dest)^ := ((X - C*94) shl 8) + C + $a1f5;
     end;
     $ff61..$ff9f:
     begin
-      if (dest_size < Result{2}) then {too small}
+      if (DestSize < Result{2}) then {too small}
       begin
         Result := 0;
         Exit;
       end;
-      PWord(dest)^ := ((X - $fec0) shl 8) + $8e;
+      PWord(Dest)^ := ((X - $fec0) shl 8) + $8e;
     end;
   else
     if (X > $ffff) or (X = $fffd) then goto unknown;
@@ -7938,7 +7935,7 @@ begin
     W := hash_jisx0208.Find(X);
     if (W <> High(Word)) then
     begin
-      if (dest_size < Result{2}) then {too small}
+      if (DestSize < Result{2}) then {too small}
       begin
         Result := 0;
         Exit;
@@ -7950,21 +7947,21 @@ begin
     if (W <> High(Word)) then
     begin
       Inc(Result){3};
-      if (dest_size < 3) then {too small}
+      if (DestSize < 3) then {too small}
       begin
         Result := 0;
         Exit;
       end;
-      dest^ := $8f;
-      Inc(dest);
+      Dest^ := $8f;
+      Inc(Dest);
 
       fill_a1a1:
-      PWord(dest)^ := W + $a1a1;
+      PWord(Dest)^ := W + $a1a1;
       Exit;
     end;
 
   unknown:
-    dest^ := UNKNOWN_CHAR;
+    Dest^ := UNKNOWN_CHAR;
     Dec(Result){1};
   end;
 end;
@@ -7977,28 +7974,28 @@ const
 
   JIS_ESC = $1b;
 
-function TUniConvContext.iso2022jp_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.iso2022jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, too_small, done;
 var
   Count: Cardinal;
-  State, s2: Byte;
+  State, S2: Byte;
 begin
   State := Self.FState.Read.B;
 
-  Result := src^;
+  Result := Src^;
   Count := 1;
   while (Result = JIS_ESC) do
   begin
     Inc(Count, 2);
-    Inc(src);
-    if (src_size < Count) then goto too_small;
+    Inc(Src);
+    if (SrcSize < Count) then goto too_small;
 
-    case src^ of
+    case Src^ of
       Ord('('):
       begin
-        Inc(src);
-        case src^ of
+        Inc(Src);
+        case Src^ of
           Ord('B'): State := JIS_ASCII;
           Ord('J'): State := JIS_X0201ROMAN;
         else
@@ -8007,29 +8004,29 @@ begin
       end;
       Ord('$'):
       begin
-        Inc(src);
-        case src^ of
+        Inc(Src);
+        case Src^ of
           Ord('@'), Ord('B'): State := JIS_X0208;
           Ord('('):
           begin
             Inc(Count);
-            Inc(src);
+            Inc(Src);
             State := JIS_X0212;
-            if (src_size < Count) then goto too_small;
-            if (src^ <> Ord('D')) then goto unknown;
+            if (SrcSize < Count) then goto too_small;
+            if (Src^ <> Ord('D')) then goto unknown;
           end;
         end;
       end;
     end;
 
     Inc(Count);
-    Inc(src);
-    if (src_size < Count) then
+    Inc(Src);
+    if (SrcSize < Count) then
     begin
       if (State = JIS_ASCII) then Count := High(Cardinal){-1}; //goto none;
       goto too_small{/done};
     end;
-    Result := src^;
+    Result := Src^;
   end;
 
   case (State) of
@@ -8051,17 +8048,17 @@ begin
     JIS_X0212:
     begin
       Inc(Count);
-      if (src_size < Count) then goto too_small;
-      if (PWord(src)^ and $8080 = 0) then
+      if (SrcSize < Count) then goto too_small;
+      if (PWord(Src)^ and $8080 = 0) then
       begin
-        Inc(src);
-        s2 := src^;
+        Inc(Src);
+        S2 := Src^;
 
         if (State = JIS_X0208) then
         begin
-          if (Result in [$21..$28, $30..$74]) and (s2 in [$21..$7e]) then
+          if (Result in [$21..$28, $30..$74]) and (S2 in [$21..$7e]) then
           begin
-            Result := 94 * (Integer(Result) - $21) + (s2 - $21);
+            Result := 94 * (Integer(Result) - $21) + (S2 - $21);
 
             Result := table_jisx0208[Result];
             goto done;
@@ -8069,9 +8066,9 @@ begin
         end else
         // if (State = JIS_X0212) then
         begin
-          if (Result in [$22, $26..$27, $29..$2b, $30..$6d]) and (s2 in [$21..$7e]) then
+          if (Result in [$22, $26..$27, $29..$2b, $30..$6d]) and (S2 in [$21..$7e]) then
           begin
-            Result := 94 * (Integer(Result) - $21) + (s2 - $21);
+            Result := 94 * (Integer(Result) - $21) + (S2 - $21);
 
             Result := table_jisx0212[Result];
             goto done;
@@ -8086,10 +8083,10 @@ unknown:
 too_small:
 done:
   Self.FState.Read.B := State;
-  src_read := Count;
+  SrcRead := Count;
 end;
 
-function TUniConvContext.iso2022jp_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.iso2022jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   unknown, std_write, not_jisx0201, done;
 const
@@ -8129,7 +8126,7 @@ begin
       W := W + $2121;
 
       Result := Byte(State<>JIS_X0208)*3 + 2;
-      if (dest_size < Result) then {too small}
+      if (DestSize < Result) then {too small}
       begin
         Result := 0;
         Exit;
@@ -8137,13 +8134,13 @@ begin
 
       if (State = JIS_X0208) then
       begin
-        PWord(dest)^ := W;
+        PWord(Dest)^ := W;
       end else
       begin
-        PCardinal(dest)^ := (W shl 24) + (JIS_ESC + (Ord('$') shl 8) + (Ord('B') shl 16));
-        Inc(dest, 4);
+        PCardinal(Dest)^ := (W shl 24) + (JIS_ESC + (Ord('$') shl 8) + (Ord('B') shl 16));
+        Inc(Dest, 4);
         State := JIS_X0208;
-        dest^ := W shr 8;
+        Dest^ := W shr 8;
       end;
 
       goto done;
@@ -8155,7 +8152,7 @@ begin
       W := W + $2121;
 
       Result := Byte(State<>JIS_X0212)*4 + 2;
-      if (dest_size < Result) then {too small}
+      if (DestSize < Result) then {too small}
       begin
         Result := 0;
         Exit;
@@ -8163,13 +8160,13 @@ begin
 
       if (State <> JIS_X0212) then
       begin
-        PCardinal(dest)^ := (JIS_ESC + (Ord('$') shl 8) + (Ord('(') shl 16) + (Ord('D') shl 24));
+        PCardinal(Dest)^ := (JIS_ESC + (Ord('$') shl 8) + (Ord('(') shl 16) + (Ord('D') shl 24));
 
-        Inc(dest, 4);
+        Inc(Dest, 4);
         State := JIS_X0212;
       end;
-      PWord(dest)^ := W;
-      Inc(dest);
+      PWord(Dest)^ := W;
+      Inc(Dest);
       goto done;
     end;
 
@@ -8180,7 +8177,7 @@ begin
 
 std_write:
   Result := Byte(State<>Byte(Mask))*3 + 1;
-  if (dest_size < Result) then {too small}
+  if (DestSize < Result) then {too small}
   begin
     Result := 0;
     Exit;
@@ -8188,62 +8185,62 @@ std_write:
 
   if (State = Byte(Mask)) then
   begin
-    dest^ := X;
+    Dest^ := X;
   end else
   begin
     State := Mask;
-    PCardinal(dest)^ := (X shl 24) + (Mask shr 8);
-    Inc(dest, 3);
+    PCardinal(Dest)^ := (X shl 24) + (Mask shr 8);
+    Inc(Dest, 3);
   end;
 
 done:
-  if (mode_final) and (State <> JIS_ASCII) then
+  if (ModeFinal) and (State <> JIS_ASCII) then
   begin
     Inc(Result, 3);
-    if (dest_size < Result) then {too small}
+    if (DestSize < Result) then {too small}
     begin
       Result := 0;
       Exit;
     end;
 
-    PCardinal(dest)^ := Cardinal(dest^) + ((JIS_ESC shl 8) + (Ord('(') shl 16) + (Ord('B') shl 24));
+    PCardinal(Dest)^ := Cardinal(Dest^) + ((JIS_ESC shl 8) + (Ord('(') shl 16) + (Ord('B') shl 24));
     State := JIS_ASCII;
   end;
   Self.FState.Write.B := State;
 end;
 
 
-function TUniConvContext.cp949_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.cp949_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, too_small, done;
 var
-  c2: Byte;
+  C2: Byte;
 begin
-  Result := src^;
-  Inc(src);
+  Result := Src^;
+  Inc(Src);
 
   case Result of
     0..$7f:
     begin
-      src_read := 1;
+      SrcRead := 1;
       Exit;
     end;
     $81..$a0:
     begin
-      if (src_size < 2) then goto too_small;
+      if (SrcSize < 2) then goto too_small;
 
-      c2 := src^;
-      if (c2 in [$41..$5a, $61..$7a, $81..$fe]) then
+      C2 := Src^;
+      if (C2 in [$41..$5a, $61..$7a, $81..$fe]) then
       begin
         Dec(Result, $81);
 
-        if (c2 >= $81) then Dec(c2, $4d)
+        if (C2 >= $81) then Dec(C2, $4d)
         else
-        if (c2 >= $61) then Dec(c2, $47)
+        if (C2 >= $61) then Dec(C2, $47)
         else
-        Dec(c2, $41);
+        Dec(C2, $41);
 
-        Result := 178*Result + c2;
+        Result := 178*Result + C2;
 
         Result := table_uhc_1[Result];
         goto done;
@@ -8251,47 +8248,43 @@ begin
     end;
     $a1..$fe:
     begin
-      if (src_size < 2) then goto too_small;
+      if (SrcSize < 2) then goto too_small;
 
-      c2 := src^;
-      if (c2 < $a1) then
+      C2 := Src^;
+      if (C2 < $a1) then
       begin
-        if (Result <= $c6) and (c2 in [$41..$5a, $61..$7a, $81..$a0]) then
+        if (Result <= $c6) and (C2 in [$41..$5a, $61..$7a, $81..$a0]) then
         begin
           Dec(Result, $a1);
-          if (c2 >= $81) then Dec(c2, $4d)
+          if (C2 >= $81) then Dec(C2, $4d)
           else
-          if (c2 >= $61) then Dec(c2, $47)
+          if (C2 >= $61) then Dec(C2, $47)
           else
-          Dec(c2, $41);
+          Dec(C2, $41);
 
-          Result := 84*Result + c2;
-
+          Result := 84*Result + C2;
           Result := table_uhc_2[Result];
-
           goto done;
         end;
       end else
-      if (c2 < $ff) and ((Result <> $a2) or (c2 <> $e8)) then
+      if (C2 < $ff) and ((Result <> $a2) or (C2 <> $e8)) then
       begin
         if (Result in [$a1..$ac, $b0..$c8, $ca..$fd]) then
-        if (c2 in [$a1..$fe]) then
+        if (C2 in [$a1..$fe]) then
         begin
-          Result := 94 * (Integer(Result) - $a1) + (c2 - $a1);
-
+          Result := 94 * (Integer(Result) - $a1) + (C2 - $a1);
           Result := table_ksc5601[Result];
-
           goto done;
         end;
 
         if (Result = $c9) then
         begin
-          Result := $e000 + (c2 - $a1);
+          Result := $e000 + (C2 - $a1);
           goto done;
         end else
         if (Result = $fe) then
         begin
-          Result := $e05e + (c2 - $a1);
+          Result := $e05e + (C2 - $a1);
           goto done;
         end;
       end;
@@ -8302,10 +8295,10 @@ unknown:
   Result := UNKNOWN_CHAR;
 too_small:
 done:
-  src_read := 2;  
+  SrcRead := 2;
 end;
 
-function TUniConvContext.cp949_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: Boolean): Cardinal;
+function TUniConvContext.cp949_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 label
   unknown;
 var
@@ -8315,12 +8308,12 @@ begin
 
   if (X <= $7f) then
   begin
-    dest^ := X;
+    Dest^ := X;
     Exit;
   end;
 
   Inc(Result);
-  if (dest_size < Result{2}) then {too small}
+  if (DestSize < Result{2}) then {too small}
   begin
     Result := 0;
     Exit;
@@ -8331,7 +8324,7 @@ begin
     W := hash_ksc5601.Find(X);
     if (W <> High(Word)) then
     begin
-      PWord(dest)^ := W + $a1a1;
+      PWord(Dest)^ := W + $a1a1;
       Exit;
     end;
   end;
@@ -8343,10 +8336,10 @@ begin
       if (W = High(Word)) then goto unknown;
 
       case (W shr 8) of
-        0..25: PWord(dest)^ := W +$4181;
-       26..51: PWord(dest)^ := W +$4781;
+        0..25: PWord(Dest)^ := W +$4181;
+       26..51: PWord(Dest)^ := W +$4781;
       else
-        PWord(dest)^ := W + $4d81;
+        PWord(Dest)^ := W + $4d81;
       end;
 
       Exit;
@@ -8357,51 +8350,51 @@ begin
       if (W = High(Word)) then goto unknown;
 
       case (W shr 8) of
-        0..25: PWord(dest)^ := W +$41a1;
-       26..51: PWord(dest)^ := W +$47a1;
+        0..25: PWord(Dest)^ := W +$41a1;
+       26..51: PWord(Dest)^ := W +$47a1;
       else
-        PWord(dest)^ := W + $4da1;
+        PWord(Dest)^ := W + $4da1;
       end;
 
       Exit;
     end;
     $e000..$e05d:
     begin
-      PWord(dest)^ := (X shl 8) - ($e00000 - $a100 - $c9);
+      PWord(Dest)^ := (X shl 8) - ($e00000 - $a100 - $c9);
     end;
     $e05e..$e0bb:
     begin
-      PWord(dest)^ := (X shl 8) - ($e05e00 - $a100 - $fe);
+      PWord(Dest)^ := (X shl 8) - ($e05e00 - $a100 - $fe);
     end;
   else
   unknown:
     Dec(Result);
-    dest^ := UNKNOWN_CHAR;
+    Dest^ := UNKNOWN_CHAR;
   end;  
 end;
 
 
-function TUniConvContext.euc_kr_reader(src_size: Cardinal; src: PByte; out src_read: Cardinal): Cardinal;
+function TUniConvContext.euc_kr_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   unknown, done;
 var
-  c2: Byte;
+  C2: Byte;
 begin
-  Result := src^;
-  Inc(src);
+  Result := Src^;
+  Inc(Src);
   case Result of
     0..$7f:
     begin
-      src_read := 1;
+      SrcRead := 1;
       Exit;
     end;
     $a1..$ac, $b0..$c8, $ca..$fd:
     begin
-      if (src_size < 2) then goto done;
-      c2 := src^;
-      if not(c2 in [$a1..$fe]) then goto unknown;
+      if (SrcSize < 2) then goto done;
+      C2 := Src^;
+      if not(C2 in [$a1..$fe]) then goto unknown;
 
-      Result := 94 * (Integer(Result) - $a1) + (c2 - $a1);
+      Result := 94 * (Integer(Result) - $a1) + (C2 - $a1);
       Result := table_ksc5601[Result];
     end;
   else
@@ -8410,10 +8403,10 @@ begin
   end;
 
 done:
-  src_read := 2;
+  SrcRead := 2;
 end;
 
-function TUniConvContext.euc_kr_writer(X: Cardinal; dest: PByte; dest_size: Cardinal; mode_final: boolean): Cardinal;
+function TUniConvContext.euc_kr_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: boolean): Cardinal;
 label
   unknown, single_Byte;
 var
@@ -8424,11 +8417,11 @@ begin
     if (X > $ffff) or (X = $fffd) then
     begin
       unknown:
-      dest^ := UNKNOWN_CHAR;
+      Dest^ := UNKNOWN_CHAR;
       goto single_Byte;
     end;
 
-    if (dest_size < 2) then {too small}
+    if (DestSize < 2) then {too small}
     begin
       Result := 0;
       Exit;
@@ -8437,11 +8430,11 @@ begin
     W := hash_ksc5601.Find(X);
     if (W = High(Word)) then goto unknown;
 
-    PWord(dest)^ := W + $a1a1;
+    PWord(Dest)^ := W + $a1a1;
     Result := 2;
   end else
   begin
-    dest^ := X;
+    Dest^ := X;
   single_Byte:
     Result := 1;
   end;
@@ -10510,7 +10503,7 @@ const
   $c858d15c,$4e5bb765,$567ff51a,$00259305,$043e1fe0,$04190419,$04190419,$00005e1f);
 
 
-procedure unpack_hieroglyphs(dest: PWord; src: PByte);
+procedure unpack_hieroglyphs(Dest: PWord; Src: PByte);
 label
   loop,
   mode_2x3, mode_2x7, mode_3x2, mode_4x3, mode_7x2, mode_10x3, mode_many,
@@ -10552,31 +10545,31 @@ begin
   {$ifdef LARGEINT}
   fffd_value := $fffdfffdfffdfffd;
   {$endif}
-  current := PWord(src)^;
-  Inc(src, SizeOf(Word));
+  current := PWord(Src)^;
+  Inc(Src, SizeOf(Word));
 
 loop:
-  v := pshortint(src)^;
-  Inc(src);
+  v := pshortint(Src)^;
+  Inc(Src);
 
   case v of
   -128: mode_2x3: // 2*3+2 = 1 [1..4]         
   begin
-    v := src^;
-    Inc(src);
+    v := Src^;
+    Inc(Src);
 
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);    
+    Dest^ := current;
+    Inc(Dest);
 
     case v of
       1: goto mode_7x2;
@@ -10588,37 +10581,37 @@ loop:
   end;
   -127: mode_2x7: // 2*7+2 = 2 [1..4]
   begin
-    v := PWord(src)^;
-    Inc(src, 2);
+    v := PWord(Src)^;
+    Inc(Src, 2);
 
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_2);
     v := v shr 2;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
 
     case v of
       1: goto mode_2x7;
@@ -10630,17 +10623,17 @@ loop:
   end;
   -126: mode_3x2: // 3*2+2 = 1 [1..8]
   begin
-    v := src^;
-    Inc(src);
+    v := Src^;
+    Inc(Src);
 
     current := current + 1 + (v and MASK_3);
     v := v shr 3;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     current := current + 1 + (v and MASK_3);
     v := v shr 3;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
 
     case v of
       1: goto mode_3x2;
@@ -10652,26 +10645,26 @@ loop:
   end;
   -125: mode_4x3: // 4*(2/3)+3 = 2 [-8..8]
   begin
-    v := PWord(src)^;
-    Inc(src, 2);
+    v := PWord(Src)^;
+    Inc(Src, 2);
 
     m := ((v shr M_4) and 1);
     current := current - HALF_4 + ((v and MASK_4) + m);
     v := v shr 4;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     m := ((v shr M_4) and 1);
     current := current - HALF_4 + ((v and MASK_4) + m);
     v := v shr 4;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
 
     if (v and (1 shl 4) <> 0) then
     begin
       m := ((v shr M_4) and 1);
       current := current - HALF_4 + ((v and MASK_4) + m);
-      dest^ := current;
-      Inc(dest);
+      Dest^ := current;
+      Inc(Dest);
     end;
 
     case (v shr 5) of
@@ -10689,25 +10682,25 @@ loop:
   -124..124: // default
   begin
     Inc(current, v);
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     goto loop;
   end;
   125: mode_7x2: // 7*2+2 = 2 [-64..64]
   begin
-    v := PWord(src)^;
-    Inc(src, 2);
+    v := PWord(Src)^;
+    Inc(Src, 2);
 
     m := ((v shr M_7) and 1);
     current := current - HALF_7 + ((v and MASK_7) + m);
     v := v shr 7;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     m := ((v shr M_7) and 1);
     current := current - HALF_7 + ((v and MASK_7) + m);
     v := v shr 7;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
 
     case v of
       1: goto mode_7x2;
@@ -10719,24 +10712,24 @@ loop:
   end;
   126: mode_10x3: // 10*3+2 = 4 [-512..512]
   begin
-    v := PCardinal(src)^;
-    Inc(src, 4);
+    v := PCardinal(Src)^;
+    Inc(Src, 4);
 
     m := ((v shr M_10) and 1);
     current := current - HALF_10 + ((v and MASK_10) + m);
     v := v shr 10;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     m := ((v shr M_10) and 1);
     current := current - HALF_10 + ((v and MASK_10) + m);
     v := v shr 10;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
     m := ((v shr M_10) and 1);
     current := current - HALF_10 + ((v and MASK_10) + m);
     v := v shr 10;
-    dest^ := current;
-    Inc(dest);
+    Dest^ := current;
+    Inc(Dest);
 
     case v of
       1: goto mode_7x2;
@@ -10748,8 +10741,8 @@ loop:
   end;
   127: mode_many: // increment/fffd/data/done
   begin
-    v := src^;
-    Inc(src);  
+    v := Src^;
+    Inc(Src);
     if (v = 0) then Exit;
 
     cnt := (v shr 1) and MASK_4; // 0..15
@@ -10765,86 +10758,86 @@ loop:
           fill_fffd:
           while (cnt >= Words_in_native) do
           begin
-            PNativeUInt(dest)^ := fffd_value;
+            PNativeUInt(Dest)^ := fffd_value;
             Dec(cnt, Words_in_native);
-            Inc(dest, Words_in_native);
+            Inc(Dest, Words_in_native);
           end;
           {$ifdef LARGEINT}
           if (cnt and 2 <> 0) then
           begin
-            PCardinal(dest)^ := $fffdfffd;
-            Inc(dest, 2);
+            PCardinal(Dest)^ := $fffdfffd;
+            Inc(Dest, 2);
           end;
           {$endif}
           if (cnt and 1 <> 0) then
           begin
-            dest^ := $fffd;
-            Inc(dest);
+            Dest^ := $fffd;
+            Inc(Dest);
           end;
         end;
         11: // fffd (cnt = Byte)
         begin
-          cnt := src^;
-          Inc(src);
+          cnt := Src^;
+          Inc(Src);
           goto fill_fffd;
         end;
         12: // copy 1
         begin
-          current := PWord(src)^;
-          Inc(src, 2);
-          dest^ := current;
-          Inc(dest);
+          current := PWord(Src)^;
+          Inc(Src, 2);
+          Dest^ := current;
+          Inc(Dest);
         end;
         13: // copy 2
         begin
-          current := PCardinal(src)^;
-          Inc(src, 4);
-          PCardinal(dest)^ := current;
-          Inc(dest, 2);
+          current := PCardinal(Src)^;
+          Inc(Src, 4);
+          PCardinal(Dest)^ := current;
+          Inc(Dest, 2);
           current := current shr 16;
         end;
         14: // copy 3
         begin
-          current := PCardinal(src)^;
-          Inc(src, 4);
-          PCardinal(dest)^ := current;
-          Inc(dest, 2);
+          current := PCardinal(Src)^;
+          Inc(Src, 4);
+          PCardinal(Dest)^ := current;
+          Inc(Dest, 2);
 
-          current := PWord(src)^;
-          Inc(src, 2);
-          dest^ := current;
-          Inc(dest);
+          current := PWord(Src)^;
+          Inc(Src, 2);
+          Dest^ := current;
+          Inc(Dest);
         end;
         15: // copy (cnt = Byte/table)
         begin
-          cnt := src^;
-          Inc(src);
+          cnt := Src^;
+          Inc(Src);
           if (cnt >= 251) then cnt := copy_counts[cnt-251];
 
           while (cnt >= Words_in_native) do
           begin
-            PNativeUInt(dest)^ := PNativeUInt(src)^;
-            Inc(src, SizeOf(NativeUint));
+            PNativeUInt(Dest)^ := PNativeUInt(Src)^;
+            Inc(Src, SizeOf(NativeUint));
             Dec(cnt, Words_in_native);
-            Inc(dest, Words_in_native);
+            Inc(Dest, Words_in_native);
           end;
           {$ifdef LARGEINT}
           if (cnt and 2 <> 0) then
           begin
-            PCardinal(dest)^ := PCardinal(src)^;
-            Inc(src, 4);
-            Inc(dest, 2);
+            PCardinal(Dest)^ := PCardinal(Src)^;
+            Inc(Src, 4);
+            Inc(Dest, 2);
           end;
           {$endif}
           if (cnt and 1 <> 0) then
           begin
-            dest^ := PWord(src)^;
-            Inc(src, 2);
-            Inc(dest);
+            Dest^ := PWord(Src)^;
+            Inc(Src, 2);
+            Inc(Dest);
           end;
-          Dec(dest);
-          current := dest^;
-          Inc(dest);
+          Dec(Dest);
+          current := Dest^;
+          Inc(Dest);
         end;
       end;
     end else
@@ -10852,8 +10845,8 @@ loop:
       // increment
       if (cnt = 15) then
       begin
-        cnt := src^;
-        Inc(src);
+        cnt := Src^;
+        Inc(Src);
       end else
       begin
         cnt := increment_counts[cnt];
@@ -10861,26 +10854,26 @@ loop:
       repeat
         Inc(current);
         Dec(cnt);
-        dest^ := current;
-        Inc(dest);
+        Dest^ := current;
+        Inc(Dest);
       until (cnt = 0);   
     end;
 
     case (v shr 5) of
       0: goto mode_many;
       1: begin
-           current := PWord(src)^;
-           Inc(src, 2);
-           dest^ := current;
-           Inc(dest);
+           current := PWord(Src)^;
+           Inc(Src, 2);
+           Dest^ := current;
+           Inc(Dest);
 
            goto mode_many;
          end;
       2: begin
-           current := PCardinal(src)^;
-           Inc(src, 4);
-           PCardinal(dest)^ := current;
-           Inc(dest, 2);
+           current := PCardinal(Src)^;
+           Inc(Src, 4);
+           PCardinal(Dest)^ := current;
+           Inc(Dest, 2);
            current := current shr 16;
 
            goto mode_many;
