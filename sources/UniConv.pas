@@ -1,7 +1,7 @@
 unit UniConv;
 
 {******************************************************************************}
-{ Copyright (c) 2014-2015 Dmitry Mozulyov                                      }
+{ Copyright (c) Dmitry Mozulyov                                                }
 {                                                                              }
 { Permission is hereby granted, free of charge, to any person obtaining a copy }
 { of this software and associated documentation files (the "Software"), to deal}
@@ -169,17 +169,31 @@ type
   TBytes = array of Byte;
   PBytes = ^TBytes;
 
-  // compiler independent UTF-16 char/string
+  // compiler independent char/string types
   {$ifdef UNICODE}
-    TUnicodeChar = Char;
-    TUnicodeString = UnicodeString;
+    UnicodeChar = Char;
   {$else}
-    TUnicodeChar = WideChar;
-    TUnicodeString = WideString;
+    UnicodeChar = WideChar;
+    UnicodeString = WideString;
+    PUnicodeString = ^UnicodeString;
   {$endif}
-  PUnicodeChar = ^TUnicodeChar;
-  PUnicodeString = ^TUnicodeString;
+  PUnicodeChar = ^UnicodeChar;
+  {$ifdef NEXTGEN}
+    AnsiChar = type Byte;
+    PAnsiChar = ^AnsiChar;
+    AnsiString = array of AnsiChar;
+    PAnsiString = ^AnsiString;
+    UTF8String = type AnsiString;
+    PUTF8String = ^UTF8String;
+    WideString = array of WideChar;
+    PWideString = ^WideString;
+    ShortString = array[0{len}..255] of Byte{AnsiChar/UTF8Char};
+    PShortString = ^ShortString;
+  {$endif}
+  UTF8Char = type AnsiChar;
+  PUTF8Char = ^UTF8Char;
 
+  
 type
   // case sensitivity
   TCharCase = (ccOriginal, ccLower, ccUpper);
@@ -420,41 +434,33 @@ type
   // - high level convert functions without TUniConvContext initialization routine
   // todo?
 
-  {$ifdef NEXTGEN}
-  AnsiChar = type Byte;
-  PAnsiChar = ^AnsiChar;
 
-  AnsiString = array of AnsiChar;
-  PAnsiString = ^AnsiString;
-
-  UTF8String = type AnsiString;
-  PUTF8String = ^UTF8String;
-
-  WideString = array of WideChar;
-  PWideString = ^WideString;
-
-  ShortString = array[0{len}..255] of Byte{AnsiChar/UTF8Char};
-  PShortString = ^ShortString;
-  {$endif}
-
-  UTF8Char = type AnsiChar;
-  PUTF8Char = ^UTF8Char;
 
 
 
 type
   // internal array types
-  TUniConvB_B = array[Byte] of Byte;
-  PUniConvB_B = ^TUniConvB_B;
-  TUniConvW_W = array[Word] of Word;
-  PUniConvW_W = ^TUniConvW_W;
-  TUniConvW_B = array[Byte] of Word;
-  PUniConvW_B = ^TUniConvW_B;
-  TUniConvB_W = array[Word] of Byte;
-  PUniConvB_W = ^TUniConvB_W;
-  TUniConvD_B = array[Byte] of Cardinal;
-  PUniConvD_B = ^TUniConvD_B;
+  TUniConvSS = array[AnsiChar] of AnsiChar;
+  PUniConvSS = ^TUniConvSS;
+  TUniConvUU = array[UnicodeChar] of UnicodeChar;
+  PUniConvUU = ^TUniConvUU;
+  TUniConvUS = array[AnsiChar] of UnicodeChar;
+  PUniConvUS = ^TUniConvUS;
+  TUniConvSU = array[UnicodeChar] of AnsiChar;
+  PUniConvSU = ^TUniConvSU;
+  TUniConvMS = array[AnsiChar] of Cardinal;
+  PUniConvMS = ^TUniConvMS;
 
+  TUniConvBB = array[Byte] of Byte;
+  PUniConvBB = ^TUniConvBB;
+  TUniConvWW = array[Word] of Word;
+  PUniConvWW = ^TUniConvWW;
+  TUniConvWB = array[Byte] of Word;
+  PUniConvWB = ^TUniConvWB;
+  TUniConvBW = array[Word] of Byte;
+  PUniConvBW = ^TUniConvBW;
+  TUniConvMB = array[Byte] of Cardinal;
+  PUniConvMB = ^TUniConvMB;
 
 
   // note:
@@ -485,12 +491,12 @@ var
   // fast ucs2 lower/upper lookup tables
   UNICONV_CHARCASE: packed record
   case Integer of
-    0: (LOWER, UPPER: TUniConvW_W);
+    0: (LOWER, UPPER: TUniConvUU);
     1: (VALUES: array[0..1 shl 17 - 1] of Word);
   end;
 
   // UTF8 character size by first byte
-  UNICONV_UTF8_SIZE: TUniConvB_B;
+  UNICONV_UTF8_SIZE: TUniConvBB;
 
 type
   // single byte encodings lookups:
@@ -541,61 +547,61 @@ type
       CodePage: Word;
     end;
     // single byte
-    FUpperCase: PUniConvB_B;
-    FLowerCase: PUniConvB_B;
+    FUpperCase: PUniConvSS;
+    FLowerCase: PUniConvSS;
     FTable_SBCSItems: Pointer; // PTable_SBCSItem
     // lower/upper unicode
     FUCS2: packed record
     case Integer of
-      0: (Original, Lower, Upper: PUniConvW_B);
-      1: (Items: array[TCharCase] of PUniConvW_B);
+      0: (Original, Lower, Upper: PUniConvUS);
+      1: (Items: array[TCharCase] of PUniConvUS);
     end;
     FUTF8: packed record
     case Integer of
-      0: (Original, Lower, Upper: PUniConvD_B);
-      1: (Items: array[TCharCase] of PUniConvD_B);
+      0: (Original, Lower, Upper: PUniConvMS);
+      1: (Items: array[TCharCase] of PUniConvMS);
     end;
     // unicode
-    FVALUES: PUniConvB_W;
+    FVALUES: PUniConvSU;
 
-    function GetLowerCase: PUniConvB_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetUpperCase: PUniConvB_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetUCS2: PUniConvW_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetLowerCaseUCS2: PUniConvW_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetUpperCaseUCS2: PUniConvW_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetUTF8: PUniConvD_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetLowerCaseUTF8: PUniConvD_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetUpperCaseUTF8: PUniConvD_B; {$ifdef INLINESUPPORT}inline;{$endif}
-    function GetVALUES: PUniConvB_W; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetLowerCase: PUniConvSS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetUpperCase: PUniConvSS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetUCS2: PUniConvUS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetLowerCaseUCS2: PUniConvUS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetUpperCaseUCS2: PUniConvUS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetUTF8: PUniConvMS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetLowerCaseUTF8: PUniConvMS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetUpperCaseUTF8: PUniConvMS; {$ifdef INLINESUPPORT}inline;{$endif}
+    function GetVALUES: PUniConvSU; {$ifdef INLINESUPPORT}inline;{$endif}
   protected
-    procedure FillUCS2(var Buffer: TUniConvW_B; const CharCase: TCharCase);
-    procedure FillUTF8(var Buffer: TUniConvD_B; const CharCase: TCharCase);
-    procedure FillVALUES(var Buffer: TUniConvB_W);
-    function AllocFillUCS2(var Buffer: PUniConvW_B; const CharCase: TCharCase): PUniConvW_B;
-    function AllocFillUTF8(var Buffer: PUniConvD_B; const CharCase: TCharCase): PUniConvD_B;
-    function AllocFillVALUES(var Buffer: PUniConvB_W): PUniConvB_W;
+    procedure FillUCS2(var Buffer: TUniConvWB; const CharCase: TCharCase);
+    procedure FillUTF8(var Buffer: TUniConvMB; const CharCase: TCharCase);
+    procedure FillVALUES(var Buffer: TUniConvBW);
+    function AllocFillUCS2(var Buffer: PUniConvUS; const CharCase: TCharCase): PUniConvUS;
+    function AllocFillUTF8(var Buffer: PUniConvMS; const CharCase: TCharCase): PUniConvMS;
+    function AllocFillVALUES(var Buffer: PUniConvSU): PUniConvSU;
   public
     // information
     property Index: Word read F.Index;
     property CodePage: Word read F.CodePage;
 
     // lower/upper single byte tables
-    property LowerCase: PUniConvB_B read GetLowerCase;
-    property UpperCase: PUniConvB_B read GetUpperCase;
+    property LowerCase: PUniConvSS read GetLowerCase;
+    property UpperCase: PUniConvSS read GetUpperCase;
 
     // basic unicode tables
-    property UCS2: PUniConvW_B read GetUCS2;
-    property UTF8: PUniConvD_B read GetUTF8;
-    property VALUES: PUniConvB_W read GetVALUES;
+    property UCS2: PUniConvUS read GetUCS2;
+    property UTF8: PUniConvMS read GetUTF8;
+    property VALUES: PUniConvSU read GetVALUES;
 
     // lower/upper unicode tables
-    property LowerCaseUCS2: PUniConvW_B read GetLowerCaseUCS2;
-    property UpperCaseUCS2: PUniConvW_B read GetUpperCaseUCS2;
-    property LowerCaseUTF8: PUniConvD_B read GetLowerCaseUTF8;
-    property UpperCaseUTF8: PUniConvD_B read GetUpperCaseUTF8;
+    property LowerCaseUCS2: PUniConvUS read GetLowerCaseUCS2;
+    property UpperCaseUCS2: PUniConvUS read GetUpperCaseUCS2;
+    property LowerCaseUTF8: PUniConvMS read GetLowerCaseUTF8;
+    property UpperCaseUTF8: PUniConvMS read GetUpperCaseUTF8;
 
     // single byte lookups from another encoding
-    function FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase = ccOriginal): PUniConvB_B;
+    function FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase = ccOriginal): PUniConvSS;
   end;
 
 var
@@ -652,9 +658,9 @@ function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORT}
 
 
 // result = length
-procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvB_B);
-procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvB_B);
-procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvB_B);
+procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
+procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS);
+procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS);
 
 // result = min: length/3*2; max: length*3/2
 function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
@@ -665,24 +671,24 @@ procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: 
 procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
 
 // result = min: length; max: length*3
-function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvD_B): NativeUInt;
-function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvD_B): NativeUInt;
-function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
+function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt;
+function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt;
 
 // result = min: length/6; max: length
-function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
-function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; LowerCase: PUniConvB_W): NativeUInt;
-function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; UpperCase: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
+function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; LowerCase: PUniConvSU): NativeUInt;
+function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; UpperCase: PUniConvSU): NativeUInt;
 
 // result = length
-procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvW_B);
-procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvW_B);
-procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvW_B);
+procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
+procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS);
+procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS);
 
 // result = min: length/2; max: length
-function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
-function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
-function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
+function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
+function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 
 // result = min: length; max: length*3
 function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
@@ -728,9 +734,9 @@ type
   T8Bytes = array[0..7] of Byte;
   P8Bytes = ^T8Bytes;
 
-
 const
   HIGH_NATIVE_BIT = {$ifdef SMALLINT}31{$else}63{$endif};
+  CHARCASE_OFFSET = $10000;
 
   MASK_80_SMALL = $80808080;
   MASK_80_LARGE = $8080808080808080;
@@ -1060,8 +1066,8 @@ begin
   until (U = UCS2_DONE);
 
   // fill upper and lower for a..z/A..Z
-  P1 := Pointer(@UNICONV_CHARCASE.LOWER[$41{Ord('A')}]);
-  P2 := Pointer(@UNICONV_CHARCASE.UPPER[$61{Ord('a')}]);
+  P1 := Pointer(@UNICONV_CHARCASE.VALUES{LOWER}[$41{Ord('A')}]);
+  P2 := Pointer(@UNICONV_CHARCASE.VALUES{UPPER}[CHARCASE_OFFSET + $61{Ord('a')}]);
   {$ifdef LARGEINT}
     U := $0064006300620061;
     L := $0044004300420041;
@@ -1092,8 +1098,8 @@ begin
 
     C := C and $ff;
     repeat
-      UNICONV_CHARCASE.LOWER[U] := L;
-      UNICONV_CHARCASE.UPPER[L] := U;
+      UNICONV_CHARCASE.VALUES{LOWER}[U] := L;
+      UNICONV_CHARCASE.VALUES{UPPER}[CHARCASE_OFFSET + L] := U;
       Dec(C);
       Inc(L);
       Inc(U);
@@ -1109,8 +1115,8 @@ begin
 
     C := C and $ff;
     repeat
-      UNICONV_CHARCASE.LOWER[U] := L;
-      UNICONV_CHARCASE.UPPER[L] := U;
+      UNICONV_CHARCASE.VALUES{LOWER}[U] := L;
+      UNICONV_CHARCASE.VALUES{UPPER}[CHARCASE_OFFSET + L] := U;
       Dec(C);
       Inc(L);
       Inc(U);
@@ -1127,10 +1133,10 @@ begin
     C := C and $ffff;
     repeat
       // UNICONV_CHARCASE.LOWER[U] := L;
-      CharCaseItem := @UNICONV_CHARCASE.LOWER[U];
+      CharCaseItem := @UNICONV_CHARCASE.VALUES{LOWER}[U];
       CharCaseItem^ := L;
       // UNICONV_CHARCASE.UPPER[L] := U;
-      PWordArray(CharCaseItem)[$10000 + 1] := U;
+      PWordArray(CharCaseItem)[CHARCASE_OFFSET + 1] := U;
 
       Dec(C);
       Inc(L, 2);
@@ -1144,16 +1150,16 @@ begin
     C := SINGLE_TABLE[i];
     U := C shr 16;
     L := C and $ffff;
-    UNICONV_CHARCASE.LOWER[U] := L;
-    UNICONV_CHARCASE.UPPER[L] := U;
+    UNICONV_CHARCASE.VALUES{LOWER}[U] := L;
+    UNICONV_CHARCASE.VALUES{UPPER}[CHARCASE_OFFSET + L] := U;
   end;
 
   // $10A0..$10C5
   L := $2D00;
   for U := $10A0 to $10C5 do
   begin
-    UNICONV_CHARCASE.LOWER[U] := L;
-    UNICONV_CHARCASE.UPPER[L] := U;
+    UNICONV_CHARCASE.VALUES{LOWER}[U] := L;
+    UNICONV_CHARCASE.VALUES{UPPER}[CHARCASE_OFFSET + L] := U;
     Inc(L);
   end;
 
@@ -1526,13 +1532,14 @@ const
 
 { TUniConvSBCS }
 
-procedure TUniConvSBCS.FillUCS2(var Buffer: TUniConvW_B; const CharCase: TCharCase);
+procedure TUniConvSBCS.FillUCS2(var Buffer: TUniConvWB; const CharCase: TCharCase);
 var
   P: PByte;
   Base, Count, Value: NativeUInt;
   Destination: PWord;
   PackedChars: PByte;
-  CharCaseLookup: PUniConvW_W;
+  CharCaseLookup: PUniConvWW;
+  TempBuffer: PUniConvMB;
 begin
   // store packed chars pointer or raw/userdefined
   if (Self.CodePage >= CODEPAGE_USERDEFINED) then
@@ -1550,7 +1557,7 @@ begin
     {$ifdef CPUX86}
     PCardinal(@Buffer[Count * 2])^ := Base;
     {$else}
-    PUniConvD_B(@Buffer)^[Count] := Base;
+    PUniConvMB(@Buffer)^[Count] := Base;
     {$endif}
     Inc(Base, $00020002);
   end;
@@ -1561,33 +1568,27 @@ begin
     begin
       // a..z --> A..Z
       Base := $00420041;
-      for Count := $61 to $61 + (26 div 2) - 1 do
+      TempBuffer := Pointer(@Buffer[$61]);
+      for Count := 0 to (26 div 2) - 1 do
       begin
-        {$ifdef CPUX86}
-        PCardinal(@Buffer[Count * 2])^ := Base;
-        {$else}
-        PUniConvD_B(@Buffer)^[Count] := Base;
-        {$endif}
+        TempBuffer^[Count] := Base;
         Inc(Base, $00020002);
       end;
 
-      CharCaseLookup := @UNICONV_CHARCASE.UPPER;
+      CharCaseLookup := Pointer(@UNICONV_CHARCASE.UPPER);
     end;
     ccLower:
     begin
       // A..Z --> a..z
       Base := $00620061;
-      for Count := $41 to $41 + (26 div 2) - 1 do
+      TempBuffer := Pointer(@Buffer[$41]);
+      for Count := 0 to (26 div 2) - 1 do
       begin
-        {$ifdef CPUX86}
-        PCardinal(@Buffer[Count * 2])^ := Base;
-        {$else}
-        PUniConvD_B(@Buffer)^[Count] := Base;
-        {$endif}
+        TempBuffer^[Count] := Base;
         Inc(Base, $00020002);
       end;
 
-      CharCaseLookup := @UNICONV_CHARCASE.LOWER;
+      CharCaseLookup := Pointer(@UNICONV_CHARCASE.LOWER);
     end;
   else
     CharCaseLookup := nil;
@@ -1598,7 +1599,7 @@ begin
   if (NativeUInt(P) <= 1) then
   begin
     if (NativeUInt(P) = 1) then
-      CharCaseLookup := Pointer(@UNICONV_CHARCASE.LOWER[$F700]);
+      CharCaseLookup := Pointer(@UNICONV_CHARCASE.VALUES{LOWER}[$F700]);
 
     if (CharCaseLookup <> nil) then
     for Count := 128 to 255 do
@@ -1662,26 +1663,26 @@ begin
   until (Count = 0)
 end;
 
-function TUniConvSBCS.AllocFillUCS2(var Buffer: PUniConvW_B; const CharCase: TCharCase): PUniConvW_B;
+function TUniConvSBCS.AllocFillUCS2(var Buffer: PUniConvUS; const CharCase: TCharCase): PUniConvUS;
 begin
   Result := Buffer;
   if (Result = nil) then
   begin
-    Result := InternalLookupAlloc(SizeOf(TUniConvW_B));
-    FillUCS2(Result^, CharCase);
+    Result := InternalLookupAlloc(SizeOf(TUniConvUS));
+    FillUCS2(PUniConvWB(Result)^, CharCase);
     Result := InternalLookupFill(Pointer(Buffer), Result);
   end;
 end;
 
-procedure TUniConvSBCS.FillUTF8(var Buffer: TUniConvD_B; const CharCase: TCharCase);
+procedure TUniConvSBCS.FillUTF8(var Buffer: TUniConvMB; const CharCase: TCharCase);
 var
-  UCS2Chars: PUniConvW_B;
-  CharCaseLookup: PUniConvW_W;
+  UCS2Chars: PUniConvWB;
+  CharCaseLookup: PUniConvWW;
   i, X, Y: NativeUInt;
   P: PCardinal;
  begin
-  UCS2Chars := Self.FUCS2.Original;
-  if (UCS2Chars = nil) then UCS2Chars := Self.AllocFillUCS2(Self.FUCS2.Original, ccOriginal); // Alloc and Fill
+  UCS2Chars := Pointer(Self.FUCS2.Original);
+  if (UCS2Chars = nil) then UCS2Chars := Pointer(Self.AllocFillUCS2(Self.FUCS2.Original, ccOriginal)); // Alloc and Fill
 
   // fill first 128 characters
   P := Pointer(@Buffer);
@@ -1697,13 +1698,13 @@ var
   case CharCase of
     ccUpper:
     begin
-      CharCaseLookup := @UNICONV_CHARCASE.UPPER;
+      CharCaseLookup := Pointer(@UNICONV_CHARCASE.UPPER);
       P := Pointer(@Buffer[$61{Ord('a')}]);
       X := $01000041;
     end;
     ccLower:
     begin
-      CharCaseLookup := @UNICONV_CHARCASE.LOWER;
+      CharCaseLookup := Pointer(@UNICONV_CHARCASE.LOWER);
       P := Pointer(@Buffer[$41{Ord('A')}]);
       X := $01000061;
     end;
@@ -1749,13 +1750,13 @@ var
   end;
 end;
 
-function TUniConvSBCS.AllocFillUTF8(var Buffer: PUniConvD_B; const CharCase: TCharCase): PUniConvD_B;
+function TUniConvSBCS.AllocFillUTF8(var Buffer: PUniConvMS; const CharCase: TCharCase): PUniConvMS;
 begin
   Result := Buffer;
   if (Result = nil) then
   begin
-    Result := InternalLookupAlloc(SizeOf(TUniConvD_B));
-    FillUTF8(Result^, CharCase);
+    Result := InternalLookupAlloc(SizeOf(TUniConvMS));
+    FillUTF8(PUniConvMB(Result)^, CharCase);
     Result := InternalLookupFill(Pointer(Buffer), Result);
   end;
 end;
@@ -1998,9 +1999,9 @@ const
   $007AFF5A,$007BFF5B,$007CFF5C,$007DFF5D,$007EFF5E,$00A2FFE0,$00A3FFE1,$00ACFFE2,
   $00A6FFE4, {fake}0);
 
-procedure TUniConvSBCS.FillVALUES(var Buffer: TUniConvB_W);
+procedure TUniConvSBCS.FillVALUES(var Buffer: TUniConvBW);
 var
-  UCS2Chars: PUniConvW_B;
+  UCS2Chars: PUniConvWB;
   S, D, i: NativeUInt;
 
   BESTFIT: PCardinal;
@@ -2008,8 +2009,8 @@ var
   TOP_BESTFIT: PCardinal;
   {$endif}
 begin
-  UCS2Chars := Self.FUCS2.Original;
-  if (UCS2Chars = nil) then UCS2Chars := Self.AllocFillUCS2(Self.FUCS2.Original, ccOriginal); // Alloc and Fill
+  UCS2Chars := Pointer(Self.FUCS2.Original);
+  if (UCS2Chars = nil) then UCS2Chars := Pointer(Self.AllocFillUCS2(Self.FUCS2.Original, ccOriginal)); // Alloc and Fill
 
   // fill basic chars
   FillBytesArrayDefault(@Buffer, SizeOf(Buffer));
@@ -2042,60 +2043,60 @@ begin
             Pointer(@SBCS_BESTFITS[High(SBCS_BESTFITS)]){$endif});
 end;
 
-function TUniConvSBCS.AllocFillVALUES(var Buffer: PUniConvB_W): PUniConvB_W;
+function TUniConvSBCS.AllocFillVALUES(var Buffer: PUniConvSU): PUniConvSU;
 begin
   Result := Buffer;
   if (Result = nil) then
   begin
-    Result := InternalLookupAlloc(SizeOf(TUniConvB_W));
-    FillVALUES(Result^);
+    Result := InternalLookupAlloc(SizeOf(TUniConvSU));
+    FillVALUES(PUniConvBW(Result)^);
     Result := InternalLookupFill(Pointer(Buffer), Result);
   end;
 end;
 
-function TUniConvSBCS.GetUCS2: PUniConvW_B;
+function TUniConvSBCS.GetUCS2: PUniConvUS;
 begin
   Result := Self.FUCS2.Original;
   if (Result = nil) then Result := AllocFillUCS2(Self.FUCS2.Original, ccOriginal);
 end;
 
-function TUniConvSBCS.GetLowerCaseUCS2: PUniConvW_B;
+function TUniConvSBCS.GetLowerCaseUCS2: PUniConvUS;
 begin
   Result := Self.FUCS2.Lower;
   if (Result = nil) then Result := AllocFillUCS2(Self.FUCS2.Lower, ccLower);
 end;
 
-function TUniConvSBCS.GetUpperCaseUCS2: PUniConvW_B;
+function TUniConvSBCS.GetUpperCaseUCS2: PUniConvUS;
 begin
   Result := Self.FUCS2.Upper;
   if (Result = nil) then Result := AllocFillUCS2(Self.FUCS2.Upper, ccUpper);
 end;
 
-function TUniConvSBCS.GetUTF8: PUniConvD_B;
+function TUniConvSBCS.GetUTF8: PUniConvMS;
 begin
   Result := Self.FUTF8.Original;
   if (Result = nil) then Result := AllocFillUTF8(Self.FUTF8.Original, ccOriginal);
 end;
 
-function TUniConvSBCS.GetLowerCaseUTF8: PUniConvD_B;
+function TUniConvSBCS.GetLowerCaseUTF8: PUniConvMS;
 begin
   Result := Self.FUTF8.Lower;
   if (Result = nil) then Result := AllocFillUTF8(Self.FUTF8.Lower, ccLower);
 end;
 
-function TUniConvSBCS.GetUpperCaseUTF8: PUniConvD_B;
+function TUniConvSBCS.GetUpperCaseUTF8: PUniConvMS;
 begin
   Result := Self.FUTF8.Upper;
   if (Result = nil) then Result := AllocFillUTF8(Self.FUTF8.Upper, ccUpper);
 end;
 
-function TUniConvSBCS.GetVALUES: PUniConvB_W;
+function TUniConvSBCS.GetVALUES: PUniConvSU;
 begin
   Result := Self.FVALUES;
   if (Result = nil) then Result := AllocFillVALUES(Self.FVALUES);
 end;
 
-function TUniConvSBCS.GetLowerCase: PUniConvB_B;
+function TUniConvSBCS.GetLowerCase: PUniConvSS;
 begin
   Result := FLowerCase;
 
@@ -2103,7 +2104,7 @@ begin
     Result := FromSBCS(@Self, ccLower);
 end;
 
-function TUniConvSBCS.GetUpperCase: PUniConvB_B;
+function TUniConvSBCS.GetUpperCase: PUniConvSS;
 begin
   Result := FUpperCase;
 
@@ -2111,8 +2112,8 @@ begin
     Result := FromSBCS(@Self, ccUpper);
 end;
 
-procedure FillTable_CaseSBCS_Advanced(var Table: TUniConvB_B;
-  const UCS2Chars: TUniConvW_B; const CharCaseLookup: TUniConvW_W);
+procedure FillTable_CaseSBCS_Advanced(var Table: TUniConvBB;
+  const UCS2Chars: TUniConvWB; const CharCaseLookup: TUniConvWW);
 type
   THashItem = packed record
     UCS2: Word;
@@ -2169,13 +2170,13 @@ begin
   end;
 end;
 
-procedure FillTable_CaseSBCS(var Table: TUniConvB_B; const Index: NativeInt; const Upper: Boolean);
+procedure FillTable_CaseSBCS(var Table: TUniConvBB; const Index: NativeInt; const Upper: Boolean);
 {$ifNdef CPUARM}
 const
-  sbsc_increment = $04040404;
+  SBCS_INCREMENT = $04040404;
 {$else}
 var
-  sbsc_increment: Cardinal;
+  SBCS_INCREMENT: Cardinal;
 {$endif}
 var
   i: NativeInt;
@@ -2184,7 +2185,7 @@ var
   X: NativeUInt;
 
   _Self: PUniConvSBCS;
-  UCS2Chars: PUniConvW_B;
+  UCS2Chars: PUniConvWB;
 begin
   // fill default characters
   FillBytesArrayDefault(@Table, -1);
@@ -2199,13 +2200,13 @@ begin
   end;
   // a..z, 'A'..'Z'
   {$ifdef CPUARM}
-    sbsc_increment := $04040404;
+    SBCS_INCREMENT := $04040404;
   {$endif}
   for i := 0 to (26 div SizeOf(Cardinal)) - 1 do
   begin
     PCardinal(P)^ := X;
     Inc(P, SizeOf(Cardinal));
-    Inc(X, sbsc_increment);
+    Inc(X, SBCS_INCREMENT);
   end;
   PWord(P)^ := X;
 
@@ -2227,7 +2228,7 @@ begin
     begin
       PCardinal(P)^ := X;
       Inc(P, SizeOf(Cardinal));
-      Inc(X, sbsc_increment);
+      Inc(X, SBCS_INCREMENT);
     end;
     PWord(P)^ := X;
 
@@ -2296,25 +2297,25 @@ begin
 
   // UCS2Chars := Self.UCS2
   _Self := @UNICONV_SUPPORTED_SBCS[Index];
-  UCS2Chars := _Self.FUCS2.Original;
-  if (UCS2Chars = nil) then UCS2Chars := _Self.AllocFillUCS2(_Self.FUCS2.Original, ccOriginal); // Alloc and Fill
+  UCS2Chars := Pointer(_Self.FUCS2.Original);
+  if (UCS2Chars = nil) then UCS2Chars := Pointer(_Self.AllocFillUCS2(_Self.FUCS2.Original, ccOriginal)); // Alloc and Fill
 
   // advanced characters: 128..255
   FillTable_CaseSBCS_Advanced(Table, UCS2Chars^,
-    PUniConvW_W(@UNICONV_CHARCASE.VALUES[NativeUInt(Upper) shl 16])^);
+    PUniConvWW(@UNICONV_CHARCASE.VALUES[NativeUInt(Upper) shl 16])^);
 end;
 
-procedure FillTable_SBCSFromSBCS(var Table: TUniConvB_B; const DestSBCS: TUniConvB_W;
-                                 const SourceUCS2: TUniConvW_B; const CharCase: TCharCase); overload;
+procedure FillTable_SBCSFromSBCS(var Table: TUniConvBB; const DestSBCS: TUniConvBW;
+                                 const SourceUCS2: TUniConvWB; const CharCase: TCharCase); overload;
 {$ifNdef CPUARM}
 const
-  sbsc_increment = $04040404;
+  SBCS_INCREMENT = $04040404;
 {$else}
 var
-  sbsc_increment: Cardinal;
+  SBCS_INCREMENT: Cardinal;
 {$endif}
 var
-  CaseLookup: PUniConvW_W;
+  CaseLookup: PUniConvWW;
   i: Integer;
 
   P: PCardinal;
@@ -2324,13 +2325,13 @@ begin
   case CharCase of
     ccUpper:
     begin
-      CaseLookup := @UNICONV_CHARCASE.UPPER;
+      CaseLookup := Pointer(@UNICONV_CHARCASE.UPPER);
       P := Pointer(@Table[$61{Ord('a')}]);
       X := $44434241;
     end;
     ccLower:
     begin
-      CaseLookup := @UNICONV_CHARCASE.LOWER;
+      CaseLookup := Pointer(@UNICONV_CHARCASE.LOWER);
       P := Pointer(@Table[$41{Ord('A')}]);
       X := $64636261;
     end;
@@ -2342,13 +2343,13 @@ begin
 
   // a..z, 'A'..'Z'
   {$ifdef CPUARM}
-    sbsc_increment := $04040404;
+    SBCS_INCREMENT := $04040404;
   {$endif}
   for i := 0 to (26 div SizeOf(Cardinal)) - 1 do
   begin
     P^ := X;
     Inc(P);
-    Inc(X, sbsc_increment);
+    Inc(X, SBCS_INCREMENT);
   end;
   PWord(P)^ := X;
 
@@ -2359,30 +2360,30 @@ end;
 
 // low allocated memory way
 // to generate SBCSFromSBCS lookup
-procedure FillTable_SBCSFromSBCS(var Table: TUniConvB_B; const DestIndex: Integer;
-                                 const SourceUCS2: TUniConvW_B; const CharCase: TCharCase); overload;
+procedure FillTable_SBCSFromSBCS(var Table: TUniConvBB; const DestIndex: Integer;
+                                 const SourceUCS2: TUniConvWB; const CharCase: TCharCase); overload;
 var
-  DestVALUES: TUniConvB_W;
+  DestVALUES: TUniConvBW;
 begin
   UNICONV_SUPPORTED_SBCS[DestIndex].FillVALUES(DestVALUES);
   FillTable_SBCSFromSBCS(Table, DestVALUES, SourceUCS2, CharCase);
 end;
 
 
-function TUniConvSBCS.FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase): PUniConvB_B;
+function TUniConvSBCS.FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase): PUniConvSS;
 type
   PTable_SBCSItem = ^TTable_SBCSItem;
   TTable_SBCSItem = record
     Value: Integer;
     Next: PTable_SBCSItem;
-    Table: TUniConvB_B;
+    Table: TUniConvBB;
   end;
 var
   AIndex, Value: Integer;
   First, Item, ResultItem: PTable_SBCSItem;
 
   Lookup, InternalPtr: Pointer;
-  SourceUCS2: PUniConvW_B;
+  SourceUCS2: PUniConvWB;
 begin
   AIndex := Source.Index;
   if (AIndex = Self.Index) and (CharCase <> ccOriginal) then
@@ -2392,8 +2393,8 @@ begin
 
     if (Result = nil) then
     begin
-      Result := InternalLookupAlloc(SizeOf(TUniConvB_B));
-      FillTable_CaseSBCS(Result^, Self.Index, (CharCase = ccUpper));
+      Result := InternalLookupAlloc(SizeOf(TUniConvSS));
+      FillTable_CaseSBCS(PUniConvBB(Result)^, Self.Index, (CharCase = ccUpper));
 
       if (CharCase = ccUpper) then Result := InternalLookupFill(Pointer(FUpperCase), Result)
       else Result := InternalLookupFill(Pointer(FLowerCase), Result);
@@ -2419,7 +2420,7 @@ begin
             FreeMem(ResultItem);
           end;
 
-          Result := @Item.Table;
+          Result := Pointer(@Item.Table);
           Exit;
         end;
         Item := Item.Next;
@@ -2436,12 +2437,12 @@ begin
           FillBytesArrayDefault(@ResultItem.Table, -1);
         end else
         begin
-          SourceUCS2 := UNICONV_SUPPORTED_SBCS[AIndex].FUCS2.Original;
-          if (SourceUCS2 = nil) then SourceUCS2 := UNICONV_SUPPORTED_SBCS[AIndex].UCS2;
+          SourceUCS2 := Pointer(UNICONV_SUPPORTED_SBCS[AIndex].FUCS2.Original);
+          if (SourceUCS2 = nil) then SourceUCS2 := Pointer(UNICONV_SUPPORTED_SBCS[AIndex].UCS2);
 
           if (Self.FVALUES <> nil) then
           begin
-             FillTable_SBCSFromSBCS(ResultItem.Table, Self.FVALUES^, SourceUCS2^, CharCase);
+             FillTable_SBCSFromSBCS(ResultItem.Table, PUniConvBW(Self.FVALUES)^, SourceUCS2^, CharCase);
           end else
           begin
              FillTable_SBCSFromSBCS(ResultItem.Table, Self.Index, SourceUCS2^, CharCase);
@@ -2454,7 +2455,7 @@ begin
     until (First = AtomicCmpExchange(Self.FTable_SBCSItems, ResultItem, First));
 
     // result
-    Result := @ResultItem.Table;
+    Result := Pointer(@ResultItem.Table);
 
     // add to internal list of pointers
     InternalPtr := Result;
@@ -2655,7 +2656,7 @@ begin
   // fast most frequently used conversions
   DestinationEncoding := CodePageEncoding(F.DestinationCodePage);
   SourceEncoding := CodePageEncoding(F.SourceCodePage);
-  if ((DestinationEncoding or SourceEncoding) and ENCODING_MASK <= ENC_UTF16) then
+  (*if ((DestinationEncoding or SourceEncoding) and ENCODING_MASK <= ENC_UTF16) then
   begin
     case (DestinationEncoding and ENCODING_MASK) * 3 + (SourceEncoding and ENCODING_MASK) of
       0: InitSBCSFromSBCS(F.DestinationCodePage, F.SourceCodePage, ACharCase);
@@ -2672,7 +2673,7 @@ begin
     end;
 
     Exit;
-  end;
+  end;*)
 
   // state, flags and conversion
   FState.WR := 0;
@@ -2701,7 +2702,7 @@ begin
       SBCS := @UNICONV_SUPPORTED_SBCS[SourceEncoding shr 8];
       F.SourceCodePage := SBCS.CodePage;
       FCallbacks.Reader := SBCS.FUCS2.Items[F.CharCase];
-      if (FCallbacks.Reader = nil) then FCallbacks.Reader := SBCS.AllocFillUCS2(SBCS.FUCS2.Items[F.CharCase], ccOriginal);
+      if (FCallbacks.Reader = nil) then FCallbacks.Reader := SBCS.AllocFillUCS2(SBCS.FUCS2.Items[F.CharCase], F.CharCase);
     end;
     ENC_UTF1:
     begin
@@ -3454,7 +3455,7 @@ char_read:
     begin
       // don't need to compare source size
       // automatically char case conversion
-      X := PUniConvW_B({$ifdef CPUX86}FStore.Reader{$else}Self.FCallbacks.Reader{$endif})[Byte(X)];
+      X := PUniConvWB({$ifdef CPUX86}FStore.Reader{$else}Self.FCallbacks.Reader{$endif})[Byte(X)];
       Inc(Src, 1);
       Dec(SrcSize, 1);
       goto char_write;
@@ -3684,7 +3685,7 @@ char_read_done:
   // char case conversion
   if (((Flags and CHARCASE_MASK_ORIGINAL) or X) <= $ffff) then
   begin
-    X := UNICONV_CHARCASE.VALUES[X + (Flags and CHARCASE_MASK) - $10000];
+    X := UNICONV_CHARCASE.VALUES[X + (Flags and CHARCASE_MASK) - CHARCASE_OFFSET];
   end;
 
 char_write:
@@ -3697,7 +3698,7 @@ char_write:
       if (DestSize = 0{< 1}) then goto dest_too_small;
 
       if (X > $ffff) then PByte(Dest)^ := UNKNOWN_CHAR
-      else PByte(Dest)^ := PUniConvB_W({$ifdef CPUX86}FStore.Writer{$else}Self.FCallbacks.Writer{$endif})[X];
+      else PByte(Dest)^ := PUniConvBW({$ifdef CPUX86}FStore.Writer{$else}Self.FCallbacks.Writer{$endif})[X];
 
       Inc(Dest);
     end;
@@ -4065,7 +4066,7 @@ end;
 function TUniConvContext.convert_sbcs_from_sbcs: NativeInt;
 type
   // result = length
-  TCallback = procedure(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvB_B);
+  TCallback = procedure(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
 var
   SrcLength, DestLength: NativeUInt;
   Length: NativeUInt;
@@ -4089,19 +4090,19 @@ begin
 end;
 
 // result = length
-procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvB_B);
+procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
 begin
   {todo};
 end;
 
 // result = length
-procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvB_B);
+procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS);
 begin
   {todo};
 end;
 
 // result = length
-procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvB_B);
+procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS);
 begin
   {todo};
 end;
@@ -4306,7 +4307,7 @@ end;
 function TUniConvContext.convert_utf8_from_sbcs: NativeInt;
 type
   // result = min: length; max: length*3
-  TCallback = function(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvD_B): NativeUInt;
+  TCallback = function(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
 const
   SMALL_SRC_SIZE = MAX_SBCSCHAR_SIZE;
   SMALL_DEST_SIZE = SMALL_SRC_SIZE * 3;
@@ -4389,19 +4390,19 @@ begin
 end;
 
 // result = min: length; max: length*3
-function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
 begin
   Result := 0{todo};
 end;
 
 // result = min: length; max: length*3
-function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt;
 begin
   Result := 0{todo};
 end;
 
 // result = min: length; max: length*3
-function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvD_B): NativeUInt;
+function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt;
 begin
   Result := 0{todo};
 end;
@@ -4409,7 +4410,7 @@ end;
 function TUniConvContext.convert_sbcs_from_utf8: NativeInt;
 type
   // result = min: length/6; max: length
-  TCallback = function(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+  TCallback = function(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 const
   SMALL_SRC_SIZE = MAX_UTF8CHAR_SIZE;
   SMALL_DEST_SIZE = SMALL_SRC_SIZE;
@@ -4487,7 +4488,7 @@ begin
 end;
 
 // result = min: length/6; max: length
-function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4524,7 +4525,7 @@ begin
 end;
 
 // result = min: length/6; max: length
-function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; LowerCase: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; LowerCase: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4561,7 +4562,7 @@ begin
 end;
 
 // result = min: length/6; max: length
-function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; UpperCase: PUniConvB_W): NativeUInt;
+function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; UpperCase: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4600,7 +4601,7 @@ end;
 function TUniConvContext.convert_utf16_from_sbcs: NativeInt;
 type
   // result = length
-  TCallback = procedure(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvW_B);
+  TCallback = procedure(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
 var
   SrcLength, DestLength: NativeUInt;
   Length: NativeUInt;
@@ -4624,19 +4625,19 @@ begin
 end;
 
 // result = length
-procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvW_B);
+procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
 begin
   {todo};
 end;
 
 // result = length
-procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvW_B);
+procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS);
 begin
   {todo};
 end;
 
 // result = length
-procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvW_B);
+procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS);
 begin
   {todo};
 end;
@@ -4644,10 +4645,10 @@ end;
 function TUniConvContext.convert_sbcs_from_utf16: NativeInt;
 type
   // result = min: length/2; max: length
-  TCallback = function(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+  TCallback = function(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 const
   SMALL_SRC_SIZE = MAX_UTF16CHAR_SIZE;
-  SMALL_DEST_SIZE = SMALL_SRC_SIZE div SizeOf(TUnicodeChar);
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE div SizeOf(UnicodeChar);
   SMALL_CONVERSION_FLAGS = FLAG_USE_CONVERTER or FLAG_SOURCE_UTF16;
 var
   DestSize, SrcSize: NativeUInt;
@@ -4706,9 +4707,9 @@ begin
     FStore.Options.SourceSize := SrcSize;
     FStore.Options.DestinationSize := DestSize;
     repeat
-      if (SrcSize < SizeOf(TUnicodeChar)) then
+      if (SrcSize < SizeOf(UnicodeChar)) then
       begin
-        Dec(SrcSize, SizeOf(TUnicodeChar));
+        Dec(SrcSize, SizeOf(UnicodeChar));
         Done := True;
       end else
       begin
@@ -4731,7 +4732,7 @@ end;
 
 
 // result = min: length/2; max: length
-function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4768,7 +4769,7 @@ begin
 end;
 
 // result = min: length/2; max: length
-function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4805,7 +4806,7 @@ begin
 end;
 
 // result = min: length/2; max: length
-function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvB_W): NativeUInt;
+function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSU): NativeUInt;
 var
   Options: PExtendedConversionOptions;
   Store: record
@@ -4847,7 +4848,7 @@ type
   TCallback = function(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
 const
   SMALL_SRC_SIZE = MAX_UTF16CHAR_SIZE;
-  SMALL_DEST_SIZE = (MAX_UTF16CHAR_SIZE div SizeOf(TUnicodeChar)) * 3;
+  SMALL_DEST_SIZE = (MAX_UTF16CHAR_SIZE div SizeOf(UnicodeChar)) * 3;
   SMALL_CONVERSION_FLAGS = FLAG_SOURCE_UTF16;
 var
   DestSize, SrcSize: NativeUInt;
@@ -4911,9 +4912,9 @@ begin
     FStore.Options.SourceSize := SrcSize;
     FStore.Options.DestinationSize := DestSize;
     repeat
-      if (SrcSize < SizeOf(TUnicodeChar)) then
+      if (SrcSize < SizeOf(UnicodeChar)) then
       begin
-        Dec(SrcSize, SizeOf(TUnicodeChar));
+        Dec(SrcSize, SizeOf(UnicodeChar));
         Done := True;
       end else
       begin
@@ -5052,7 +5053,7 @@ type
   TCallback = function(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
 const
   SMALL_SRC_SIZE = MAX_UTF8CHAR_SIZE;
-  SMALL_DEST_SIZE = SMALL_SRC_SIZE * SizeOf(TUnicodeChar);
+  SMALL_DEST_SIZE = SMALL_SRC_SIZE * SizeOf(UnicodeChar);
   SMALL_CONVERSION_FLAGS = FLAG_DESTINATION_UTF16;
 var
   DestSize, SrcSize: NativeUInt;
