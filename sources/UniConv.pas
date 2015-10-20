@@ -176,6 +176,8 @@ type
     UnicodeChar = WideChar;
     UnicodeString = WideString;
     PUnicodeString = ^UnicodeString;
+    RawByteString = type AnsiString;
+    PRawByteString = ^RawByteString;
   {$endif}
   PUnicodeChar = ^UnicodeChar;
   {$ifdef NEXTGEN}
@@ -185,6 +187,8 @@ type
     PAnsiString = ^AnsiString;
     UTF8String = type AnsiString;
     PUTF8String = ^UTF8String;
+    RawByteString = type AnsiString;
+    PRawByteString = ^RawByteString;
     WideString = array of WideChar;
     PWideString = ^WideString;
     ShortString = array[0{len}..255] of Byte{AnsiChar/UTF8Char};
@@ -284,7 +288,7 @@ type
          1: (_: Byte; ModeFinalize: Boolean; CharCase: TCharCase);
     end;
     FCallbacks: packed record
-      Convertable: NativeInt;
+      Convertible: NativeInt;
       case Boolean of
        False: (Reader, Writer: Pointer);
         True: (ReaderWriter, Converter: Pointer);
@@ -325,9 +329,9 @@ type
     function convert_utf8_from_utf16: NativeInt;
     function convert_utf16_from_utf8: NativeInt;
 
-    // temporary convertable routine
-    function call_convertable(X: NativeUInt; Callback: Pointer): Boolean; {$ifNdef CPUINTEL}inline;{$endif}
-    function sbcs_convertable(X: NativeUInt): Boolean;
+    // temporary convertible routine
+    function call_convertible(X: NativeUInt; Callback: Pointer): Boolean; {$ifNdef CPUINTEL}inline;{$endif}
+    function sbcs_convertible(X: NativeUInt): Boolean;
 
     // difficult double/multy-byte encodings conversion callbacks
     function utf1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
@@ -342,31 +346,31 @@ type
     function bocu1_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
     function gb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function gb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function gb2312_convertable(X: NativeUInt): Boolean;
+    function gb2312_convertible(X: NativeUInt): Boolean;
     function gb18030_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function gb18030_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function gb18030_convertable(X: NativeUInt): Boolean;
+    function gb18030_convertible(X: NativeUInt): Boolean;
     function hzgb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function hzgb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function hzgb2312_convertable(X: NativeUInt): Boolean;
+    function hzgb2312_convertible(X: NativeUInt): Boolean;
     function big5_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function big5_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function big5_convertable(X: NativeUInt): Boolean;
+    function big5_convertible(X: NativeUInt): Boolean;
     function shift_jis_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function shift_jis_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function shift_jis_convertable(X: NativeUInt): Boolean;
+    function shift_jis_convertible(X: NativeUInt): Boolean;
     function euc_jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function euc_jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function euc_jp_convertable(X: NativeUInt): Boolean;
+    function euc_jp_convertible(X: NativeUInt): Boolean;
     function iso2022jp_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function iso2022jp_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function iso2022jp_convertable(X: NativeUInt): Boolean;
+    function iso2022jp_convertible(X: NativeUInt): Boolean;
     function cp949_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function cp949_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function cp949_convertable(X: NativeUInt): Boolean;
+    function cp949_convertible(X: NativeUInt): Boolean;
     function euc_kr_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function euc_kr_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
-    function euc_kr_convertable(X: NativeUInt): Boolean;
+    function euc_kr_convertible(X: NativeUInt): Boolean;
   public
     // "constructors"
     procedure Init(const ADestinationCodePage, ASourceCodePage: Word; const ACharCase: TCharCase = ccOriginal); overload;
@@ -391,8 +395,8 @@ type
     procedure ResetState; {$ifdef INLINESUPPORT}inline;{$endif}
 
     // character convertibility
-    function Convertable(const C: UCS4Char): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-    function Convertable(const C: UnicodeChar): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+    function Convertible(const C: UCS4Char): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+    function Convertible(const C: UnicodeChar): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
 
     // conversion parameters
     property Destination: Pointer read FDestination write FDestination;
@@ -560,7 +564,7 @@ type
     property LowerCaseUTF8: PUniConvMS read GetLowerCaseUTF8;
     property UpperCaseUTF8: PUniConvMS read GetUpperCaseUTF8;
 
-    // single byte lookups from another encoding
+    // single byte lookup from another encoding
     function FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase = ccOriginal): PUniConvSS;
   end;
 
@@ -608,13 +612,16 @@ var
   );
 
 
-// get single byte encoding lookup index
-// 0 if not found of raw data (CP $ffff)
-function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
+// detect single byte encoding
+function UniConvIsSBCS(const CodePage: Word): Boolean; {$ifdef INLINESUPPORT}inline;{$endif}
 
 // get single byte encoding lookup
 // UNICONV_SUPPORTED_SBCS[0] if not found of raw data (CP $ffff)
 function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORT}inline;{$endif}
+
+// get single byte encoding lookup index
+// 0 if not found of raw data (CP $ffff)
+function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
 
 
 // result = length
@@ -1242,9 +1249,8 @@ begin
   end;
 end;
 
-// get single byte encoding lookup index
-// 0 if not found of raw data (CP $ffff)
-function UniConvSBCSIndex(const CodePage: Word): NativeUInt;
+// detect single byte encoding
+function UniConvIsSBCS(const CodePage: Word): Boolean;
 var
   Index: NativeUInt;
   Value: Integer;
@@ -1256,7 +1262,7 @@ begin
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
 
-  Result := Byte(Value shr 16);
+  Result := (Word(Value) = CodePage);
 end;
 
 // get single byte encoding lookup
@@ -1274,6 +1280,23 @@ begin
   until (False);
 
   Result := @UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)];
+end;
+
+// get single byte encoding lookup index
+// 0 if not found of raw data (CP $ffff)
+function UniConvSBCSIndex(const CodePage: Word): NativeUInt;
+var
+  Index: NativeUInt;
+  Value: Integer;
+begin
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+
+  Result := Byte(Value shr 16);
 end;
 
 
@@ -2681,10 +2704,12 @@ begin
     end;
     ENC_SCSU:
     begin
+      F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
       FCallbacks.Reader := @TUniConvContext.scsu_reader;
     end;
     ENC_BOCU1:
     begin
+      F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
       FCallbacks.Reader := @TUniConvContext.bocu1_reader;
     end;
     ENC_GB18030:
@@ -2755,38 +2780,40 @@ begin
       F.DestinationCodePage := SBCS.CodePage;
       FCallbacks.Writer := SBCS.FVALUES;
       if (FCallbacks.Writer = nil) then FCallbacks.Writer := SBCS.AllocFillVALUES(SBCS.FVALUES);
-      FCallbacks.Convertable := NativeInt(FCallbacks.Writer);
+      FCallbacks.Convertible := NativeInt(FCallbacks.Writer);
     end;
     ENC_UTF1:
     begin
       FCallbacks.Writer := @TUniConvContext.utf1_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.utf7_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_UTFEBCDIC:
     begin
       FCallbacks.Writer := @TUniConvContext.utf_ebcdic_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_SCSU:
     begin
+      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.scsu_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_BOCU1:
     begin
+      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.bocu1_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_GB18030:
     begin
       FCallbacks.Writer := @TUniConvContext.gb18030_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.gb18030_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.gb18030_convertible);
       if (hash_gb2312 = nil) then generate_hash_gb2312;
       if (hash_gbkext1 = nil) then generate_hash_gbkext1;
       if (hash_gbkext2 = nil) then generate_hash_gbkext2;
@@ -2797,7 +2824,7 @@ begin
     ENC_GB2312:
     begin
       FCallbacks.Writer := @TUniConvContext.gb2312_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.gb2312_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.gb2312_convertible);
       if (hash_gb2312 = nil) then generate_hash_gb2312;
       if (hash_gbkext1 = nil) then generate_hash_gbkext1;
       if (hash_gbkext2 = nil) then generate_hash_gbkext2;
@@ -2806,25 +2833,25 @@ begin
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.hzgb2312_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.hzgb2312_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.hzgb2312_convertible);
       if (hash_gb2312 = nil) then generate_hash_gb2312;
     end;
     ENC_BIG5:
     begin
       FCallbacks.Writer := @TUniConvContext.big5_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.big5_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.big5_convertible);
       if (hash_big5 = nil) then generate_hash_big5;
     end;
     ENC_SHIFT_JIS:
     begin
       FCallbacks.Writer := @TUniConvContext.shift_jis_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.shift_jis_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.shift_jis_convertible);
       if (hash_jisx0208 = nil) then generate_hash_jisx0208;
     end;
     ENC_EUC_JP:
     begin
       FCallbacks.Writer := @TUniConvContext.euc_jp_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.euc_jp_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.euc_jp_convertible);
       if (hash_jisx0208 = nil) then generate_hash_jisx0208;
       if (hash_jisx0212 = nil) then generate_hash_jisx0212;
     end;
@@ -2832,14 +2859,14 @@ begin
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.iso2022jp_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.iso2022jp_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.iso2022jp_convertible);
       if (hash_jisx0208 = nil) then generate_hash_jisx0208;
       if (hash_jisx0212 = nil) then generate_hash_jisx0212;
     end;
     ENC_CP949:
     begin
       FCallbacks.Writer := @TUniConvContext.cp949_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.cp949_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.cp949_convertible);
       if (hash_ksc5601 = nil) then generate_hash_ksc5601;
       if (hash_uhc_1 = nil) then generate_hash_uhc_1;
       if (hash_uhc_2 = nil) then generate_hash_uhc_2;
@@ -2847,7 +2874,7 @@ begin
     ENC_EUC_KR:
     begin
       FCallbacks.Writer := @TUniConvContext.euc_kr_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.euc_kr_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.euc_kr_convertible);
       if (hash_ksc5601 = nil) then generate_hash_ksc5601;
     end;
   end;
@@ -2936,10 +2963,12 @@ begin
     end;
     ENC_SCSU:
     begin
+      F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
       FCallbacks.Reader := @TUniConvContext.scsu_reader;
     end;
     ENC_BOCU1:
     begin
+      F.Flags := F.Flags or FLAG_SRC_STATE_NEEDED;
       FCallbacks.Reader := @TUniConvContext.bocu1_reader;
     end;
     ENC_GB18030:
@@ -2962,38 +2991,40 @@ begin
       F.DestinationCodePage := SBCS.CodePage;
       FCallbacks.Writer := SBCS.FVALUES;
       if (FCallbacks.Writer = nil) then FCallbacks.Writer := SBCS.AllocFillVALUES(SBCS.FVALUES);
-      FCallbacks.Convertable := NativeInt(FCallbacks.Writer);
+      FCallbacks.Convertible := NativeInt(FCallbacks.Writer);
     end;
     ENC_UTF1:
     begin
       FCallbacks.Writer := @TUniConvContext.utf1_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_UTF7:
     begin
       F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.utf7_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_UTFEBCDIC:
     begin
       FCallbacks.Writer := @TUniConvContext.utf_ebcdic_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_SCSU:
     begin
+      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.scsu_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_BOCU1:
     begin
+      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
       FCallbacks.Writer := @TUniConvContext.bocu1_writer;
-      FCallbacks.Convertable := 0;
+      FCallbacks.Convertible := 0;
     end;
     ENC_GB18030:
     begin
       FCallbacks.Writer := @TUniConvContext.gb18030_writer;
-      FCallbacks.Convertable := -NativeInt(@TUniConvContext.gb18030_convertable);
+      FCallbacks.Convertible := -NativeInt(@TUniConvContext.gb18030_convertible);
       if (hash_gb2312 = nil) then generate_hash_gb2312;
       if (hash_gbkext1 = nil) then generate_hash_gbkext1;
       if (hash_gbkext2 = nil) then generate_hash_gbkext2;
@@ -3013,7 +3044,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_SBCS shl ENCODING_DESTINATION_OFFSET) + ENC_SBCS;
   FConvertProc := Pointer(@TUniConvContext.convert_sbcs_from_sbcs);
-  FCallbacks.Convertable := -NativeInt(@TUniConvContext.sbcs_convertable);
+  FCallbacks.Convertible := -NativeInt(@TUniConvContext.sbcs_convertible);
 
   DestinationSBCS := UniConvSBCS(ADestinationCodePage);
   SourceSBCS := UniConvSBCS(ASourceCodePage);
@@ -3052,7 +3083,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_SBCS shl ENCODING_DESTINATION_OFFSET) + ENC_UTF16;
   FConvertProc := Pointer(@TUniConvContext.convert_sbcs_from_utf16);
-  FCallbacks.Convertable := -NativeInt(@TUniConvContext.sbcs_convertable);
+  FCallbacks.Convertible := -NativeInt(@TUniConvContext.sbcs_convertible);
 
   SBCS := UniConvSBCS(ADestinationCodePage);
   F.DestinationCodePage := SBCS.CodePage;
@@ -3084,7 +3115,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_SBCS shl ENCODING_DESTINATION_OFFSET) + ENC_UTF8;
   FConvertProc := Pointer(@TUniConvContext.convert_sbcs_from_utf8);
-  FCallbacks.Convertable := -NativeInt(@TUniConvContext.sbcs_convertable);
+  FCallbacks.Convertible := -NativeInt(@TUniConvContext.sbcs_convertible);
 
   SBCS := UniConvSBCS(ADestinationCodePage);
   F.DestinationCodePage := SBCS.CodePage;
@@ -3116,7 +3147,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF16 shl ENCODING_DESTINATION_OFFSET) + ENC_SBCS;
   FConvertProc := Pointer(@TUniConvContext.convert_utf16_from_sbcs);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   SBCS := UniConvSBCS(ASourceCodePage);
   F.DestinationCodePage := CODEPAGE_UTF16;
@@ -3145,7 +3176,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF16 shl ENCODING_DESTINATION_OFFSET) + ENC_UTF16;
   FConvertProc := Pointer(@TUniConvContext.convert_utf16_from_utf16);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   F.DestinationCodePage := CODEPAGE_UTF16;
   F.SourceCodePage := CODEPAGE_UTF16;
@@ -3169,7 +3200,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF16 shl ENCODING_DESTINATION_OFFSET) + ENC_UTF8;
   FConvertProc := Pointer(@TUniConvContext.convert_utf16_from_utf8);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   F.DestinationCodePage := CODEPAGE_UTF16;
   F.SourceCodePage := CODEPAGE_UTF8;
@@ -3196,7 +3227,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF8 shl ENCODING_DESTINATION_OFFSET) + ENC_SBCS;
   FConvertProc := Pointer(@TUniConvContext.convert_utf8_from_sbcs);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   SBCS := UniConvSBCS(ASourceCodePage);
   F.DestinationCodePage := CODEPAGE_UTF8;
@@ -3224,7 +3255,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF8 shl ENCODING_DESTINATION_OFFSET) + ENC_UTF16;
   FConvertProc := Pointer(@TUniConvContext.convert_utf8_from_utf16);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   F.DestinationCodePage := CODEPAGE_UTF8;
   F.SourceCodePage := CODEPAGE_UTF16;
@@ -3248,7 +3279,7 @@ begin
   F.Flags := CHARCASE_FLAGS[ACharCase] +
     (ENC_UTF8 shl ENCODING_DESTINATION_OFFSET) + ENC_UTF8;
   FConvertProc := Pointer(@TUniConvContext.convert_utf8_from_utf8);
-  FCallbacks.Convertable := 0;
+  FCallbacks.Convertible := 0;
 
   F.DestinationCodePage := CODEPAGE_UTF8;
   F.SourceCodePage := CODEPAGE_UTF8;
@@ -3326,7 +3357,7 @@ begin
 end;                                   
 
 
-function TUniConvContext.Convertable(const C: UCS4Char): Boolean;
+function TUniConvContext.Convertible(const C: UCS4Char): Boolean;
 label
   standard_way, ret_false, ret_true;
 var
@@ -3357,7 +3388,7 @@ begin
     end;
 
   standard_way:
-    Callback := FCallbacks.Convertable;
+    Callback := FCallbacks.Convertible;
     if (Callback = 0{Unicode}) then goto ret_true;
     if (Callback > 0) then
     begin
@@ -3370,7 +3401,7 @@ begin
     end else
     begin
       Callback := -Callback;
-      Result := call_convertable(X, Pointer(Callback));
+      Result := call_convertible(X, Pointer(Callback));
       Exit;
     end;
   end;
@@ -3384,7 +3415,7 @@ ret_true:
 {$endif}
 end;
 
-function TUniConvContext.Convertable(const C: UnicodeChar): Boolean;
+function TUniConvContext.Convertible(const C: UnicodeChar): Boolean;
 label
   standard_way, ret_false, ret_true;
 var
@@ -3412,7 +3443,7 @@ begin
     end;
 
   standard_way:
-    Callback := FCallbacks.Convertable;
+    Callback := FCallbacks.Convertible;
     if (Callback = 0{Unicode}) then goto ret_true;
     if (Callback > 0) then
     begin
@@ -3423,7 +3454,7 @@ begin
     end else
     begin
       Callback := -Callback;
-      Result := call_convertable(X, Pointer(Callback));
+      Result := call_convertible(X, Pointer(Callback));
       Exit;
     end;
   end;
@@ -3437,7 +3468,7 @@ ret_true:
 {$endif}
 end;
 
-function TUniConvContext.call_convertable(X: NativeUInt; Callback: Pointer): Boolean;
+function TUniConvContext.call_convertible(X: NativeUInt; Callback: Pointer): Boolean;
 {$if Defined(CPUX86)}
 asm
   jmp ecx
@@ -3454,10 +3485,10 @@ begin
 end;
 {$ifend}
 
-function TUniConvContext.sbcs_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.sbcs_convertible(X: NativeUInt): Boolean;
 begin
-  FCallbacks.Convertable := NativeInt(UniConvSBCS(F.DestinationCodePage).VALUES);
-  Result := Self.Convertable(X);
+  FCallbacks.Convertible := NativeInt(UniConvSBCS(F.DestinationCodePage).VALUES);
+  Result := Self.Convertible(X);
 end;
 
 function TUniConvContext.convert_copy: NativeInt;
@@ -6645,7 +6676,7 @@ const
     $FF, $FF, $FF, $FF, $FF, $06, $07, $08, $09, $0A, $0B,
     $0C, $0D, $0E, $0F, $FF, $FF, $10, $11, $12, $13, $FF);
 
-  BOCU1_TRAIL_TO_Byte: array[0..BOCU1_TRAIL_CONTROLS_COUNT - 1] of Byte = (
+  BOCU1_TRAIL_TO_BYTE: array[0..BOCU1_TRAIL_CONTROLS_COUNT - 1] of Byte = (
     $01, $02, $03, $04, $05, $06, $10, $11, $12, $13,
     $14, $15, $16, $17, $18, $19, $1C, $1D, $1E, $1F);
 
@@ -6883,7 +6914,7 @@ begin
       end;
 
       if (M >= BOCU1_TRAIL_CONTROLS_COUNT) then Dest^ := M + BOCU1_TRAIL_BYTE_OFFSET
-      else Dest^ := BOCU1_TRAIL_TO_Byte[m];
+      else Dest^ := BOCU1_TRAIL_TO_BYTE[m];
 
       Dec(Dest);
     end;
@@ -7176,7 +7207,7 @@ begin
   Dest^ := UNKNOWN_CHARACTER;
 end;
 
-function TUniConvContext.gb2312_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.gb2312_convertible(X: NativeUInt): Boolean;
 var
   Buf: Word;
 begin
@@ -7542,7 +7573,7 @@ begin
   end;
 end;
 
-function TUniConvContext.gb18030_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.gb18030_convertible(X: NativeUInt): Boolean;
 begin
   case (X) of
     $E78D..$E796,
@@ -7710,7 +7741,7 @@ begin
   end;
 end;
 
-function TUniConvContext.hzgb2312_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.hzgb2312_convertible(X: NativeUInt): Boolean;
 begin
   if (X < $80) then Result := True
   else
@@ -7793,7 +7824,7 @@ done:
   Result := 2;
 end;
 
-function TUniConvContext.big5_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.big5_convertible(X: NativeUInt): Boolean;
 begin
   if (X <= $7f) then Result := True
   else
@@ -7951,7 +7982,7 @@ not_jisx0201:
   Dec(Result);{1}
 end;
 
-function TUniConvContext.shift_jis_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.shift_jis_convertible(X: NativeUInt): Boolean;
 begin
   case X of
    0..$7f: Result := (X <> $5c) and (X <> $7e);
@@ -8137,7 +8168,7 @@ begin
   end;
 end;
 
-function TUniConvContext.euc_jp_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.euc_jp_convertible(X: NativeUInt): Boolean;
 begin
   case X of
     0..$7f, $e000..$e3ab, $e3ac..$e757, $ff61..$ff9f: Result := True;
@@ -8390,7 +8421,7 @@ done:
   Self.FState.Write.B := State;
 end;
 
-function TUniConvContext.iso2022jp_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.iso2022jp_convertible(X: NativeUInt): Boolean;
 begin
   case X of
     0..$7f, $00a5, $203e: Result := (X <> $1b);
@@ -8563,7 +8594,7 @@ begin
   end;  
 end;
 
-function TUniConvContext.cp949_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.cp949_convertible(X: NativeUInt): Boolean;
 begin
   case X of
     0..$7f, $e000..$e05d, $e05e..$e0bb: Result := True;
@@ -8648,7 +8679,7 @@ begin
   end;
 end;
 
-function TUniConvContext.euc_kr_convertable(X: NativeUInt): Boolean;
+function TUniConvContext.euc_kr_convertible(X: NativeUInt): Boolean;
 begin
   if (X <= $7f) then Result := True
   else
@@ -11318,7 +11349,6 @@ end;
 
 
 initialization
-  TUniConvContext(nil^).gb18030_convertable(0);
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
   System.GetMemoryManager(MemoryManager);
   InternalLookupsInitialize;
