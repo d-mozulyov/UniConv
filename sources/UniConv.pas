@@ -193,7 +193,7 @@ type
   UTF8Char = type AnsiChar;
   PUTF8Char = ^UTF8Char;
 
-  
+
 type
   // case sensitivity
   TCharCase = (ccOriginal, ccLower, ccUpper);
@@ -209,8 +209,7 @@ type
   function DetectBOM(const Data: Pointer; const Size: NativeUInt = 4): TBOM;
 
 var
-  // non-unicode code page specified by system as default (initialized later)
-  // you may use const "0" to make conversions with default non-unicode encoding
+  // automatically defined default code page
   CODEPAGE_DEFAULT: Word;
 
 const
@@ -230,37 +229,41 @@ const
   CODEPAGE_SCSU = 65004;
   CODEPAGE_BOCU1 = 65005;
   CODEPAGE_USERDEFINED = $fffd;
+  CODEPAGE_RAWDATA = $ffff;
 
   // byte order mark information
   BOM_INFO: array[TBOM] of
   record
-    Value: Cardinal;
+    Data: Cardinal;
     Size: Cardinal;
     Name: string;
     CodePage: Word;
   end = (
-    (Value: $00000000; Size: 0; Name: ''          ; CodePage: 0),                  // none
-    (Value: $00BFBBEF; Size: 3; Name: 'UTF-8'     ; CodePage: CODEPAGE_UTF8),      // EF BB BF
-    (Value: $0000FEFF; Size: 2; Name: 'UTF-16 LE' ; CodePage: CODEPAGE_UTF16),     // FF FE XX XX
-    (Value: $0000FFFE; Size: 2; Name: 'UTF-16 BE' ; CodePage: CODEPAGE_UTF16BE),   // FE FF XX XX
-    (Value: $0000FEFF; Size: 4; Name: 'UTF-32 LE' ; CodePage: CODEPAGE_UTF32),     // FF FE 00 00
-    (Value: $FFFE0000; Size: 4; Name: 'UTF-32 BE' ; CodePage: CODEPAGE_UTF32BE),   // 00 00 FE FF
-    (Value: $FEFF0000; Size: 4; Name: 'UCS-2143'  ; CodePage: CODEPAGE_UCS2143),   // 00 00 FF FE
-    (Value: $0000FFFE; Size: 4; Name: 'UCS-3412'  ; CodePage: CODEPAGE_UCS3412),   // FE FF 00 00
-    (Value: $004C64F7; Size: 3; Name: 'UTF-1'     ; CodePage: CODEPAGE_UTF1),      // F7 64 4C
-    (Value: $00762F2B; Size: 3; Name: 'UTF-7'     ; CodePage: CODEPAGE_UTF7),      // 2B 2F 76 + 38/39/2B/2F
-    (Value: $736673DD; Size: 4; Name: 'UTF-EBCDIC'; CodePage: CODEPAGE_UTFEBCDIC), // DD 73 66 73
-    (Value: $00FFFE0E; Size: 3; Name: 'SCSU'      ; CodePage: CODEPAGE_SCSU),      // 0E FE FF
-    (Value: $0028EEFB; Size: 3; Name: 'BOCU-1'    ; CodePage: CODEPAGE_BOCU1),     // FB EE 28
-    (Value: $33953184; Size: 4; Name: 'GB-18030'  ; CodePage: 54936)               // 84 31 95 33
+    (Data: $00000000; Size: 0; Name: ''          ; CodePage: 0),                  // none
+    (Data: $00BFBBEF; Size: 3; Name: 'UTF-8'     ; CodePage: CODEPAGE_UTF8),      // EF BB BF
+    (Data: $0000FEFF; Size: 2; Name: 'UTF-16 LE' ; CodePage: CODEPAGE_UTF16),     // FF FE XX XX
+    (Data: $0000FFFE; Size: 2; Name: 'UTF-16 BE' ; CodePage: CODEPAGE_UTF16BE),   // FE FF XX XX
+    (Data: $0000FEFF; Size: 4; Name: 'UTF-32 LE' ; CodePage: CODEPAGE_UTF32),     // FF FE 00 00
+    (Data: $FFFE0000; Size: 4; Name: 'UTF-32 BE' ; CodePage: CODEPAGE_UTF32BE),   // 00 00 FE FF
+    (Data: $FEFF0000; Size: 4; Name: 'UCS-2143'  ; CodePage: CODEPAGE_UCS2143),   // 00 00 FF FE
+    (Data: $0000FFFE; Size: 4; Name: 'UCS-3412'  ; CodePage: CODEPAGE_UCS3412),   // FE FF 00 00
+    (Data: $004C64F7; Size: 3; Name: 'UTF-1'     ; CodePage: CODEPAGE_UTF1),      // F7 64 4C
+    (Data: $00762F2B; Size: 3; Name: 'UTF-7'     ; CodePage: CODEPAGE_UTF7),      // 2B 2F 76 + 38/39/2B/2F
+    (Data: $736673DD; Size: 4; Name: 'UTF-EBCDIC'; CodePage: CODEPAGE_UTFEBCDIC), // DD 73 66 73
+    (Data: $00FFFE0E; Size: 3; Name: 'SCSU'      ; CodePage: CODEPAGE_SCSU),      // 0E FE FF
+    (Data: $0028EEFB; Size: 3; Name: 'BOCU-1'    ; CodePage: CODEPAGE_BOCU1),     // FB EE 28
+    (Data: $33953184; Size: 4; Name: 'GB-18030'  ; CodePage: 54936)               // 84 31 95 33
   );
+
+  // important characters constants
+  UNKNOWN_CHARACTER = Ord('?');
+  MAXIMUM_CHARACTER = $110000-1; // 1 114 111
 
 
 type
   // main interface, that you should use to conversion
   // see description of the Convert() function!
   PUniConvContext = ^TUniConvContext;
-  PUniConvContextProc = function(Context: PUniConvContext): NativeInt;
   TUniConvContext = object
   protected
     F: packed record
@@ -303,7 +306,7 @@ type
     FSource: Pointer;
     FSourceSize: NativeUInt;
 
-    FConvertProc: PUniConvContextProc;
+    FConvertProc: function(Context: PUniConvContext): NativeInt;
     FDestinationWritten: NativeUInt;
     FSourceRead: NativeUInt;
 
@@ -364,19 +367,6 @@ type
     function euc_kr_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
     function euc_kr_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
     function euc_kr_convertable(X: NativeUInt): Boolean;
-
-   // property ReadState: Byte read F.ReadState write F.ReadState;
-   // property WriteState: Byte read F.WriteState write F.WriteState;
-  public
-    // some encodings (such as UTF-7) use an internal state in the decoding process.
-    // it's automatically reset in the initialization functions and allows to decode at the beginning,
-    // but if necessary, you can reset the state directly.
-    procedure ResetState; {$ifdef INLINESUPPORT}inline;{$endif}
-
-    // some decoding algorithms (such as UTF-7) use finalize data routine.
-    // but if you're doing the decoding in parts - you should temporarily disable the mode.
-    // (also the state is automatically reset after decoding if the mode is enabled)
-    property ModeFinalize: Boolean read F.ModeFinalize write F.ModeFinalize; // deafult = True
   public
     // "constructors"
     procedure Init(const ADestinationCodePage, ASourceCodePage: Word; const ACharCase: TCharCase = ccOriginal); overload;
@@ -393,41 +383,24 @@ type
     procedure InitUTF8FromUTF16(const ACharCase: TCharCase);
     procedure InitUTF16FromUTF8(const ACharCase: TCharCase);
 
-    // destination
-    property Destination: Pointer read FDestination write FDestination;
-    property DestinationSize: NativeUInt read FDestinationSize write FDestinationSize;
+    // context properties
     property DestinationCodePage: Word read F.DestinationCodePage;
-
-    // source
-    property Source: Pointer read FSource write FSource;
-    property SourceSize: NativeUInt read FSourceSize write FSourceSize;
     property SourceCodePage: Word read F.SourceCodePage;
-
-    // case sensitivity
     property CharCase: TCharCase read F.CharCase;
+    property ModeFinalize: Boolean read F.ModeFinalize write F.ModeFinalize; // deafult = True
+    procedure ResetState; {$ifdef INLINESUPPORT}inline;{$endif}
 
-
+    // character convertibility
     function Convertable(const C: UCS4Char): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
     function Convertable(const C: UnicodeChar): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
 
-    // to make conversion you should:
-    // 1) initialize your context with needed encodings
-    // 2) fill destination and source information (Pointer and available size)
-    // 3) call Convert function
-    //
-    // out information is DestinationWritten and SourceRead properties
-    // Result is count of Bytes remaining in source buffer, so:
-    // 0 - conversion was done correctly
-    // >0 - too small destination buffer
-    // <0 - source buffer was not fully read
+    // conversion parameters
+    property Destination: Pointer read FDestination write FDestination;
+    property DestinationSize: NativeUInt read FDestinationSize write FDestinationSize;
+    property Source: Pointer read FSource write FSource;
+    property SourceSize: NativeUInt read FSourceSize write FSourceSize;
 
-
-    // to save a few cpu cycles in Delphi versions < 2005
-    // you can also call Context.ConvertProc(@Context)
-  //  property ConvertProc: PUniConvContextProc read FConvertProc;
-
-    // to fill information and perform the conversion at a time
-    // you can use ConvertEx functions
+    // conversion
     function Convert: NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
     function Convert(const ADestination: Pointer;
                      const ADestinationSize: NativeUInt;
@@ -444,16 +417,6 @@ type
     property DestinationWritten: NativeUInt read FDestinationWritten;
     property SourceRead: NativeUInt read FSourceRead;
   end;
-
-
-  // BONUS for most frequently used encodings(single byte, UTF8, ucs2):
-  // - string compare functions (instead of slow standard functions)
-  // - high level convert functions with already initialized TUniConvContext
-  // - high level convert functions without TUniConvContext initialization routine
-  // todo?
-
-
-
 
 
 type
@@ -484,45 +447,20 @@ type
   TUniConvMB = array[Byte] of Cardinal;
   PUniConvMB = ^TUniConvMB;
 
-
-  // note:
-  // of course you can use comfortable functions like ...(String): String
-  // instead recommended procedures ...(Destination, Source: String),
-  // but you should know that in these cases the compiler may generate an overhead,
-  // which may adversely affect the performance of your applications
-  //
-  // if your destination AnsiString has non-default internal code page
-  // (for example: CyrillicString = type AnsiString(1251)),
-  // to use conversion procedures, you should perform simple AnsiString type cast:
-  // var
-  //   Result, Source: CyrillicString;
-  // begin
-  //   Source := 'some string';
-  //   sbcs_upper(AnsiString(Result), Source); // convert to 'SOME STRING'
-
-  // note:
-  // Be mindful, the Result internal code page will be initialized as Source code page
-  // To convert different encodings strings - you should use TUniConvContext directly
-
-(*  ToDo    *)
-
-  // low level lookup routine, that you can use to:
-  // lower/upper, single byte encodings, UTF8 size
-
 var
-  // fast ucs2 lower/upper lookup tables
+  // fast utf16 lower/upper lookup tables
   UNICONV_CHARCASE: packed record
   case Integer of
     0: (LOWER, UPPER: TUniConvUU);
     1: (VALUES: array[0..1 shl 17 - 1] of Word);
   end;
 
-  // UTF8 character size by first byte
+  // utf8 character size by first byte
   UNICONV_UTF8_SIZE: TUniConvBB;
 
 type
   // single byte encodings lookups:
-  // sbcs --> ucs2, sbcs --> UTF8, ucs2 --> sbcs, sbcs --> sbcs
+  // sbcs --> utf16(ucs2), sbcs --> utf8, utf16(ucs2) --> sbcs, sbcs --> sbcs
   //
   //(0) 0xFFFF - Raw data
   //(1) 874 – Thai
@@ -724,7 +662,7 @@ function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: Nativ
 
 
 
-// todo
+// low level string types routine
 procedure AnsiStringClear(var S{: AnsiString/UTF8String});
 function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
 procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
@@ -743,7 +681,7 @@ implementation
 var
   MemoryManager: {$if Defined(FPC) or (CompilerVersion < 18)}TMemoryManager{$else}TMemoryManagerEx{$ifend};
 
-type  
+type
   {$ifdef NEXTGEN}
     PByteArray = PByte;
   {$else}
@@ -758,6 +696,7 @@ type
 
 const
   HIGH_NATIVE_BIT = {$ifdef SMALLINT}31{$else}63{$endif};
+  UNICODE_CHARACTERS_COUNT = MAXIMUM_CHARACTER + 1;
   CHARCASE_OFFSET = $10000;
 
   MASK_80_SMALL = $80808080;
@@ -909,7 +848,7 @@ function GetACP: Cardinal; external 'kernel32.dll' name 'GetACP';
 procedure InternalLookupsInitialize;
 const
   SBCS_CODE_PAGES: array[Low(UNICONV_SUPPORTED_SBCS)..High(UNICONV_SUPPORTED_SBCS)] of Word  =
-  ($FFFF,874,1250,1251,1252,1253,1254,1255,1256,1257,1258,866,28592,28593,28594,
+  (CODEPAGE_RAWDATA,874,1250,1251,1252,1253,1254,1255,1256,1257,1258,866,28592,28593,28594,
    28595,28596,28597,28598,28600,28603,28604,28605,28606,20866,21866,10000,10007,CODEPAGE_USERDEFINED);
 
   CHARS_TABLE: array[0..12-1+1] of Cardinal  = 
@@ -1008,7 +947,7 @@ const
      $04C004CF,$1FBC1FB3,$1FCC1FC3,$1FEC1FE5,$1FFC1FF3,$2132214E,
      $21832184,$2C602C61,$2C631D7D,$2C722C73,$2C752C76,$A77D1D79,$A78BA78C,
      // 7 rarly used characters, that disturb
-     // same-length UTF8 lower/upper conversion
+     // same-length utf8 lower/upper conversion
      $023A2C65,$023E2C66,$2C6F0250,$2C6D0251,$2C62026B,$2C6E0271,$2C64027D
   );
 
@@ -2548,7 +2487,7 @@ begin
 
   // detect unicode/multy-byte
   // convert to internal format
-  if (Value < 0) and (CodePage <> $ffff) then
+  if (Value < 0) and (CodePage <> CODEPAGE_RAWDATA) then
   begin
     Value := CodePage;
     if (CodePage = 0) then Value := CODEPAGE_DEFAULT;
@@ -3387,11 +3326,6 @@ begin
 end;                                   
 
 
-const
-  UNICODE_CHARACTERS_COUNT = $110000; // 1 114 112
-  UNKNOWN_CHAR = Ord('?');
-
-
 function TUniConvContext.Convertable(const C: UCS4Char): Boolean;
 label
   standard_way, ret_false, ret_true;
@@ -3865,7 +3799,7 @@ char_read:
   if (X >= UNICODE_CHARACTERS_COUNT) then
   begin
 char_read_unknown:
-    X := UNKNOWN_CHAR;
+    X := UNKNOWN_CHARACTER;
     goto char_write;
   end;
 char_read_done:
@@ -3885,7 +3819,7 @@ char_write:
     begin
       if (DestSize = 0{< 1}) then goto dest_too_small;
 
-      if (X > $ffff) then PByte(Dest)^ := UNKNOWN_CHAR
+      if (X > $ffff) then PByte(Dest)^ := UNKNOWN_CHARACTER
       else PByte(Dest)^ := PUniConvBW({$ifdef CPUX86}FStore.Writer{$else}Self.FCallbacks.Writer{$endif})[X];
 
       Inc(Dest);
@@ -5761,7 +5695,7 @@ none:
   Count := High(Cardinal){-1};
   // goto done;
 unknown:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 too_small:
 done:
   Self.FState.Read.B := State;
@@ -6431,7 +6365,7 @@ begin
 
 unknown:
 too_small:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
   goto done;
 done_UTF16:
   Result := Word(Result);
@@ -6821,7 +6755,7 @@ loop:
       Ret := Ret + PPrev^;
       if (Cardinal(Ret) <= $10ffff) then goto calc_prev;
       unknown:
-        Ret := UNKNOWN_CHAR;
+        Ret := UNKNOWN_CHARACTER;
         Prev := BOCU1_ASCII_PREV;
         goto fill_prev;
     end;
@@ -7180,7 +7114,7 @@ end;
 
 fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 done:
   SrcRead := 2;
 end;
@@ -7239,7 +7173,7 @@ begin
   end;
 
   Dec(Result){1};
-  Dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHARACTER;
 end;
 
 function TUniConvContext.gb2312_convertable(X: NativeUInt): Boolean;
@@ -7440,7 +7374,7 @@ look_gb18030ext:
 
 fail:
 unknown:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 end;
 
 
@@ -7569,7 +7503,7 @@ begin
       if (X >= range_gb18030_write[2 * K + 2]) then K1 := K + 1
       else
       begin
-        Dest^ := UNKNOWN_CHAR;
+        Dest^ := UNKNOWN_CHARACTER;
         Result := 1;
         Exit;
       end;
@@ -7693,7 +7627,7 @@ begin
     end else
     begin
     unknown:
-      Result := UNKNOWN_CHAR;
+      Result := UNKNOWN_CHARACTER;
     end;
   end;
 
@@ -7743,7 +7677,7 @@ begin
   if (X > $ffff) or (X = $fffd) then
   begin
   unknown:
-    X := UNKNOWN_CHAR;
+    X := UNKNOWN_CHARACTER;
     goto ascii;
   end;
 
@@ -7810,7 +7744,7 @@ begin
 
 fail:
 unknown:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 done:
   SrcRead := 2;
 end;
@@ -7851,7 +7785,7 @@ begin
   end;
 
 unknown:
-  Dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHARACTER;
 done_1:
   Result := 1;
   Exit;
@@ -7929,7 +7863,7 @@ begin
   
 fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 done:
   SrcRead := 2;
 end;
@@ -8013,7 +7947,7 @@ not_jisx0201:
     end;
   end;
 
-  Dest^ := UNKNOWN_CHAR;
+  Dest^ := UNKNOWN_CHARACTER;
   Dec(Result);{1}
 end;
 
@@ -8100,7 +8034,7 @@ begin
 
 fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 done:
   SrcRead := 2;
 end;
@@ -8198,7 +8132,7 @@ begin
     end;
 
   unknown:
-    Dest^ := UNKNOWN_CHAR;
+    Dest^ := UNKNOWN_CHARACTER;
     Dec(Result){1};
   end;
 end;
@@ -8326,7 +8260,7 @@ begin
   end;
 
 unknown:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 too_small:
 done:
   Self.FState.Read.B := State;
@@ -8418,7 +8352,7 @@ begin
     end;
 
   unknown:
-    X := UNKNOWN_CHAR;
+    X := UNKNOWN_CHARACTER;
     Mask := MASK_ASCII; // goto ascii;
   end;
 
@@ -8548,7 +8482,7 @@ begin
   end;
 
 unknown:
-  Result := UNKNOWN_CHAR;
+  Result := UNKNOWN_CHARACTER;
 too_small:
 done:
   SrcRead := 2;
@@ -8625,7 +8559,7 @@ begin
   else
   unknown:
     Dec(Result);
-    Dest^ := UNKNOWN_CHAR;
+    Dest^ := UNKNOWN_CHARACTER;
   end;  
 end;
 
@@ -8673,7 +8607,7 @@ begin
     end;
   else
   unknown:
-    Result := UNKNOWN_CHAR;
+    Result := UNKNOWN_CHARACTER;
   end;
 
 done:
@@ -8691,7 +8625,7 @@ begin
     if (X > $ffff) or (X = $fffd) then
     begin
       unknown:
-      Dest^ := UNKNOWN_CHAR;
+      Dest^ := UNKNOWN_CHARACTER;
       goto single_Byte;
     end;
 
