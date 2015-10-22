@@ -1,7 +1,7 @@
 unit UniConv;
 
 {******************************************************************************}
-{ Copyright (c) Dmitry Mozulyov                                                }
+{ Copyright (c) 2014 Dmitry Mozulyov                                           }
 {                                                                              }
 { Permission is hereby granted, free of charge, to any person obtaining a copy }
 { of this software and associated documentation files (the "Software"), to deal}
@@ -95,8 +95,8 @@ unit UniConv;
 
 // compiler directives
 {$ifdef FPC}
-  {$mode Delphi}
-  {$asmmode Intel}
+  {$mode delphi}
+  {$asmmode intel}
   {$define INLINESUPPORT}
   {$ifdef CPU386}
     {$define CPUX86}
@@ -113,11 +113,13 @@ unit UniConv;
     {$WARN UNSAFE_TYPE OFF}
     {$WARN UNSAFE_CAST OFF}
   {$ifend}
-  {$if (CompilerVersion < 23)}
-    {$define CPUX86}
-  {$ifend}
-  {$if (CompilerVersion >= 17)}
+  {$if CompilerVersion >= 17}
     {$define INLINESUPPORT}
+  {$ifend}
+  {$if CompilerVersion < 23}
+    {$define CPUX86}
+  {$else}
+    {$define UNITSCOPENAMES}
   {$ifend}
   {$if CompilerVersion >= 21}
     {$WEAKLINKRTTI ON}
@@ -265,8 +267,7 @@ const
 
 
 type
-  // main interface, that you should use to conversion
-  // see description of the Convert() function!
+  // main conversion interface
   PUniConvContext = ^TUniConvContext;
   TUniConvContext = object
   protected
@@ -463,7 +464,7 @@ var
   UNICONV_UTF8_SIZE: TUniConvBB;
 
 type
-  // single byte encodings lookups:
+  // single-byte encodings lookups:
   // sbcs --> utf16(ucs2), sbcs --> utf8, utf16(ucs2) --> sbcs, sbcs --> sbcs
   //
   //(0) 0xFFFF - Raw data
@@ -510,7 +511,7 @@ type
       Index: Word;
       CodePage: Word;
     end;
-    // single byte
+    // single-byte
     FUpperCase: PUniConvSS;
     FLowerCase: PUniConvSS;
     FTableSBCSItems: Pointer; // PTableSBCSItem
@@ -549,7 +550,7 @@ type
     property Index: Word read F.Index;
     property CodePage: Word read F.CodePage;
 
-    // lower/upper single byte tables
+    // lower/upper single-byte tables
     property LowerCase: PUniConvSS read GetLowerCase;
     property UpperCase: PUniConvSS read GetUpperCase;
 
@@ -564,7 +565,7 @@ type
     property LowerCaseUTF8: PUniConvMS read GetLowerCaseUTF8;
     property UpperCaseUTF8: PUniConvMS read GetUpperCaseUTF8;
 
-    // single byte lookup from another encoding
+    // single-byte lookup from another encoding
     function FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase = ccOriginal): PUniConvSS;
   end;
 
@@ -612,14 +613,14 @@ var
   );
 
 
-// detect single byte encoding
+// detect single-byte encoding
 function UniConvIsSBCS(const CodePage: Word): Boolean; {$ifdef INLINESUPPORT}inline;{$endif}
 
-// get single byte encoding lookup
+// get single-byte encoding lookup
 // UNICONV_SUPPORTED_SBCS[0] if not found of raw data (CP $ffff)
 function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORT}inline;{$endif}
 
-// get single byte encoding lookup index
+// get single-byte encoding lookup index
 // 0 if not found of raw data (CP $ffff)
 function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
 
@@ -1249,7 +1250,7 @@ begin
   end;
 end;
 
-// detect single byte encoding
+// detect single-byte encoding
 function UniConvIsSBCS(const CodePage: Word): Boolean;
 var
   Index: NativeUInt;
@@ -1265,7 +1266,7 @@ begin
   Result := (Word(Value) = CodePage);
 end;
 
-// get single byte encoding lookup
+// get single-byte encoding lookup
 // UNICONV_SUPPORTED_SBCS[0] if not found of raw data (CP $ffff)
 function UniConvSBCS(const CodePage: Word): PUniConvSBCS;
 var
@@ -1282,7 +1283,7 @@ begin
   Result := @UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)];
 end;
 
-// get single byte encoding lookup index
+// get single-byte encoding lookup index
 // 0 if not found of raw data (CP $ffff)
 function UniConvSBCSIndex(const CodePage: Word): NativeUInt;
 var
