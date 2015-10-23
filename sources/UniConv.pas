@@ -275,9 +275,10 @@ type
     case Integer of
          0: (Flags: Cardinal;
              (*
-               SourceMode:5(6): TUniConvEncoding;
+               SourceMode:5: TUniConvEncoding;
                SourceStateNeeded:1: Boolean;
                DestinationStateNeeded:1: Boolean;
+               DestinationMarginNeeded:1: Boolean;
                ModeFinalize: Boolean;
                CharCase: TCharCase;
                CharCaseOriginal:1(3): Boolean;
@@ -2482,9 +2483,10 @@ const
   ENCODING_MASK = $1f;
   ENCODING_DESTINATION_OFFSET = 27;
 
-  FLAG_SRC_STATE_NEEDED = 1 shl 6;
-  FLAG_DEST_STATE_NEEDED = 1 shl 7;
+  FLAG_SRC_STATE_NEEDED = 1 shl 5;
+  FLAG_DEST_STATE_NEEDED = 1 shl 6;
   FLAGS_STATE_NEEDED = (FLAG_SRC_STATE_NEEDED or FLAG_DEST_STATE_NEEDED);
+  FLAG_DEST_MARGIN_NEEDED = 1 shl 7;
   FLAG_MODE_FINALIZE = 1 shl 8;
 
   CHARCASE_MASK = $3 shl 16;
@@ -2790,7 +2792,7 @@ begin
     end;
     ENC_UTF7:
     begin
-      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
+      F.Flags := F.Flags or (FLAG_DEST_STATE_NEEDED or FLAG_DEST_MARGIN_NEEDED);
       FCallbacks.Writer := @TUniConvContext.utf7_writer;
       FCallbacks.Convertible := 0;
     end;
@@ -2832,7 +2834,7 @@ begin
     end;
     ENC_HZGB2312:
     begin
-      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
+      F.Flags := F.Flags or (FLAG_DEST_STATE_NEEDED or FLAG_DEST_MARGIN_NEEDED);
       FCallbacks.Writer := @TUniConvContext.hzgb2312_writer;
       FCallbacks.Convertible := -NativeInt(@TUniConvContext.hzgb2312_convertible);
       if (hash_gb2312 = nil) then generate_hash_gb2312;
@@ -2858,7 +2860,7 @@ begin
     end;
     ENC_ISO2022JP:
     begin
-      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
+      F.Flags := F.Flags or (FLAG_DEST_STATE_NEEDED or FLAG_DEST_MARGIN_NEEDED);
       FCallbacks.Writer := @TUniConvContext.iso2022jp_writer;
       FCallbacks.Convertible := -NativeInt(@TUniConvContext.iso2022jp_convertible);
       if (hash_jisx0208 = nil) then generate_hash_jisx0208;
@@ -3001,7 +3003,7 @@ begin
     end;
     ENC_UTF7:
     begin
-      F.Flags := F.Flags or FLAG_DEST_STATE_NEEDED;
+      F.Flags := F.Flags or (FLAG_DEST_STATE_NEEDED or FLAG_DEST_MARGIN_NEEDED);
       FCallbacks.Writer := @TUniConvContext.utf7_writer;
       FCallbacks.Convertible := 0;
     end;
@@ -3541,6 +3543,8 @@ label
 type
   TReaderProc = function(Context: PUniConvContext; SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
   TWriterProc = function(Context: PUniConvContext; X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
+const
+  FLAG_DEST_ALREADY_FINALIZED = 1 shl (ENCODING_DESTINATION_OFFSET - 1);
 var
   Dest, Src: PByte;
   SrcSize: NativeUInt;
@@ -3573,7 +3577,7 @@ var
             2: (B: Byte);
             3: (Bytes: array[0..3] of Byte);
           end);
-      1: (WR: int64; ScsuReadWindows: array[0..7] of Cardinal);
+      1: (WR: Int64; ScsuReadWindows: array[0..7] of Cardinal);
   end;
 
   {$ifdef CPUX86}
@@ -3817,9 +3821,10 @@ char_read:
     Y := FStore.SrcRead;
     if (Integer(Cardinal(Y)) < 0) then
     begin
-      // mode finish
-      // Inc(Src, SrcSize);
+      // read none
+      Inc(Src, SrcSize);
       SrcSize := 0;
+      FStore.StoredSrc := Src;
       goto convert_finish;
     end;
     Dec(SrcSize, Y);
@@ -3843,8 +3848,8 @@ char_read_done:
   end;
 
 char_write:
-  DestSize := NativeInt(FStore.DestTop);
-  Dec(DestSize, NativeInt(Dest));
+  DestSize := NativeUInt(FStore.DestTop);
+  Dec(DestSize, NativeUInt(Dest));
 
   case {DestinationEncoding}(Flags shr ENCODING_DESTINATION_OFFSET) of
     ENC_SBCS{Single-byte: AnsiChar, AnsiString}:
@@ -4004,9 +4009,12 @@ char_write:
     FStore.Dest := Dest;
     FStore.Src := Src;
     {$endif}
+      // destination finalized (FinalMode)
+      if (SrcSize = 0) and (Flags and FLAG_MODE_FINALIZE <> 0) then
+        Flags := Flags or FLAG_DEST_ALREADY_FINALIZED;
       X := TWriterProc({$ifdef CPUX86}FStore.writer{$else}Self.FCallbacks.Writer{$endif})
            ({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, X, Dest, DestSize,
-           (SrcSize = 0) and (Flags and FLAG_MODE_FINALIZE <> 0));
+           Flags and FLAG_DEST_ALREADY_FINALIZED <> 0);
     {$ifdef CPUX86}
     Dest := FStore.Dest;
     Src := FStore.Src;
@@ -4060,7 +4068,27 @@ char_write:
   if (SrcSize >= 4) then goto char_read_normal;
 char_read_small:
   case SrcSize of
-    0: goto convert_finish;
+    0: begin
+         if (Flags and (FLAG_DEST_MARGIN_NEEDED or FLAG_MODE_FINALIZE or FLAG_DEST_ALREADY_FINALIZED) <>
+            (FLAG_DEST_MARGIN_NEEDED or FLAG_MODE_FINALIZE)) then goto convert_finish;
+
+         // call margin data write
+         {$ifdef CPUX86}
+         FStore.Dest := Dest;
+         {$endif}
+         X := TWriterProc({$ifdef CPUX86}FStore.writer{$else}Self.FCallbacks.Writer{$endif})
+           ({$ifdef CPUX86}FStore.Self{$else}@Self{$endif}, High(Cardinal),
+           Dest, {DestSize}NativeUInt(FStore.DestTop) - NativeUInt(Dest), True);
+         {$ifdef CPUX86}
+         Dest := FStore.Dest;
+         {$endif}
+         if (X = 0) then goto dest_too_small;
+         if (Cardinal(X) = High(Cardinal)) then goto convert_finish;
+         Inc(Dest, X);
+         FStore.StoredDest := Dest;
+         FStore.Write.D := {$ifdef CPUX86}FStore.{$endif}Self.FState.Write.D;
+         goto convert_finish;
+       end;
     1: begin
          X := PByte(Src)^;
          goto char_read;
@@ -5744,11 +5772,25 @@ const
   $00, $00, $00, $00, $00, $a8, $ff, $03,
   $fe, $ff, $ff, $07, $fe, $ff, $ff, $07);
 label
-  fail;
+  fail, done;
 var
   State: Cardinal;
   C: Cardinal;
 begin
+  if (X = High(Cardinal)) then
+  begin
+    State := Self.FState.Write.B;
+
+    if (State and 3 = 0) then
+    begin
+      Result := High(Cardinal);
+      Exit;
+    end;
+
+    Result := 0;
+    goto done;
+  end;
+
   C := X;
   if (C{X} > 127) then
   begin
@@ -5895,7 +5937,7 @@ begin
     until ({k}State and $ff00 = 0) and (State and 3 <> 0);
   end;
 
-//done:  
+done:
   if (ModeFinal) and (State and 3 <> 0) then
   begin
     Result := Result + (((State and 2) shr 1) + 1);
@@ -6507,7 +6549,7 @@ begin
     begin
       // need_window := 0;
       //Inc(State, 0 shl need_window_offset);
-     end;
+    end;
     $0100..$0100+$7f{1 modified}:
     begin
       // need_window := 1;
@@ -7671,12 +7713,25 @@ end;
 
 function TUniConvContext.hzgb2312_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 label
-  ascii, make_finalize, unknown, fail;
+  ascii, unknown, done, fail;
 var
   State: Byte;
   W: Word;
 begin
   State := Self.FState.Write.B;
+
+  if (X = High(Cardinal)) then
+  begin
+    if (State = 0) then
+    begin
+      Result := High(Cardinal);
+      Exit;
+    end;
+
+    Result := 0;
+    Dec(Dest, 2);
+    goto done;
+  end;
 
   if (X <= $7f) then
   begin
@@ -7727,7 +7782,8 @@ begin
     Self.FState.Write.B := 1;
   end;
   PWord(Dest)^ := W;
-  
+
+done:
   if (ModeFinal) then
   begin
     Inc(Result, 2);
@@ -8311,6 +8367,26 @@ var
   W: Word;
 begin
   State := Self.FState.Write.B;
+  if (X = High(Cardinal)) then
+  begin
+    if (State = JIS_ASCII) then
+    begin
+      Result := High(Cardinal);
+      Exit;
+    end;
+
+    Result := 3;
+    if (DestSize < Result) then {too small}
+    begin
+      Result := 0;
+      Exit;
+    end;
+
+    PWord(Dest)^ := JIS_ESC + (Ord('(') shl 8);
+    Inc(Dest, 2);
+    Dest^ := Ord('B');
+    Exit;
+  end;
 
   case X of
     0..$7f:
