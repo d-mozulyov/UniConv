@@ -4894,14 +4894,116 @@ end;
 
 // result = length
 procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+label
+  _2;
+var
+  i, X: NativeUInt;
+  CharCaseLookup: PUniConvWW;
 begin
-  {todo};
+  CharCaseLookup := Pointer(@UNICONV_CHARCASE.LOWER);
+
+  for i := 1 to (Length shr 2)  do
+  begin
+    X := PNativeUInt(Src)^;
+    Inc(NativeUInt(Src), SizeOf(NativeUInt));
+
+    {$ifNdef LARGEINT}
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+      Inc(Dest, 2);
+      X := PCardinal(Src)^;
+      Inc(Src, 2);
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+      Inc(Dest, 2);
+    {$else}
+      PNativeUInt(Dest)^ := NativeUInt(CharCaseLookup[Word(X)]) +
+        (NativeUInt(CharCaseLookup[Word(X shr 16)]) shl 16) +
+        (NativeUInt(CharCaseLookup[Word(X shr 32)]) shl 32) +
+        (NativeUInt(CharCaseLookup[X shr 48]) shl 48);
+
+      Inc(NativeUInt(Dest), SizeOf(NativeUInt));
+    {$endif}
+  end;
+
+  case (Length and 3) of
+    3:
+    begin
+      X := PWord(Src)^;
+      Inc(Src);
+      PWord(Dest)^ := CharCaseLookup[X];
+      Inc(Dest);
+      goto _2;
+    end;
+    2:
+    begin _2:
+      X := PCardinal(Src)^;
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+    end;
+    1:
+    begin
+      X := PWord(Src)^;
+      PWord(Dest)^ := CharCaseLookup[X];
+    end;
+  end;
 end;
 
 // result = length
 procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+label
+  _2;
+var
+  i, X: NativeUInt;
+  CharCaseLookup: PUniConvWW;
 begin
-  {todo};
+  CharCaseLookup := Pointer(@UNICONV_CHARCASE.UPPER);
+
+  for i := 1 to (Length shr 2)  do
+  begin
+    X := PNativeUInt(Src)^;
+    Inc(NativeUInt(Src), SizeOf(NativeUInt));
+
+    {$ifNdef LARGEINT}
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+      Inc(Dest, 2);
+      X := PCardinal(Src)^;
+      Inc(Src, 2);
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+      Inc(Dest, 2);
+    {$else}
+      PNativeUInt(Dest)^ := NativeUInt(CharCaseLookup[Word(X)]) +
+        (NativeUInt(CharCaseLookup[Word(X shr 16)]) shl 16) +
+        (NativeUInt(CharCaseLookup[Word(X shr 32)]) shl 32) +
+        (NativeUInt(CharCaseLookup[X shr 48]) shl 48);
+
+      Inc(NativeUInt(Dest), SizeOf(NativeUInt));
+    {$endif}
+  end;
+
+  case (Length and 3) of
+    3:
+    begin
+      X := PWord(Src)^;
+      Inc(Src);
+      PWord(Dest)^ := CharCaseLookup[X];
+      Inc(Dest);
+      goto _2;
+    end;
+    2:
+    begin _2:
+      X := PCardinal(Src)^;
+      PCardinal(Dest)^ := Cardinal(CharCaseLookup[Word(X)]) +
+        Cardinal(CharCaseLookup[X shr 16]) shl 16;
+    end;
+    1:
+    begin
+      X := PWord(Src)^;
+      PWord(Dest)^ := CharCaseLookup[X];
+    end;
+  end;
 end;
 
 function TUniConvContext.convert_utf8_from_sbcs: NativeInt;
