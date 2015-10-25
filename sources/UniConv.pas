@@ -8242,12 +8242,26 @@ end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+label
+  process4, look_first, process1_3,
+  ascii_1, ascii_2, ascii_3,
+  process_standard, process_character, unknown,
+  next_iteration, small_length, done, done_extended, done_standard;
 var
   Options: PExtendedConversionOptions;
   Store: record
     Options: PExtendedConversionOptions;
     Dest: Pointer;
   end;
+  X, U: NativeUInt;
+
+{$ifdef CPUINTEL}
+const
+  MASK_80 = MASK_80_SMALL;
+{$else .CPUARM}
+var
+  MASK_80: NativeUInt;
+{$endif}
 begin
   // extended options
   if (NativeInt(Length) < 0) then
@@ -8260,31 +8274,230 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  Inc(Length, NativeUInt(Src));
+  Dec(Length, MAX_UTF8CHAR_SIZE);
 
-  // todo
+  {$ifdef CPUARM}
+    MASK_80 := MASK_80_SMALL;
+  {$endif}
+
+  // conversion loop
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then
+  begin
+    repeat
+    process4:
+      Inc(Src, SizeOf(Cardinal));
+
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        X := X shr 16;
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16) + ((X and $7f000000) shl 24);
+        Inc(NativeUInt(Dest), SizeOf(NativeUInt));
+      {$endif}
+
+      if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+      X := PCardinal(Src)^;
+    until (X and Integer(MASK_80) <> 0);
+    goto look_first;
+  end else
+  begin
+  look_first:
+    if (X and $80 = 0) then
+    begin
+    process1_3:
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := ((X shr 16) and $7f);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16);
+      {$endif}
+
+      if (X and $8000 <> 0) then goto ascii_1;
+      if (X and $800000 <> 0) then goto ascii_2;
+      ascii_3:
+        Inc(Src, 3);
+        Inc(Dest, 3{$ifdef SMALLINT}- 2{$endif});
+        goto next_iteration;
+      ascii_2:
+        X := X shr 16;
+        Inc(Src, 2);
+        {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        goto next_iteration;
+      ascii_1:
+        X := X shr 8;
+        Inc(Src);
+        Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        // goto next_iteration;
+    end else
+    begin
+    process_standard:
+      if (X and $C0E0 = $80C0) then
+      begin
+        X := ((X and $1F) shl 6) + ((X shr 8) and $3F);
+        Inc(Src, 2);
+
+      process_character:
+        PWord(Dest)^ := X;
+        Inc(Dest);
+      end else
+      begin
+        U := UNICONV_UTF8_SIZE[Byte(X)];
+        case (U) of
+          1:
+          begin
+            X := X and $7f;
+            Inc(Src);
+            PWord(Dest)^ := X;
+            Inc(Dest);
+          end;
+          3:
+          begin
+            if (X and $C0C000 = $808000) then
+            begin
+              U := (X and $0F) shl 12;
+              U := U + (X shr 16) and $3F;
+              X := (X and $3F00) shr 2;
+              Inc(Src, 3);
+              Inc(X, U);
+              if (U shr 11 = $1B) then X := $fffd;
+              PWord(Dest)^ := X;
+              Inc(Dest);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+          4:
+          begin
+            if (X and $C0C0C000 = $80808000) then
+            begin
+              U := (X and $07) shl 18;
+              U := U + (X and $3f00) shl 4;
+              U := U + (X shr 10) and $0fc0;
+              X := (X shr 24) and $3f;
+              Inc(X, U);
+
+              U := (X - $10000) shr 10 + $d800;
+              X := (X - $10000) and $3ff + $dc00;
+              X := (X shl 16) + U;
+
+              PCardinal(Dest)^ := X;
+              Inc(Dest, 2);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+        else
+        unknown:
+          PWord(Dest)^ := UNKNOWN_CHARACTER;
+          Inc(Dest);
+          Inc(Src, U);
+          Inc(Src, NativeUInt(U = 0));
+        end;
+      end;
+    end;
+  end;
+
+next_iteration:
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then goto process4;
+  if (X and $80 = 0) then goto process1_3;
+  goto process_standard;
+
+small_length:
+  U := Length{TopSrc} + MAX_UTF8CHAR_SIZE;
+  if (U = NativeUInt(Src)) then goto done;
+  X := PByte(Src)^;
+  if (X <= $7f) then
+  begin
+    PWord(Dest)^ := X;
+    Inc(Src);
+    Inc(Dest);
+    if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
+    goto done;
+  end;
+  X := UNICONV_UTF8_SIZE[X];
+  Dec(U, NativeUInt(Src));
+  if (X{char size} > U{available source length}) then
+  begin
+    Options := Store.Options;
+    if (Options <> nil) then goto done_extended;
+    PByte(Dest)^ := UNKNOWN_CHARACTER;
+    Inc(Dest);
+    goto done_standard;
+  end;
+
+  case X{char size} of
+    2:
+    begin
+      X := PWord(Src)^;
+      goto process_standard;
+    end;
+    3:
+    begin
+      X := P4Bytes(Src)[2];
+      X := (X shl 16) or PWord(Src)^;
+      goto process_standard;
+    end;
+  else
+    // 4..5
+    goto unknown;
+  end;
 
   // result
+done:
   Options := Store.Options;
   if (Options <> nil) then
   begin
+  done_extended:
     Options.Source := Src;
-    {test}Options.Length := Length;
-    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Result := (NativeUInt(Dest) - NativeUInt(Options.Destination)) shr 1;
     Options.Destination := Dest;
   end else
   begin
-    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  done_standard:
+    Result := (NativeUInt(Dest) - NativeUInt(Store.Dest)) shr 1;
   end;
 end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+label
+  process4, look_first, process1_3,
+  ascii_1, ascii_2, ascii_3,
+  process_standard, process_character, unknown,
+  next_iteration, small_length, done, done_extended, done_standard;
 var
   Options: PExtendedConversionOptions;
   Store: record
     Options: PExtendedConversionOptions;
     Dest: Pointer;
   end;
+
+  X, U, V: NativeUInt;
+  StoredX: NativeUInt;
+
+{$ifdef CPUINTEL}
+const
+  MASK_80 = MASK_80_SMALL;
+  MASK_40 = MASK_40_SMALL;
+  MASK_65 = MASK_65_SMALL;
+  MASK_7F = MASK_7F_SMALL;
+{$else .CPUARM}
+var
+  MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
+{$endif}
 begin
   // extended options
   if (NativeInt(Length) < 0) then
@@ -8297,31 +8510,243 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  Inc(Length, NativeUInt(Src));
+  Dec(Length, MAX_UTF8CHAR_SIZE);
 
-  // todo
+  {$ifdef CPUARM}
+    MASK_80 := MASK_80_SMALL;
+    MASK_40 := MASK_40_SMALL;
+    MASK_65 := MASK_65_SMALL;
+    MASK_7F := MASK_7F_SMALL;
+  {$endif}
+
+  // conversion loop
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then
+  begin
+    repeat
+    process4:
+      U := X xor MASK_40;
+      V := (U + MASK_65);
+      U := (U + MASK_7F) and Integer(MASK_80);
+      X := X + ((not V) and U) shr 2;
+      Inc(Src, SizeOf(Cardinal));
+
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        X := X shr 16;
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16) + ((X and $7f000000) shl 24);
+        Inc(NativeUInt(Dest), SizeOf(NativeUInt));
+      {$endif}
+
+      if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+      X := PCardinal(Src)^;
+    until (X and Integer(MASK_80) <> 0);
+    goto look_first;
+  end else
+  begin
+  look_first:
+    if (X and $80 = 0) then
+    begin
+    process1_3:
+      StoredX := X;
+        X := X and Integer(MASK_7F);
+        U := X xor MASK_40;
+        V := (U + MASK_65);
+        U := (U + MASK_7F) and Integer(MASK_80);
+        X := X + ((not V) and U) shr 2;
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := ((X shr 16) and $7f);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16);
+      {$endif}
+      X := StoredX;
+
+      if (X and $8000 <> 0) then goto ascii_1;
+      if (X and $800000 <> 0) then goto ascii_2;
+      ascii_3:
+        Inc(Src, 3);
+        Inc(Dest, 3{$ifdef SMALLINT}- 2{$endif});
+        goto next_iteration;
+      ascii_2:
+        X := X shr 16;
+        Inc(Src, 2);
+        {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        goto next_iteration;
+      ascii_1:
+        X := X shr 8;
+        Inc(Src);
+        Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        // goto next_iteration;
+    end else
+    begin
+    process_standard:
+      if (X and $C0E0 = $80C0) then
+      begin
+        X := ((X and $1F) shl 6) + ((X shr 8) and $3F);
+        Inc(Src, 2);
+
+      process_character:
+        PWord(Dest)^ := UNICONV_CHARCASE.VALUES[X];
+        Inc(Dest);
+      end else
+      begin
+        U := UNICONV_UTF8_SIZE[Byte(X)];
+        case (U) of
+          1:
+          begin
+            X := X and $7f;
+            Inc(Src);
+            goto process_character;
+          end;
+          3:
+          begin
+            if (X and $C0C000 = $808000) then
+            begin
+              U := (X and $0F) shl 12;
+              U := U + (X shr 16) and $3F;
+              X := (X and $3F00) shr 2;
+              Inc(Src, 3);
+              Inc(X, U);
+              if (U shr 11 <> $1B) then goto process_character;
+              PWord(Dest)^ := $fffd;
+              Inc(Dest);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+          4:
+          begin
+            if (X and $C0C0C000 = $80808000) then
+            begin
+              U := (X and $07) shl 18;
+              U := U + (X and $3f00) shl 4;
+              U := U + (X shr 10) and $0fc0;
+              X := (X shr 24) and $3f;
+              Inc(X, U);
+
+              U := (X - $10000) shr 10 + $d800;
+              X := (X - $10000) and $3ff + $dc00;
+              X := (X shl 16) + U;
+
+              PCardinal(Dest)^ := X;
+              Inc(Dest, 2);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+        else
+        unknown:
+          PWord(Dest)^ := UNKNOWN_CHARACTER;
+          Inc(Dest);
+          Inc(Src, U);
+          Inc(Src, NativeUInt(U = 0));
+        end;
+      end;
+    end;
+  end;
+
+next_iteration:
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then goto process4;
+  if (X and $80 = 0) then goto process1_3;
+  goto process_standard;
+
+small_length:
+  U := Length{TopSrc} + MAX_UTF8CHAR_SIZE;
+  if (U = NativeUInt(Src)) then goto done;
+  X := PByte(Src)^;
+  if (X <= $7f) then
+  begin
+    PWord(Dest)^ := UNICONV_CHARCASE.VALUES[X];
+    Inc(Src);
+    Inc(Dest);
+    if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
+    goto done;
+  end;
+  X := UNICONV_UTF8_SIZE[X];
+  Dec(U, NativeUInt(Src));
+  if (X{char size} > U{available source length}) then
+  begin
+    Options := Store.Options;
+    if (Options <> nil) then goto done_extended;
+    PByte(Dest)^ := UNKNOWN_CHARACTER;
+    Inc(Dest);
+    goto done_standard;
+  end;
+
+  case X{char size} of
+    2:
+    begin
+      X := PWord(Src)^;
+      goto process_standard;
+    end;
+    3:
+    begin
+      X := P4Bytes(Src)[2];
+      X := (X shl 16) or PWord(Src)^;
+      goto process_standard;
+    end;
+  else
+    // 4..5
+    goto unknown;
+  end;
 
   // result
+done:
   Options := Store.Options;
   if (Options <> nil) then
   begin
+  done_extended:
     Options.Source := Src;
-    {test}Options.Length := Length;
-    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Result := (NativeUInt(Dest) - NativeUInt(Options.Destination)) shr 1;
     Options.Destination := Dest;
   end else
   begin
-    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  done_standard:
+    Result := (NativeUInt(Dest) - NativeUInt(Store.Dest)) shr 1;
   end;
 end;
 
 // result = min: length/3; max: length
 function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+label
+  process4, look_first, process1_3,
+  ascii_1, ascii_2, ascii_3,
+  process_standard, process_character, unknown,
+  next_iteration, small_length, done, done_extended, done_standard;
 var
   Options: PExtendedConversionOptions;
   Store: record
     Options: PExtendedConversionOptions;
     Dest: Pointer;
   end;
+
+  X, U, V: NativeUInt;
+  StoredX: NativeUInt;
+
+{$ifdef CPUINTEL}
+const
+  MASK_80 = MASK_80_SMALL;
+  MASK_60 = MASK_60_SMALL;
+  MASK_65 = MASK_65_SMALL;
+  MASK_7F = MASK_7F_SMALL;
+{$else .CPUARM}
+var
+  MASK_80, MASK_60, MASK_65, MASK_7F: NativeUInt;
+{$endif}
 begin
   // extended options
   if (NativeInt(Length) < 0) then
@@ -8334,20 +8759,213 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  Inc(Length, NativeUInt(Src));
+  Dec(Length, MAX_UTF8CHAR_SIZE);
 
-  // todo
+  {$ifdef CPUARM}
+    MASK_80 := MASK_80_SMALL;
+    MASK_60 := MASK_60_SMALL;
+    MASK_65 := MASK_65_SMALL;
+    MASK_7F := MASK_7F_SMALL;
+  {$endif}
+
+  // conversion loop
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then
+  begin
+    repeat
+    process4:
+      U := X xor MASK_60;
+      V := (U + MASK_65);
+      U := (U + MASK_7F) and Integer(MASK_80);
+      X := X - ((not V) and U) shr 2;
+      Inc(Src, SizeOf(Cardinal));
+
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        X := X shr 16;
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16) + ((X and $7f000000) shl 24);
+        Inc(NativeUInt(Dest), SizeOf(NativeUInt));
+      {$endif}
+
+      if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+      X := PCardinal(Src)^;
+    until (X and Integer(MASK_80) <> 0);
+    goto look_first;
+  end else
+  begin
+  look_first:
+    if (X and $80 = 0) then
+    begin
+    process1_3:
+      StoredX := X;
+        X := X and Integer(MASK_7F);
+        U := X xor MASK_60;
+        V := (U + MASK_65);
+        U := (U + MASK_7F) and Integer(MASK_80);
+        X := X - ((not V) and U) shr 2;
+      {$ifNdef LARGEINT}
+        PCardinal(Dest)^ := (X and $7f) + ((X and $7f00) shl 8);
+        Inc(Dest, 2);
+        PCardinal(Dest)^ := ((X shr 16) and $7f);
+      {$else}
+        PNativeUInt(Dest)^ := (X and $7f) + ((X and $7f00) shl 8) +
+          ((X and $7f0000) shl 16);
+      {$endif}
+      X := StoredX;
+
+      if (X and $8000 <> 0) then goto ascii_1;
+      if (X and $800000 <> 0) then goto ascii_2;
+      ascii_3:
+        Inc(Src, 3);
+        Inc(Dest, 3{$ifdef SMALLINT}- 2{$endif});
+        goto next_iteration;
+      ascii_2:
+        X := X shr 16;
+        Inc(Src, 2);
+        {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        goto next_iteration;
+      ascii_1:
+        X := X shr 8;
+        Inc(Src);
+        Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
+        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        // goto next_iteration;
+    end else
+    begin
+    process_standard:
+      if (X and $C0E0 = $80C0) then
+      begin
+        X := ((X and $1F) shl 6) + ((X shr 8) and $3F);
+        Inc(Src, 2);
+
+      process_character:
+        PWord(Dest)^ := UNICONV_CHARCASE.VALUES[CHARCASE_OFFSET + X];
+        Inc(Dest);
+      end else
+      begin
+        U := UNICONV_UTF8_SIZE[Byte(X)];
+        case (U) of
+          1:
+          begin
+            X := X and $7f;
+            Inc(Src);
+            goto process_character;
+          end;
+          3:
+          begin
+            if (X and $C0C000 = $808000) then
+            begin
+              U := (X and $0F) shl 12;
+              U := U + (X shr 16) and $3F;
+              X := (X and $3F00) shr 2;
+              Inc(Src, 3);
+              Inc(X, U);
+              if (U shr 11 <> $1B) then goto process_character;
+              PWord(Dest)^ := $fffd;
+              Inc(Dest);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+          4:
+          begin
+            if (X and $C0C0C000 = $80808000) then
+            begin
+              U := (X and $07) shl 18;
+              U := U + (X and $3f00) shl 4;
+              U := U + (X shr 10) and $0fc0;
+              X := (X shr 24) and $3f;
+              Inc(X, U);
+
+              U := (X - $10000) shr 10 + $d800;
+              X := (X - $10000) and $3ff + $dc00;
+              X := (X shl 16) + U;
+
+              PCardinal(Dest)^ := X;
+              Inc(Dest, 2);
+              goto next_iteration;
+            end;
+            goto unknown;
+          end;
+        else
+        unknown:
+          PWord(Dest)^ := UNKNOWN_CHARACTER;
+          Inc(Dest);
+          Inc(Src, U);
+          Inc(Src, NativeUInt(U = 0));
+        end;
+      end;
+    end;
+  end;
+
+next_iteration:
+  if (NativeUInt(Src) > Length{TopSrc}) then goto small_length;
+  X := PCardinal(Src)^;
+  if (X and Integer(MASK_80) = 0) then goto process4;
+  if (X and $80 = 0) then goto process1_3;
+  goto process_standard;
+
+small_length:
+  U := Length{TopSrc} + MAX_UTF8CHAR_SIZE;
+  if (U = NativeUInt(Src)) then goto done;
+  X := PByte(Src)^;
+  if (X <= $7f) then
+  begin
+    PWord(Dest)^ := UNICONV_CHARCASE.VALUES[CHARCASE_OFFSET + X];
+    Inc(Src);
+    Inc(Dest);
+    if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
+    goto done;
+  end;
+  X := UNICONV_UTF8_SIZE[X];
+  Dec(U, NativeUInt(Src));
+  if (X{char size} > U{available source length}) then
+  begin
+    Options := Store.Options;
+    if (Options <> nil) then goto done_extended;
+    PByte(Dest)^ := UNKNOWN_CHARACTER;
+    Inc(Dest);
+    goto done_standard;
+  end;
+
+  case X{char size} of
+    2:
+    begin
+      X := PWord(Src)^;
+      goto process_standard;
+    end;
+    3:
+    begin
+      X := P4Bytes(Src)[2];
+      X := (X shl 16) or PWord(Src)^;
+      goto process_standard;
+    end;
+  else
+    // 4..5
+    goto unknown;
+  end;
 
   // result
+done:
   Options := Store.Options;
   if (Options <> nil) then
   begin
+  done_extended:
     Options.Source := Src;
-    {test}Options.Length := Length;
-    Result := NativeUInt(Dest) - NativeUInt(Options.Destination);
+    Result := (NativeUInt(Dest) - NativeUInt(Options.Destination)) shr 1;
     Options.Destination := Dest;
   end else
   begin
-    Result := NativeUInt(Dest) - NativeUInt(Store.Dest);
+  done_standard:
+    Result := (NativeUInt(Dest) - NativeUInt(Store.Dest)) shr 1;
   end;
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
