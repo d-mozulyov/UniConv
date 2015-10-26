@@ -626,65 +626,66 @@ function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORT}
 function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
 
 
-// result = length
-procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
-procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS);
-procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS);
+{$ifdef undef}{$REGION 'low level SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
+  // result = length
+  procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
+  procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS);
+  procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS);
 
-// result = min: length/3*2; max: length*3/2
-function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  // result = min: length/3*2; max: length*3/2
+  function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
 
-// result = length
-procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
-procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+  // result = length
+  procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+  procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
 
-// result = min: length; max: length*3
-function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
-function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt;
-function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt;
+  // result = min: length; max: length*3
+  function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
+  function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt;
+  function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt;
 
-// result = min: length/6; max: length
-function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  // result = min: length/6; max: length
+  function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
 
-// result = length
-procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
-procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS);
-procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS);
+  // result = length
+  procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
+  procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS);
+  procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS);
 
-// result = min: length/2; max: length
-function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  // result = min: length/2; max: length
+  function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
 
-// result = min: length; max: length*3
-function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
-function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
-function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+  // result = min: length; max: length*3
+  function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+  function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+  function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
 
-// result = min: length/3; max: length
-function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  // result = min: length/3; max: length
+  function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+{$ifdef undef}{$ENDREGION}{$endif}
 
+{$ifdef undef}{$REGION 'low level string types routine'}{$endif}
+  procedure AnsiStringClear(var S{: AnsiString/UTF8String});
+  function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
+  procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 
+  procedure WideStringClear(var S{: WideString}); {$ifNdef MSWINDOWS}inline;{$endif}
+  function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
+  procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 
-// low level string types routine
-procedure AnsiStringClear(var S{: AnsiString/UTF8String});
-function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
-procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-
-procedure WideStringClear(var S{: WideString}); {$ifNdef MSWINDOWS}inline;{$endif}
-function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
-procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-
-{$ifdef UNICODE}
-procedure UnicodeStringClear(var S{: UnicodeString}); {$ifNdef NEXTGEN}inline;{$endif}
-function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
-procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-{$endif}
+  {$ifdef UNICODE}
+  procedure UnicodeStringClear(var S{: UnicodeString}); {$ifNdef NEXTGEN}inline;{$endif}
+  function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
+  procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
+  {$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
 
 implementation
 var
@@ -1301,8 +1302,7 @@ begin
   Result := Byte(Value shr 16);
 end;
 
-
-{$ifdef undef}{$REGION 'TUniConvSBCS ROUTINE'}{$endif}
+{$ifdef undef}{$REGION 'TUniConvSBCS routine'}{$endif}
 const
   SBCS_UCS2_OFFSETS: array[Low(UNICONV_SUPPORTED_SBCS)..High(UNICONV_SUPPORTED_SBCS)] of Word = (
                      0,0,123,353,495,584,707,814,965,1111,1365,1496,1682,1854,1960,2111,
@@ -2455,7 +2455,7 @@ begin
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
-
+{$ifdef undef}{$REGION 'TUniConv routine'}{$endif}
 const
   ENC_SBCS = 0;
   ENC_UTF8 = 1;
@@ -4124,8 +4124,9 @@ convert_finish:
   end;
   Result := SrcSize;
 end;
+{$ifdef undef}{$ENDREGION}{$endif}
 
-{$ifdef undef}{$REGION 'FAST MOST FREQUENTLY USED CONVERSIONS'}{$endif}
+{$ifdef undef}{$REGION 'fast SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
 
 const
   HIGH_NATIVE_BIT_VALUE = (NativeUInt(1) shl HIGH_NATIVE_BIT);
@@ -6333,6 +6334,7 @@ begin
               Inc(X, U);
               PByte(Dest)^ := PUniConvBW(Converter)[X];
               Inc(Dest);
+              goto next_iteration;
             end;
             goto unknown;
           end;
@@ -9490,7 +9492,7 @@ done:
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
-{$ifdef undef}{$REGION 'DIFFICULT CONTEXT READERS AND WRITERS'}{$endif}
+{$ifdef undef}{$REGION 'difficult context readers and writers'}{$endif}
 function TUniConvContext.utf1_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 const
   U: array[0..256-1] of Byte = (
@@ -12834,7 +12836,7 @@ begin
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
-{$ifdef undef}{$REGION 'SYSTEM STRING TYPES ROUTINE'}{$endif}
+{$ifdef undef}{$REGION 'low level string types routine'}{$endif}
 type
   TDynArrayRec = packed record
     RefCount: Integer;
@@ -12853,7 +12855,7 @@ type
       TAnsiStrRec = TDynArrayRec;
     {$else}
       TAnsiStrRec = packed record
-      {$ifdef CPUX64}
+      {$ifdef LARGEINT}
         _Padding: Integer;
       {$endif}
         CodePageElemSize: Integer;
@@ -12869,7 +12871,7 @@ type
       TUnicodeStrRec = TAnsiStrRec;
     {$else}
       TUnicodeStrRec = packed record
-      {$ifdef CPUX64}
+      {$ifdef LARGEINT}
         _Padding: Integer;
       {$endif}
         CodePageElemSize: Integer;
@@ -13136,7 +13138,7 @@ asm
   mov [eax], edx
   ret
 @1:
-  mov Byte ptr [edx+ecx], 0
+  mov byte ptr [edx+ecx], 0
 
   push eax
   lea eax, [edx-8]
@@ -13228,7 +13230,7 @@ end;
 {$endif}
 
 
-function WideStringAlloc(S: Pointer{last WideString}; Length, flag: Integer): Pointer;
+function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
 {$ifdef MSWINDOWS}
 var
   CurrentLen: Integer;
@@ -13242,7 +13244,7 @@ begin
     Length := Length*2;
     CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
 
-    if (flag >= 0) then
+    if (Flag >= 0) then
     begin
       if (CurrentLen >= Length) then Result := S
       else
@@ -13284,7 +13286,7 @@ begin
     // use or free
     if (P.Length >= Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
     begin
-      if (flag < 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+      if (Flag < 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
       end;
@@ -13380,7 +13382,7 @@ end;
 {$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
-{$ifdef undef}{$REGION 'HIEROGLYPH LOOKUPS'}{$endif}
+{$ifdef undef}{$REGION 'hieroglyph lookups'}{$endif}
 const
   offsets_gb18030_data: array[0..25-1] of Cardinal = (
   $5081007f,$dfc11650,$50604213,$c0635063,$0570813f,$24cbcbc1,$83000f81,$dd005b8c,$4c33c9c9,$56810f24,
