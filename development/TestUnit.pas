@@ -74,10 +74,11 @@ begin
   BreakPoint := S;
 
   {$ifdef MSWINDOWS}
-    {$ifdef UNITSCOPENAMES}Winapi.{$endif}Windows.MessageBox(0, PChar(BreakPoint), 'Сообщение:', 0);
+    if ({$ifdef UNITSCOPENAMES}Winapi.{$endif}Windows.MessageBox(GetForegroundWindow,
+      PChar(BreakPoint), 'Сообщение:', MB_OKCANCEL) = IDCANCEL) then Halt;
+  {$else}
+    Halt;
   {$endif}
-
-  Halt;
 end;
 
 procedure ShowMessage(const StrFmt: string; const Args: array of const);
