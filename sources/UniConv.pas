@@ -628,47 +628,47 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
 
 {$ifdef undef}{$REGION 'low level SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
   // result = length
-  procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS);
-  procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS);
-  procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS);
+  procedure sbcs_from_sbcs(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvSS); overload;
+  procedure sbcs_from_sbcs_lower(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvSS); overload;
+  procedure sbcs_from_sbcs_upper(Dest: PAnsiChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvSS); overload;
 
   // result = min: length/3*2; max: length*3/2
-  function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-  function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  function utf8_from_utf8_lower(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt; overload;
+  function utf8_from_utf8_upper(Dest: PUTF8Char; Src: PUTF8Char; Length: NativeUInt): NativeUInt; overload;
 
   // result = length
-  procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
-  procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt);
+  procedure utf16_from_utf16_lower(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt); overload;
+  procedure utf16_from_utf16_upper(Dest: PUnicodeChar; Src: PUnicodeChar; Length: NativeUInt); overload;
 
   // result = min: length; max: length*3
-  function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt;
-  function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt;
-  function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt;
+  function utf8_from_sbcs(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvMS): NativeUInt; overload;
+  function utf8_from_sbcs_lower(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvMS): NativeUInt; overload;
+  function utf8_from_sbcs_upper(Dest: PUTF8Char; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvMS): NativeUInt; overload;
 
   // result = min: length/6; max: length
-  function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-  function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-  function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf8(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
+  function sbcs_from_utf8_lower(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
+  function sbcs_from_utf8_upper(Dest: PAnsiChar; Src: PUTF8Char; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
 
   // result = length
-  procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS);
-  procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS);
-  procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS);
+  procedure utf16_from_sbcs(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; Converter: PUniConvUS); overload;
+  procedure utf16_from_sbcs_lower(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; LowerCase: PUniConvUS); overload;
+  procedure utf16_from_sbcs_upper(Dest: PUnicodeChar; Src: PAnsiChar; Length: NativeUInt; UpperCase: PUniConvUS); overload;
 
   // result = min: length/2; max: length
-  function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-  function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
-  function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt;
+  function sbcs_from_utf16(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
+  function sbcs_from_utf16_lower(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
+  function sbcs_from_utf16_upper(Dest: PAnsiChar; Src: PUnicodeChar; Length: NativeUInt; Converter: PUniConvSBCSValues): NativeUInt; overload;
 
   // result = min: length; max: length*3
-  function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
-  function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
-  function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt;
+  function utf8_from_utf16(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt; overload;
+  function utf8_from_utf16_lower(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt; overload;
+  function utf8_from_utf16_upper(Dest: PUTF8Char; Src: PUnicodeChar; Length: NativeUInt): NativeUInt; overload;
 
   // result = min: length/3; max: length
-  function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-  function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
-  function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt;
+  function utf16_from_utf8(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt; overload;
+  function utf16_from_utf8_lower(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt; overload;
+  function utf16_from_utf8_upper(Dest: PUnicodeChar; Src: PUTF8Char; Length: NativeUInt): NativeUInt; overload;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'low level string types routine'}{$endif}
@@ -685,6 +685,175 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
   function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
   procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
   {$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
+
+{$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
+  procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+  function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+  procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+  function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+  procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+  function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
+  function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
+
+  procedure sbcs_from_utf8(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure sbcs_from_utf8(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
+  procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
+  procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
+  function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
+
+  procedure sbcs_from_utf16(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+  function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure sbcs_from_utf16(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+  procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+  function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+  procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+  function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
+
+  procedure utf8_from_sbcs(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure utf8_from_sbcs(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
+  function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
+  function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
+  procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
+  function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+
+  procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: UTF8String); overload;
+  function utf8_from_utf8_lower(const Src: UTF8String): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: ShortString); overload;
+  procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: ShortString); overload;
+  function utf8_from_utf8_lower(const Src: ShortString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: UTF8String); overload;
+  procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: UTF8String); overload;
+  function utf8_from_utf8_upper(const Src: UTF8String): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: ShortString); overload;
+  procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: ShortString); overload;
+  function utf8_from_utf8_upper(const Src: ShortString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: UTF8String); overload;
+
+  procedure utf8_from_utf16(var Dest: UTF8String; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
+  function utf8_from_utf16(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf8_from_utf16(var Dest: ShortString; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
+  procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
+  function utf8_from_utf16_lower(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
+  procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
+  function utf8_from_utf16_upper(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
+
+  procedure utf16_from_sbcs(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_sbcs(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
+  {$ifdef UNICODE} procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+
+  procedure utf16_from_utf8(var Dest: WideString; const Src: UTF8String); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf8(var Dest: WideString; const Src: ShortString); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf8_lower(var Dest: WideString; const Src: UTF8String); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf8_lower(var Dest: WideString; const Src: ShortString); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf8_upper(var Dest: WideString; const Src: UTF8String); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf8_upper(var Dest: WideString; const Src: ShortString); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+
+  procedure utf16_from_utf16_lower(var Dest: WideString; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf16_lower(var Dest: UnicodeString; const Src: UnicodeString); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf16_lower(const Src: WideString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  procedure utf16_from_utf16_upper(var Dest: WideString; const Src: WideString); overload;
+  {$ifdef UNICODE} procedure utf16_from_utf16_upper(var Dest: UnicodeString; const Src: UnicodeString); overload; {$endif}
+  {$ifNdef UNICODE} function utf16_from_utf16_upper(const Src: WideString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
 implementation
@@ -15477,6 +15646,3542 @@ procedure generate_hash_big5;
 begin
   universal_hash_alloc(hash_big5, 19302, 190, table_big5, generate_table_big5);
 end;
+{$ifdef undef}{$ENDREGION}{$endif}
+
+{$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
+procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Index := NativeUInt(SrcCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs(Buffer, Pointer(Src), Length, Converter);
+end;
+
+function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
+end;
+
+procedure sbcs_from_sbcs(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Index := NativeUInt(SrcCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+
+  // conversion
+  UniConv.sbcs_from_sbcs(Pointer(@Dest[1]), Pointer(@Src[1]), Length, Converter);
+end;
+
+procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Index := NativeUInt(SrcCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs(Result, Src, DestCodePage, SrcCodePage);
+end;
+
+procedure sbcs_from_sbcs(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Index := NativeUInt(SrcCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+
+  // conversion
+  UniConv.sbcs_from_sbcs(Pointer(@Dest[1]), Pointer(Src), Length, Converter);
+end;
+
+procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FLowerCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccLower);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter);
+end;
+
+function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs_lower(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
+end;
+
+procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FLowerCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccLower);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+  end;
+
+  // conversion
+  UniConv.sbcs_from_sbcs_lower(Pointer(@Dest[1]), Pointer(@Src[1]), Length, Converter);
+end;
+
+procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FLowerCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccLower);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs_lower(Result, Src, DestCodePage, SrcCodePage);
+end;
+
+procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FLowerCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccLower);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+  end;
+
+  // conversion
+  UniConv.sbcs_from_sbcs_lower(Pointer(@Dest[1]), Pointer(Src), Length, Converter);
+end;
+
+procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FUpperCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccUpper);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter);
+end;
+
+function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs_upper(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
+end;
+
+procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FUpperCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccUpper);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+  end;
+
+  // conversion
+  UniConv.sbcs_from_sbcs_upper(Pointer(@Dest[1]), Pointer(@Src[1]), Length, Converter);
+end;
+
+procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FUpperCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccUpper);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
+  Pointer(Dest) := Buffer;
+  UniConv.sbcs_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_sbcs_upper(Result, Src, DestCodePage, SrcCodePage);
+end;
+
+procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
+  PByte(@Dest)^ := Length;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(DestCodePage);
+  Index := NativeUInt(DestCodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = DestCodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  if (SrcCodePage = DestCodePage) then
+  begin
+    Converter := SBCS.FUpperCase;
+    if (Converter = nil) then Converter := SBCS.FromSBCS(SBCS, ccUpper);
+  end else
+  begin
+    Index := NativeUInt(SrcCodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+  end;
+
+  // conversion
+  UniConv.sbcs_from_sbcs_upper(Pointer(@Dest[1]), Pointer(Src), Length, Converter);
+end;
+
+procedure sbcs_from_utf8(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf8(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_lower(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8_lower(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_lower;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_lower(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8_lower(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_lower;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_upper(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8_upper(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_upper;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_upper(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf8_upper(Result, Src, CodePage);
+end;
+
+procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_upper;
+  if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure sbcs_from_utf16(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16(Buffer, Pointer(Src), Length, Converter));
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16(Buffer, Pointer(Src), Length, Converter));
+end;
+{$endif}
+
+function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16(Result, Src, CodePage);
+end;
+
+{$ifdef UNICODE}
+function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure sbcs_from_utf16(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16_lower(Buffer, Pointer(Src), Length, Converter));
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16_lower(Buffer, Pointer(Src), Length, Converter));
+end;
+{$endif}
+
+function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16_lower(Result, Src, CodePage);
+end;
+
+{$ifdef UNICODE}
+function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16_lower(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_lower;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_lower;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16_upper(Buffer, Pointer(Src), Length, Converter));
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(CodePage) or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf16_upper(Buffer, Pointer(Src), Length, Converter));
+end;
+{$endif}
+
+function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16_upper(Result, Src, CodePage);
+end;
+
+{$ifdef UNICODE}
+function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+begin
+  UniConv.sbcs_from_utf16_upper(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_upper;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FVALUES;
+  if (Converter = nil) then Converter := SBCS.AllocFillVALUES(SBCS.FVALUES);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_upper;
+  if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure utf8_from_sbcs(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Original, ccOriginal);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+begin
+  UniConv.utf8_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+
+procedure utf8_from_sbcs(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Original, ccOriginal);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_sbcs(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Original, ccOriginal);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+begin
+  UniConv.utf8_from_sbcs(Result, Src, CodePage);
+end;
+
+procedure utf8_from_sbcs(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Original, ccOriginal);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Lower, ccLower);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+begin
+  UniConv.utf8_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+
+procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Lower, ccLower);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs_lower;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Lower, ccLower);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+begin
+  UniConv.utf8_from_sbcs_lower(Result, Src, CodePage);
+end;
+
+procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Lower, ccLower);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs_lower;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Upper, ccUpper);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter));
+end;
+
+function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+begin
+  UniConv.utf8_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+
+procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Upper, ccUpper);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs_upper;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Upper, ccUpper);
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter));
+end;
+
+function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+begin
+  UniConv.utf8_from_sbcs_upper(Result, Src, CodePage);
+end;
+
+procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUTF8.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUTF8(SBCS.FUTF8.Upper, ccUpper);
+  Context.FCallbacks.Converter := Converter;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_sbcs_upper;
+  Context.convert_utf8_from_sbcs;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
+end;
+
+function utf8_from_utf8_lower(const Src: UTF8String): UTF8String;
+begin
+  UniConv.utf8_from_utf8_lower(Result, Src);
+end;
+
+procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_lower;
+  if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(@Src[1]), Length));
+end;
+
+function utf8_from_utf8_lower(const Src: ShortString): UTF8String;
+begin
+  UniConv.utf8_from_utf8_lower(Result, Src);
+end;
+
+procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_lower;
+  if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
+end;
+
+function utf8_from_utf8_upper(const Src: UTF8String): UTF8String;
+begin
+  UniConv.utf8_from_utf8_upper(Result, Src);
+end;
+
+procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(@Src[1]);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_upper;
+  if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(@Src[1]), Length));
+end;
+
+function utf8_from_utf8_upper(const Src: ShortString): UTF8String;
+begin
+  UniConv.utf8_from_utf8_upper(Result, Src);
+end;
+
+procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_upper;
+  if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+procedure utf8_from_utf16(var Dest: UTF8String; const Src: WideString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16(var Dest: UTF8String; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+function utf8_from_utf16(const Src: WideString): UTF8String;
+begin
+  UniConv.utf8_from_utf16(Result, Src);
+end;
+
+{$ifdef UNICODE}
+function utf8_from_utf16(const Src: UnicodeString): UTF8String;
+begin
+  UniConv.utf8_from_utf16(Result, Src);
+end;
+{$endif}
+
+procedure utf8_from_utf16(var Dest: ShortString; const Src: WideString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16(var Dest: ShortString; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: WideString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16_lower(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16_lower(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+function utf8_from_utf16_lower(const Src: WideString): UTF8String;
+begin
+  UniConv.utf8_from_utf16_lower(Result, Src);
+end;
+
+{$ifdef UNICODE}
+function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String;
+begin
+  UniConv.utf8_from_utf16_lower(Result, Src);
+end;
+{$endif}
+
+procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: WideString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_lower;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_lower;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: WideString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16_upper(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    AnsiStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
+  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf16_upper(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+function utf8_from_utf16_upper(const Src: WideString): UTF8String;
+begin
+  UniConv.utf8_from_utf16_upper(Result, Src);
+end;
+
+{$ifdef UNICODE}
+function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String;
+begin
+  UniConv.utf8_from_utf16_upper(Result, Src);
+end;
+{$endif}
+
+procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: WideString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  {$endif}
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_upper;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+
+{$ifdef UNICODE}
+procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Context: TUniConvContext;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    PByte(@Dest)^ := 0;
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Context.Destination := Pointer(@Dest[1]);
+  Context.Source := Pointer(Src);
+  Context.DestinationSize := NativeUInt(High(Dest));
+  Context.SourceSize := Length + Length;
+
+  // conversion
+  Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_upper;
+  if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
+    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  PByte(@Dest)^ := Context.DestinationWritten;
+end;
+{$endif}
+
+procedure utf16_from_sbcs(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs(Buffer, Pointer(Src), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs(Buffer, Pointer(Src), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+begin
+  UniConv.utf16_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+procedure utf16_from_sbcs(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Original;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString;
+begin
+  UniConv.utf16_from_sbcs(Result, Src, CodePage);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+begin
+  UniConv.utf16_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Lower;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString;
+begin
+  UniConv.utf16_from_sbcs_lower(Result, Src, CodePage);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs_lower(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Upper, ccUpper);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif});
+var
+  Length: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Upper, ccUpper);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+begin
+  UniConv.utf16_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
+end;
+{$endif}
+
+procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Upper, ccUpper);
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0);
+var
+  Length: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Converter: Pointer;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // SBCS := UniConvSBCS(CodePage);
+  Index := NativeUInt(CodePage);
+  Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+  repeat
+    if (Word(Value) = CodePage) or (Value < 0) then Break;
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+  until (False);
+  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+
+  // converter
+  Converter := SBCS.FUCS2.Upper;
+  if (Converter = nil) then Converter := SBCS.AllocFillUCS2(SBCS.FUCS2.Upper, ccUpper);
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString;
+begin
+  UniConv.utf16_from_sbcs_upper(Result, Src, CodePage);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+begin
+  UniConv.utf16_from_sbcs_upper(Result, Src, CodePage);
+end;
+{$endif}
+
+procedure utf16_from_utf8(var Dest: WideString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8(var Dest: UnicodeString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8(const Src: UTF8String): WideString;
+begin
+  UniConv.utf16_from_utf8(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8(const Src: UTF8String): UnicodeString;
+begin
+  UniConv.utf16_from_utf8(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf8(var Dest: WideString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8(Buffer, Pointer(@Src[1]), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8(var Dest: UnicodeString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8(Buffer, Pointer(@Src[1]), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8(const Src: ShortString): WideString;
+begin
+  UniConv.utf16_from_utf8(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8(const Src: ShortString): UnicodeString;
+begin
+  UniConv.utf16_from_utf8(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf8_lower(var Dest: WideString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_lower(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_lower(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8_lower(const Src: UTF8String): WideString;
+begin
+  UniConv.utf16_from_utf8_lower(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString;
+begin
+  UniConv.utf16_from_utf8_lower(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf8_lower(var Dest: WideString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_lower(Buffer, Pointer(@Src[1]), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_lower(Buffer, Pointer(@Src[1]), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8_lower(const Src: ShortString): WideString;
+begin
+  UniConv.utf16_from_utf8_lower(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8_lower(const Src: ShortString): UnicodeString;
+begin
+  UniConv.utf16_from_utf8_lower(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf8_upper(var Dest: WideString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_upper(Buffer, Pointer(Src), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: UTF8String);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_upper(Buffer, Pointer(Src), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8_upper(const Src: UTF8String): WideString;
+begin
+  UniConv.utf16_from_utf8_upper(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString;
+begin
+  UniConv.utf16_from_utf8_upper(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf8_upper(var Dest: WideString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
+  WideStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_upper(Buffer, Pointer(@Src[1]), Length));
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: ShortString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  Length := PByte(@Src)^;
+  if (Length = 0) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
+  UnicodeStringFinish(Pointer(Dest), Buffer, UniConv.utf16_from_utf8_upper(Buffer, Pointer(@Src[1]), Length));
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf8_upper(const Src: ShortString): WideString;
+begin
+  UniConv.utf16_from_utf8_upper(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf8_upper(const Src: ShortString): UnicodeString;
+begin
+  UniConv.utf16_from_utf8_upper(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf16_lower(var Dest: WideString; const Src: WideString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_utf16_lower(Buffer, Pointer(Src), Length);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf16_lower(var Dest: UnicodeString; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_utf16_lower(Buffer, Pointer(Src), Length);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf16_lower(const Src: WideString): WideString;
+begin
+  UniConv.utf16_from_utf16_lower(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString;
+begin
+  UniConv.utf16_from_utf16_lower(Result, Src);
+end;
+{$endif}
+
+procedure utf16_from_utf16_upper(var Dest: WideString; const Src: WideString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  {$ifdef MSWINDOWS}
+  if (Length = 0) then
+  begin
+    WideStringClear(Dest);
+    Exit;
+  end;
+  {$endif}
+
+  // conversion
+  Buffer := WideStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_utf16_upper(Buffer, Pointer(Src), Length);
+end;
+
+{$ifdef UNICODE}
+procedure utf16_from_utf16_upper(var Dest: UnicodeString; const Src: UnicodeString);
+var
+  Length: NativeUInt;
+  Buffer: Pointer;
+begin
+  if (Pointer(Src) = nil) then
+  begin
+    UnicodeStringClear(Dest);
+    Exit;
+  end;
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+
+  // conversion
+  Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
+  Pointer(Dest) := Buffer;
+  UniConv.utf16_from_utf16_upper(Buffer, Pointer(Src), Length);
+end;
+{$endif}
+
+{$ifNdef UNICODE}
+function utf16_from_utf16_upper(const Src: WideString): WideString;
+begin
+  UniConv.utf16_from_utf16_upper(Result, Src);
+end;
+{$endif}
+
+{$ifdef UNICODE}
+function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString;
+begin
+  UniConv.utf16_from_utf16_upper(Result, Src);
+end;
+{$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
 
