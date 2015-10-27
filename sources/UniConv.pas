@@ -7248,10 +7248,10 @@ begin
   // source length limit = Destination Length;
   if (SrcSize > SMALL_SRC_SIZE) and (DestSize > SMALL_DEST_SIZE) then
   repeat
-    Length := DestSize shr 1;
-    if (Length > SrcSize) then
+    Length := DestSize;
+    if (Length > SrcSize shr 1) then
     begin
-      FStore.Options.Length := SrcSize;
+      FStore.Options.Length := SrcSize shr 1;
     end else
     begin
       FStore.Options.Length := Length;
@@ -13077,7 +13077,7 @@ begin
     // use or free
     if (P.Length >= Length) then
     begin
-      if (CodePage{flag} < 0) and (P.Length <> Length) then
+      if (CodePage{Flag} >= 0) and (P.Length <> Length) then
       begin
         P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
       end;
@@ -13104,8 +13104,7 @@ done:
   Result := P;
 end;
 
-{$ifdef INLINESUPPORT}
-procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
+procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 var
   P: PAnsiStrRec;
 begin
@@ -13118,6 +13117,8 @@ begin
     Result := P;
   end else
   begin
+    P.Length := Length;
+
     {$ifNdef NEXTGEN}
     Inc(P);
     PByteArray(P)[Length] := NULL_ANSICHAR;
@@ -13130,30 +13131,9 @@ begin
     Result := P;
   end;
 end;
-{$else .Delphi.Windows.CPUX86}
-procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-asm
-  cmp [edx-4], ecx
-  jne @1
-  mov [eax], edx
-  ret
-@1:
-  mov byte ptr [edx+ecx], 0
-
-  push eax
-  lea eax, [edx-8]
-  lea edx, [ecx+8+1]
-  call MemoryManager.ReallocMem
-
-  add eax, 8
-  pop edx
-  mov [edx], eax
-end;
-{$endif}
-
 
 {$ifdef UNICODE}
-function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, flag: Integer): Pointer;
+function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
 label
   allocate_new, done;
 var
@@ -13179,7 +13159,7 @@ begin
     // use or free
     if (P.Length >= Length) then
     begin
-      if (flag < 0) and (P.Length <> Length) then
+      if (Flag >= 0) and (P.Length <> Length) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
       end;
@@ -13197,7 +13177,7 @@ allocate_new:
   P.Length := Length;
 done:
   {$if SizeOf(TUnicodeStrRec) > 8}
-    P.CodePageElemSize := DefaultUnicodeCodePage or $00020000;
+    P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
   {$ifend}
   Inc(NativeInt(P), SizeOf(P^));
   PWideChar(P)[Length] := NULL_WIDECHAR;
@@ -13217,6 +13197,8 @@ begin
     Result := P;
   end else
   begin
+    P.Length := Length;
+
     Inc(P);
     PWideChar(P)[Length] := NULL_WIDECHAR;
     Dec(P);
@@ -13228,7 +13210,6 @@ begin
   end;
 end;
 {$endif}
-
 
 function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
 {$ifdef MSWINDOWS}
@@ -13244,7 +13225,7 @@ begin
     Length := Length*2;
     CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
 
-    if (Flag >= 0) then
+    if (Flag < 0) then
     begin
       if (CurrentLen >= Length) then Result := S
       else
@@ -13286,7 +13267,7 @@ begin
     // use or free
     if (P.Length >= Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
     begin
-      if (Flag < 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+      if (Flag >= 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
       end;
@@ -13306,7 +13287,7 @@ done:
   {$if SizeOf(TWideStrRec) > 8}
     {$if CompilerVersion >= 22}
        // Delphi >= XE (WideString = UnicodeString)
-       P.CodePageElemSize := DefaultUnicodeCodePage or $00020000;
+       P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
     {$else}
        // Delphi < XE (WideString = double AnsiString, CodePage default)
        P.CodePageElemSize := DefaultSystemCodePage or $00010000;
@@ -13351,6 +13332,8 @@ begin
     Result := P;
   end else
   begin
+    P.Length := Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend};
+
     {$ifNdef NEXTGEN}
     Inc(P);
     PWideChar(P)[Length] := NULL_WIDECHAR;
