@@ -857,6 +857,27 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
   {$ifdef UNICODE} function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
+{$ifdef undef}{$REGION 'low level comparison routine'}{$endif}
+type
+  TUniConvCompareOptions = record
+    Length: NativeUInt;
+    Lookup: Pointer;
+    Length_2: NativeUInt;
+    Lookup_2: Pointer;
+  end;
+  PUniConvCompareOptions = ^TUniConvCompareOptions;
+
+  function __uniconv_compare_bytes(S1, S2: PByte; Length: NativeUInt): NativeInt;
+  function __uniconv_compare_words(S1, S2: PWord; Length: NativeUInt): NativeInt;
+  function __uniconv_sbcs_compare_sbcs_1(S1, S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+  function __uniconv_sbcs_compare_sbcs_2(S1, S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+  function __uniconv_utf16_compare_utf16(S1, S2: PUnicodeChar; Length: NativeUInt): NativeInt;
+  function __uniconv_utf16_compare_sbcs(S1: PUnicodeChar; S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+  function __uniconv_utf8_compare_utf16(S1: PUTF8Char; S2: PUnicodeChar; const Comp: TUniConvCompareOptions): NativeInt;
+  function __uniconv_utf8_compare_utf8(S1, S2: PUTF8Char; const Comp: TUniConvCompareOptions): NativeInt;
+  function __uniconv_utf8_compare_sbcs(S1: PUTF8Char; S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+{$ifdef undef}{$ENDREGION}{$endif}
+
 implementation
 var
   MemoryManager: {$if Defined(FPC) or (CompilerVersion < 18)}TMemoryManager{$else}TMemoryManagerEx{$ifend};
@@ -874,10 +895,16 @@ type
   T8Bytes = array[0..7] of Byte;
   P8Bytes = ^T8Bytes;
 
+  {$ifNdef CPUX86}
+    {$define CPUMANYREGS}
+  {$endif}
+
 const
   HIGH_NATIVE_BIT = {$ifdef SMALLINT}31{$else}63{$endif};
   UNICODE_CHARACTERS_COUNT = MAXIMUM_CHARACTER + 1;
   CHARCASE_OFFSET = $10000;
+  WORDS_IN_NATIVE = SizeOf(NativeUInt) div SizeOf(Word);
+  WORDS_IN_CARDINAL = SizeOf(Cardinal) div SizeOf(Word);
 
   MASK_80_SMALL = $80808080;
   MASK_80_LARGE = $8080808080808080;
@@ -19273,6 +19300,1678 @@ end;
 function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString;
 begin
   UniConv.utf16_from_utf16_upper(Result, Src);
+end;
+{$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
+
+{$ifdef undef}{$REGION 'low level comparison routine'}{$endif}
+// binary compare sbcs/utf8
+function __uniconv_compare_bytes(S1, S2: PByte; Length: NativeUInt): NativeInt;
+label
+  make_result, make_result_swaped;
+var
+  X, Y: NativeUInt;
+begin
+  while (Length >= SizeOf(NativeUInt)) do
+  begin
+    X := PNativeUInt(S1)^;
+    Dec(Length, SizeOf(NativeUInt));
+    Y := PNativeUInt(S2)^;
+    Inc(S1, SizeOf(NativeUInt));
+    Inc(S2, SizeOf(NativeUInt));
+
+    if (X <> Y) then
+    begin
+      {$ifdef LARGEINT}
+        if (Cardinal(X) = Cardinal(Y)) then
+        begin
+          X := X shr 32;
+          Y := Y shr 32;
+        end else
+        begin
+          X := Cardinal(X);
+          Y := Cardinal(Y);
+        end;
+      {$endif}
+
+      goto make_result;
+    end;
+  end;
+
+  // read last
+  {$ifdef LARGEINT}
+  if (Length >= SizeOf(Cardinal)) then
+  begin
+    X := PCardinal(S1)^;
+    Dec(Length, SizeOf(Cardinal));
+    Y := PCardinal(S2)^;
+    Inc(S1, SizeOf(Cardinal));
+    Inc(S2, SizeOf(Cardinal));
+
+    if (X <> Y) then goto make_result;
+  end;
+  {$endif}
+
+  case Length of
+    1: begin
+         X := PByte(S1)^;
+         Y := PByte(S2)^;
+         goto make_result_swaped;
+       end;
+    2: begin
+         X := Swap(PWord(S1)^);
+         Y := Swap(PWord(S2)^);
+         goto make_result_swaped;
+       end;
+    3: begin
+         X := Swap(PWord(S1)^);
+         Y := Swap(PWord(S2)^);
+         Inc(S1, SizeOf(Word));
+         Inc(S2, SizeOf(Word));
+         X := (X shl 8) or PByte(S1)^;
+         Y := (Y shl 8) or PByte(S2)^;
+         goto make_result_swaped;
+       end;
+  else
+    // 0
+    Result := 0;
+    Exit;
+  end;
+
+make_result:
+  X := (Swap(X) shl 16) + Swap(X shr 16);
+  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+
+make_result_swaped:
+  if (X = Y) then
+  begin
+    Result := 0;
+    Exit;
+  end;
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+// binary compare utf16
+function __uniconv_compare_words(S1, S2: PWord; Length: NativeUInt): NativeInt;
+label
+  make_result, make_result_swaped;
+var
+  X, Y: NativeUInt;
+begin
+  while (Length >= WORDS_IN_NATIVE) do
+  begin
+    X := PNativeUInt(S1)^;
+    Dec(Length, WORDS_IN_NATIVE);
+    Y := PNativeUInt(S2)^;
+    inc (S1, WORDS_IN_NATIVE);
+    inc (S2, WORDS_IN_NATIVE);
+
+    if (X <> Y) then
+    begin
+      {$ifdef LARGEINT}
+        if (Cardinal(X) = Cardinal(Y)) then
+        begin
+          X := X shr 32;
+          Y := Y shr 32;
+        end else
+        begin
+          X := Cardinal(X);
+          Y := Cardinal(Y);
+        end;
+      {$endif}
+
+      goto make_result;
+    end;
+  end;
+
+  // read last
+  {$ifdef LARGEINT}
+  if (Length >= WORDS_IN_CARDINAL) then
+  begin
+    X := PCardinal(S1)^;
+    Dec(Length, WORDS_IN_CARDINAL);
+    Y := PCardinal(S2)^;
+    inc (S1, WORDS_IN_CARDINAL);
+    inc (S2, WORDS_IN_CARDINAL);
+
+    if (X <> Y) then goto make_result;
+  end;
+  {$endif}
+
+  if (Length <> 0) then
+  begin
+    X := PWord(S1)^;
+    Y := PWord(S2)^;
+    if (X <> Y) then goto make_result_swaped;
+  end;
+
+  Result := 0;
+  Exit;
+
+  // warnings off
+  X := 0;
+  Y := 0;
+
+make_result:
+  X := (X shl 16) + (X shr 16);
+  Y := (Y shl 16) + (Y shr 16);
+
+make_result_swaped:
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+// comparison between same single byte enconding code page, case insensitive
+// lookup is lower case PUniConvBB
+function __uniconv_sbcs_compare_sbcs_1(S1, S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+label
+  main_loop, main_loop_finish, compare_chars, make_result;
+var
+  X, Y: NativeUInt;
+  Length: NativeUInt;
+  Lookup: PUniConvBB;
+
+  {$ifdef CPUX86}
+  F: record
+    Y_Offset: NativeInt;
+    TopPtr: PByteArray;
+  end;
+  {$else .CPUMANYREGS}
+    TopPtr: PByteArray;
+  {$endif}
+
+  U, V: NativeUInt;
+
+  {$ifdef CPUINTEL}
+  const
+    MASK_80 = MASK_80_SMALL;
+    MASK_40 = MASK_40_SMALL;
+    MASK_65 = MASK_65_SMALL;
+    MASK_7F = MASK_7F_SMALL;
+  {$else .CPUARM}
+  var
+    MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
+  {$endif}
+begin
+  {$ifNdef CPUINTEL}
+    // ARM
+    MASK_80 := MASK_80_SMALL;
+    MASK_40 := MASK_40_SMALL;
+    MASK_65 := MASK_65_SMALL;
+    MASK_7F := MASK_7F_SMALL;
+  {$endif}
+
+  Lookup := Comp.Lookup;
+  {$ifdef CPUX86}F.Y_Offset := NativeInt(S2) - NativeInt(S1){$endif};
+  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
+
+  // while (Length >= SizeOf(NativeUInt)) do
+  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  main_loop:
+  begin
+    X := PNativeUInt(S1)^;
+    Y := PNativeUInt({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
+    Inc(S1, SizeOf(NativeUInt));
+    {$ifdef CPUMANYREGS}Inc(S2, SizeOf(NativeUInt));{$endif}
+
+    if (X <> Y) then
+    begin
+      {$ifdef LARGEINT}
+        if (Cardinal(X) = Cardinal(Y)) then
+        begin
+          X := X shr 32;
+          Y := Y shr 32;
+          Dec(S1, SizeOf(Cardinal));
+          {$ifdef CPUMANYREGS}Dec(S2, SizeOf(Cardinal));{$endif}
+        end else
+        begin
+          X := Cardinal(X);
+          Y := Cardinal(Y);
+        end;
+      {$endif}
+
+      compare_chars:
+      if (Cardinal(X or Y) and MASK_80 = 0) then
+      begin
+        U := X xor MASK_40;
+        V := (U + MASK_65);
+        U := (U + MASK_7F) and Integer(MASK_80);
+        X := X + ((not V) and U) shr 2;
+
+        U := Y xor MASK_40;
+        V := (U + MASK_65);
+        U := (U + MASK_7F) and Integer(MASK_80);
+        Y := Y + ((not V) and U) shr 2;
+
+        if (X <> Y) then
+        begin
+          X := (Swap(X) shl 16) + Swap(X shr 16);
+          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+          goto make_result;
+        end;
+      end else
+      begin
+        // make lower and swap
+        X := (Lookup[X and $ff] shl 24) or
+             (Lookup[(X shr 8) and $ff] shl 16) or
+             (Lookup[(X shr 16) and $ff] shl 24) or
+             (Lookup[X shr 24]);
+        Y := (Lookup[Y and $ff] shl 24) or
+             (Lookup[(Y shr 8) and $ff] shl 16) or
+             (Lookup[(Y shr 16) and $ff] shl 24) or
+             (Lookup[Y shr 24]);
+        if (X <> Y) then goto make_result;
+      end;
+    end;
+
+   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+  end;
+  main_loop_finish:
+
+  Length := NativeUInt({$ifdef CPUX86}F.{$endif}TopPtr)-NativeUInt(S1)+SizeOf(NativeUInt);
+
+  // read last
+  {$ifdef LARGEINT}
+  if (Length >= SizeOf(Cardinal)) then
+  begin
+    X := PCardinal(S1)^;
+    Y := PCardinal(S2)^;
+    Inc(S1, SizeOf(Cardinal));
+    {$ifdef CPUMANYREGS}Inc(S2, SizeOf(Cardinal));{$endif}
+    Dec(Length, SizeOf(Cardinal));
+
+    if (X <> Y) then goto compare_chars;
+  end;
+  {$endif}
+
+  case Length of
+    1: begin
+         X := PByte(S1)^;
+         Y := PByte({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
+         // Inc(S1);
+         // Inc(S2);
+         if (X <> Y) then goto make_result{compare_chars};
+       end;
+    2: begin
+         X := PWord(S1)^;
+         Y := PWord({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
+         Inc(S1, SizeOf(Word));
+         {$ifdef CPUMANYREGS}Inc(S2, SizeOf(Word));{$endif}
+         if (X <> Y) then goto compare_chars;
+       end;
+    3: begin
+         X := PByte(S1)^;
+         Y := PByte({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
+         Inc(S1);
+         {$ifdef CPUMANYREGS}Inc(S2);{$endif}
+         X := (X shl 16) or PWord(S1)^;
+         Y := (Y shl 16) or PWord({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
+         Inc(S1, SizeOf(Word));
+         {$ifdef CPUMANYREGS}Inc(S2, SizeOf(Word));{$endif}
+         if (X <> Y) then goto compare_chars;
+       end;
+  else
+    Result := 0;
+    Exit;
+  end;
+
+  Result := 0;
+  Exit;
+
+make_result:
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+// comparison between different code pages, optional case insensitive
+// both lookups are PUniConvWB
+function __uniconv_sbcs_compare_sbcs_2(S1, S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+label
+  main_loop, main_loop_finish, compare_chars, make_result;
+var
+  X, Y: NativeUInt;
+  Length: NativeUInt;
+
+  {$ifdef CPUX86}
+  F: record
+    _1, _2: PUniConvWB;
+    TopPtr: PByteArray;
+  end;
+  {$else .CPUMANYREGS}
+    _1, _2: PUniConvWB;
+    TopPtr: PByteArray;
+  {$endif}
+
+  {$ifdef CPUX86}
+  const
+    MASK_80 = MASK_80_DEFAULT;
+  {$else .CPUMANYREGS}
+  var
+    MASK_80: NativeUInt;
+  {$endif}
+begin
+  {$ifdef CPUMANYREGS}MASK_80 := MASK_80_DEFAULT;{$endif}
+
+  {$ifdef CPUX86}F.{$endif}_1 := Comp.Lookup;
+  {$ifdef CPUX86}F.{$endif}_2 := Comp.Lookup_2;
+  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
+
+  // while (Length >= SizeOf(NativeUInt)) do
+  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  main_loop:
+  begin
+    X := PNativeUInt(S1)^;
+    Y := PNativeUInt(S2)^;
+    Inc(S1, SizeOf(NativeUInt));
+    Inc(S2, SizeOf(NativeUInt));
+
+    if (X <> Y) or ((X or Y) and MASK_80 <> 0) then
+    begin
+      {$ifdef LARGEINT}
+        if (Cardinal(X) = Cardinal(Y)) and (Cardinal(X or Y) and MASK_80_SMALL = 0) then
+        begin
+          X := X shr 32;
+          Y := Y shr 32;
+          Dec(S1, SizeOf(Cardinal));
+          Dec(S2, SizeOf(Cardinal));
+        end else
+        begin
+          X := Cardinal(X);
+          Y := Cardinal(Y);
+        end;
+      {$endif}
+
+      compare_chars:
+        if {0}({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif}) then goto make_result;
+        X := X shr 8;
+        Y := Y shr 8;
+        if {1}({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif}) then goto make_result;
+        X := X shr 8;
+        Y := Y shr 8;
+        if {2}({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif}) then goto make_result;
+        X := X shr 8;
+        Y := Y shr 8;
+        if {3}({$ifdef CPUX86}F._1[X]<>F._2[Y]{$else}_1[X]<>_2[Y]{$endif}) then goto make_result;
+    end;
+
+   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+  end;
+  main_loop_finish:
+
+  Length := NativeUInt({$ifdef CPUX86}F.{$endif}TopPtr)-NativeUInt(S1)+SizeOf(NativeUInt);
+
+  // read last
+  {$ifdef LARGEINT}
+  if (Length >= SizeOf(Cardinal)) then
+  begin
+    X := PCardinal(S1)^;
+    Y := PCardinal(S2)^;
+    Inc(S1, SizeOf(Cardinal));
+    Inc(S2, SizeOf(Cardinal));
+    Dec(Length, SizeOf(Cardinal));
+
+    if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto compare_chars;
+  end;
+  {$endif}
+
+  case Length of
+    1: begin
+         X := PByte(S1)^;
+         Y := PByte(S2)^;
+         // Inc(S1);
+         // Inc(S2);
+         if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto make_result{compare_chars};
+       end;
+    2: begin
+         X := PWord(S1)^;
+         Y := PWord(S2)^;
+         Inc(S1, SizeOf(Word));
+         Inc(S2, SizeOf(Word));
+         if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto compare_chars;
+       end;
+    3: begin
+         X := PByte(S1)^;
+         Y := PByte(S2)^;
+         Inc(S1);
+         Inc(S2);
+         X := (X shl 16) or PWord(S1)^;
+         Y := (Y shl 16) or PWord(S2)^;
+         Inc(S1, SizeOf(Word));
+         Inc(S2, SizeOf(Word));
+         if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto compare_chars;
+       end;
+  else
+    Result := 0;
+    Exit;
+  end;
+
+  Result := 0;
+  Exit;
+
+make_result:
+  Result := Ord({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif})*2 - 1;
+end;
+
+// case insensitive utf16 comparison
+function __uniconv_utf16_compare_utf16(S1, S2: PUnicodeChar; Length: NativeUInt): NativeInt;
+label
+  compare_chars, compare_ascii,
+  make_result, make_result_swaped;
+var
+  X, Y: NativeUInt;
+
+  {$ifdef LARGEINT}
+    U, V: NativeUInt;
+    MASK_FF80, MASK_0040, MASK_0065, MASK_007F: NativeUInt;
+  {$endif}
+
+  {$ifNdef CPUX86}
+    lookup_utf16_lower: PUniConvWW;
+  {$endif}
+begin
+  {$ifdef LARGEINT}
+    MASK_FF80 := MASK_FF80_DEFAULT;
+    MASK_0040 := MASK_0040_DEFAULT;
+    MASK_0065 := MASK_0065_DEFAULT;
+    MASK_007F := MASK_007F_DEFAULT;
+  {$endif}
+  {$ifNdef CPUX86}
+    lookup_utf16_lower := Pointer(@UNICONV_CHARCASE);
+  {$endif}
+
+
+  while (Length >= WORDS_IN_NATIVE) do
+  begin
+    X := PNativeUInt(S1)^;
+    Dec(Length, WORDS_IN_NATIVE);
+    Y := PNativeUInt(S2)^;
+    Inc(S1, WORDS_IN_NATIVE);
+    Inc(S2, WORDS_IN_NATIVE);
+
+    if (X <> Y) then
+    begin
+      {$ifdef LARGEINT}
+      if ((X or Y) and MASK_FF80 = 0) then
+      begin
+        U := X xor MASK_0040;
+        V := (U + MASK_0065);
+        U := (U + MASK_007F) and MASK_FF80;
+        X := X + ((not V) and U) shr 2;
+
+        U := X xor MASK_0040;
+        V := (U + MASK_0065);
+        U := (U + MASK_007F) and MASK_FF80;
+        X := X + ((not V) and U) shr 2;
+
+        if (X <> Y) then
+        begin
+          X := (X shl 48) + ((X and Integer($ffff0000)) shl 32) +
+               ((X shr 16) and Integer($ffff0000)) + (X shr 48);
+          Y := (Y shl 48) + ((Y and Integer($ffff0000)) shl 32) +
+               ((Y shr 16) and Integer($ffff0000)) + (Y shr 48);
+          goto make_result;
+        end;
+      end else
+      {$endif}
+      begin
+        {$ifdef LARGEINT}
+          if (Cardinal(X) = Cardinal(Y)) then
+          begin
+            X := X shr 32;
+            Y := Y shr 32;
+          end else
+          begin
+            X := Cardinal(X);
+            Y := Cardinal(Y);
+          end;
+        {$endif}
+
+      compare_chars:
+        {$ifdef CPUX86}
+          X := (UNICONV_CHARCASE.VALUES[Word(X)] shl 16) + UNICONV_CHARCASE.VALUES[X shr 16];
+          Y := (UNICONV_CHARCASE.VALUES[Word(Y)] shl 16) + UNICONV_CHARCASE.VALUES[Y shr 16];
+        {$else}
+          X := (lookup_utf16_lower[Word(X)] shl 16) + lookup_utf16_lower[X shr 16];
+          Y := (lookup_utf16_lower[Word(Y)] shl 16) + lookup_utf16_lower[Y shr 16];
+        {$endif}
+
+        if (X <> Y) then goto make_result;
+      end;
+    end;
+  end;
+
+  // read last
+  {$ifdef LARGEINT}
+  if (Length >= WORDS_IN_CARDINAL) then
+  begin
+    X := PCardinal(S1)^;
+    Dec(Length, WORDS_IN_CARDINAL);
+    Y := PCardinal(S2)^;
+    Inc(S1, WORDS_IN_CARDINAL);
+    Inc(S2, WORDS_IN_CARDINAL);
+
+    if (X <> Y) then goto compare_chars;
+  end;
+  {$endif}
+
+  if (Length <> 0) then
+  begin
+    X := PWord(S1)^;
+    Y := PWord(S2)^;
+    if (X <> Y) then goto make_result;
+  end;
+
+  Result := 0;
+  Exit;
+
+  // warnings off
+  X := 0;
+  Y := 0;
+
+make_result:
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+// comparison between utf16 and single byte encoding
+// optional case sensitive
+function __uniconv_utf16_compare_sbcs(S1: PUnicodeChar; S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+{$ifNdef CPUX86}
+type
+  TCardinalArray = array[0..0] of Cardinal;
+  PCardinalArray = ^TCardinalArray;
+  TWordArray = array[0..0] of Word;
+  PWordArray = ^TWordArray;
+label
+  make_result;
+var
+  X, Y: NativeUInt;
+  Length: NativeUInt;
+  i: NativeUInt;
+
+  _1: PUniConvWW;
+  _2: PUniConvWB;
+begin
+  _1 := Comp.Lookup;
+  _2 := Comp.Lookup_2;
+
+  Length := Comp.Length;
+  if (Length >= 2) then
+  for i := 0 to (Length shr 1)-1 do
+  begin
+    X := PCardinalArray(S1)[i];
+    if (_1 = nil) then
+    begin
+      X := (X shl 16) + (X shr 16);
+    end else
+    begin
+      X := (NativeUInt(_1[Word(X)]) shl 16) + NativeUInt(_1[X shr 16]);
+    end;
+
+    Y := PWordArray(S2)[i];
+    Y := (NativeUInt(_2[Byte(Y)]) shl 16) + NativeUInt(_2[Y shr 8]);
+    if (X <> Y) then goto make_result;
+  end;
+
+  if (Length and 1 <> 0) then
+  begin
+    X := PWordArray(S1)[Length-1];
+    if (_1 <> nil) then X := _1[X];
+
+    Y := Byte(PByteArray(S2)[Length-1]);
+    Y := _2[Y];
+    if (X <> Y) then goto make_result;
+  end;
+
+  Result := 0;
+  Exit;
+
+  // warnings off
+  X := 0;
+  Y := 0;
+
+make_result:
+  Result := Ord(X > Y)*2 - 1;
+end;
+{$else .CPUX86}
+asm
+  // S1 - ebx
+  // S2 - ebp
+  // _1 - esi
+  // _2 - edi
+  // X - eax
+  // Y - edx
+  //
+  // Buffer - ecx
+  // TopS1Ptr(from Length) - stack [esp]
+@prefix:
+  push ebx
+  push ebp
+  push esi
+  push edi
+@start:
+  mov ebx, [ECX].TUniConvCompareOptions.Length
+  mov esi, [ECX].TUniConvCompareOptions.Lookup
+  mov edi, [ECX].TUniConvCompareOptions.Lookup_2
+
+  lea ecx, [eax + ebx*2]
+  lea ebx, [eax - 4] // S1 := PByteArray(S1) - 4;
+  sub ecx, 8
+  mov ebp, edx       // S2 := S2;
+  push ecx           // TopS1Ptr(stack) := PByteArray(S1) + Length*SizeOf(WideChar) - 4-4;
+
+  cmp ebx, ecx
+  jnbe @after_loop
+  @loop:
+    movzx edx, word ptr [ebp]
+    add ebx, 4
+    add ebp, 2
+
+    // Y := (NativeUInt(_2[Byte(Y)]) shl 16) + NativeUInt(_2[Y shr 8]);
+    // X := PCardinal(S1)^;
+    // if (_1 <> nil) then ...
+    movzx ecx, dh
+    movzx edx, dl
+    movzx ecx, word ptr [edi + ecx*2]
+    movzx edx, word ptr [edi + edx*2]
+      mov eax, [ebx]
+    shl edx, 16
+      test esi, esi
+    lea edx, [edx + ecx]
+      mov ecx, eax
+
+    jz @X_final
+    @X_lookup:
+      // X := (NativeUInt(_1[Word(X)]) shl 16) + NativeUInt(_1[X shr 16]);
+      //  =
+      // X1 := _1[Word(X)]; / X2 := _1[X shr 16] shl 16;
+      // X := (X1 shl 16) + (X2 shr 16);
+      shr ecx, 16
+      movzx eax, ax
+      movzx ecx, word ptr [esi + ecx*2]
+      movzx eax, word ptr [esi + eax*2]
+      shl ecx, 16 {fake shift}
+    @X_final:
+      // X := (X shl 16) + (X shr 16);
+      shl eax, 16
+      shr ecx, 16
+      add eax, ecx
+    @compare:
+      cmp eax, edx
+      jne @make_result
+
+  @loop_continue:
+    cmp ebx, [esp]
+    jbe @loop
+
+@after_loop:
+  sub ebx, 4
+  cmp ebx, [esp]
+  je @result_equal
+
+  // X := _1[Ord(S1[Length-1])];
+  // Y := _2[Ord(S2[Length-1])];
+  movzx eax, word ptr [ebx+8]
+  movzx edx, byte ptr [ebp]
+  test esi, esi
+  movzx edx, word ptr [edi + edx*2]
+  jz @X_done
+  movzx eax, word ptr [esi + eax*2]
+  @X_done:
+  cmp eax, edx
+  jne @make_result
+
+@result_equal:
+  xor eax, eax
+  jmp @finish
+
+@make_result:
+  seta al
+  movzx eax, al
+  lea eax, [eax*2-1]
+@finish:
+  pop ecx
+  pop edi
+  pop esi
+  pop ebp
+  pop ebx
+@Exit:
+end;
+{$endif}
+
+// comparison between utf8 and utf16
+// optional case sensitive (Lookup = @UNICONV_CHARCASE.VALUES)
+function __uniconv_utf8_compare_utf16(S1: PUTF8Char; S2: PUnicodeChar; const Comp: TUniConvCompareOptions): NativeInt;
+label
+  utf8_read_normal, utf8_read, utf8_read_one, utf8_read_small,
+  return_less, return_greater, make_fail_utf8_result, make_result;
+var
+  X, Y: NativeUInt;
+  UTF8Length: NativeUInt;
+
+  {$ifdef CPUX86}
+  F: record
+    TopPtr: PWideChar;
+    lookup_utf16_lower: PUniConvWW;
+  end;
+  {$else .CPUMANYREGS}
+    TopPtr: PWideChar;
+    lookup_utf16_lower: PUniConvWW;
+  {$endif}
+begin
+  UTF8Length := Comp.Length;
+  {$ifdef CPUX86}F.{$endif}TopPtr := PWideChar(S2) + Comp.Length_2-1;
+  {$ifdef CPUX86}F.{$endif}lookup_utf16_lower := Comp.Lookup;
+
+  if (UTF8Length < 4) then goto utf8_read_small;
+utf8_read_normal:
+  X := PCardinal(S1)^;
+utf8_read:
+  if (S2 >= {$ifdef CPUX86}F.{$endif}TopPtr{WideLength <= 1}) then
+  begin
+    if (S2 = {$ifdef CPUX86}F.{$endif}TopPtr{WideLength = 1}) then goto utf8_read_one;
+    goto return_greater;
+  end;
+
+  if (X and $8080 = 0) then
+  begin
+    // compare 2 chars
+    X := ((X and $7f00) shl 8) + (X and $007f);
+    Inc(S1, 2);
+    Dec(UTF8Length, 2);
+    Y := PCardinal(S2)^;
+    Inc(S2, 2);
+
+    if (X <> Y) then
+    begin
+      if ({$ifdef CPUX86}F.{$endif}lookup_utf16_lower = nil) then
+      begin
+        X := (X shl 16) or (X shr 16);
+        Y := (Y shl 16) or (Y shr 16);
+        goto make_result;
+      end else
+      begin
+        {$ifdef CPUX86}
+          X := (UNICONV_CHARCASE.VALUES[Word(X)] shl 16) + UNICONV_CHARCASE.VALUES[X shr 16];
+          Y := (UNICONV_CHARCASE.VALUES[Word(Y)] shl 16) + UNICONV_CHARCASE.VALUES[Y shr 16];
+        {$else}
+          X := (lookup_utf16_lower[Word(X)] shl 16) + lookup_utf16_lower[X shr 16];
+          Y := (lookup_utf16_lower[Word(Y)] shl 16) + lookup_utf16_lower[Y shr 16];
+        {$endif}
+        if (X <> Y) then goto make_result;
+      end;
+    end;
+  end else
+  begin
+utf8_read_one:
+    // compare 1 char
+    if (X and $80 = 0) then
+    begin
+      X := X and $7f;
+      Inc(S1);
+      Dec(UTF8Length);
+    end else
+    if (X and $C0E0 = $80C0) then
+    begin
+      Y := X;
+      X := X and $1F;
+      Dec(UTF8Length, 2);
+      Y := Y shr 8;
+      Inc(S1, 2);
+      X := X shl 6;
+      Y := Y and $3F;
+      Inc(X, Y);
+      //if (NativeInt(UTF8Length) < 0) then goto make_fail_utf8_result;
+    end else
+    begin
+      Y := UNICONV_UTF8_SIZE[Byte(X){ and $ff}];
+      Dec(UTF8Length, Y);
+      Inc(S1, Y);
+      if (NativeInt(UTF8Length) < 0) or (Y <> 3) then goto make_fail_utf8_result;
+
+      if (X and $C0C000 = $808000) then
+      begin
+        // X := ((X & 0x0f) << 12) | ((X & 0x3f00) >> 2) | ((X >> 16) & 0x3f);
+        Y := (X and $0F) shl 12;
+        Y := Y + (X shr 16) and $3F;
+        X := (X and $3F00) shr 2;
+        Inc(X, Y);
+      end else
+      begin
+        goto make_fail_utf8_result;
+      end;
+    end;
+
+    Y := PWord(S2)^;
+    Inc(S2);
+    if (X <> Y) then
+    begin
+      if ({$ifdef CPUX86}F.{$endif}lookup_utf16_lower = nil) then
+      begin
+        goto make_result;
+      end else
+      begin
+        {$ifdef CPUX86}
+          X := UNICONV_CHARCASE.VALUES[X];
+          Y := UNICONV_CHARCASE.VALUES[Y];
+        {$else}
+          X := lookup_utf16_lower[X];
+          Y := lookup_utf16_lower[Y];
+        {$endif}
+        if (X <> Y) then goto make_result;
+      end;
+    end;
+  end;
+
+  // next interation
+  if (UTF8Length >= 4) then goto utf8_read_normal;
+utf8_read_small:
+  case UTF8Length of
+    1: begin
+         X := PByte(S1)^;
+         goto utf8_read_one;
+       end;
+    2: begin
+         X := PWord(S1)^;
+         goto utf8_read;
+       end;
+    3: begin
+         X := P4Bytes(S1)[2];
+         Y := PWord(S1)^;
+         X := (X shl 16) or Y;
+         goto utf8_read;
+       end;
+  end;
+
+  // utf8 string is finished: -1 or 0
+  Result := -Ord(S2 <= {$ifdef CPUX86}F.{$endif}TopPtr{WideLength > 0 (>=1)});
+  Exit;
+
+return_less:
+  Result := -1;
+  Exit;
+
+return_greater:
+  Result :=  1;
+  Exit;
+
+make_fail_utf8_result:
+  X := 1;
+  Y := {WideLength}({$ifdef CPUX86}F.{$endif}TopPtr+1)-S2;
+
+make_result:
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+// comparison between utf8 strings
+// case insensitive!
+function __uniconv_utf8_compare_utf8(S1, S2: PUTF8Char; const Comp: TUniConvCompareOptions): NativeInt;
+label
+  unterminated_binary_compare, compare_difficult, compare_difficult_4,
+  compare_first_ascii, ascii_1, ascii_2, ascii_3, ascii_4, compare_ascii,
+  X3_Y2,
+  next_iteration, read_small, make_result, make_result_swaped;
+var
+  X, Y, U, V: NativeUInt;
+
+  {$ifdef CPUX86}
+  Store: record
+    Top1: NativeUInt;
+    Top2: NativeUInt;
+    Overflow1: NativeUInt;
+    Overflow2: NativeUInt;
+  end;
+  {$else .CPUMANYREGS}
+    Top1: NativeUInt;
+    Top2: NativeUInt;
+    Overflow1: NativeUInt;
+    Overflow2: NativeUInt;
+  {$endif}
+
+  {$ifdef CPUINTEL}
+  const
+    MASK_80 = MASK_80_SMALL;
+    MASK_40 = MASK_40_SMALL;
+    MASK_65 = MASK_65_SMALL;
+    MASK_7F = MASK_7F_SMALL;
+  {$else .CPUARM}
+  var
+    MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
+  {$endif}
+
+  {$ifdef CPUMANYREGS}
+  var
+    UNICONV_UTF8_SIZE: PUniConvBB;
+  {$endif}
+begin
+  {$ifNdef CPUINTEL}
+    // ARM
+    MASK_80 := MASK_80_SMALL;
+    MASK_40 := MASK_40_SMALL;
+    MASK_65 := MASK_65_SMALL;
+    MASK_7F := MASK_7F_SMALL;
+  {$endif}
+  {$ifdef CPUMANYREGS}
+    UNICONV_UTF8_SIZE := @UniConv.UNICONV_UTF8_SIZE;
+  {$endif}
+
+  // store parameters
+  X := NativeUInt(S1) + Comp.Length;
+  Y := NativeUInt(S2) + Comp.Length_2;
+  {$ifdef CPUX86}Store.{$endif}Overflow1 := X;
+  {$ifdef CPUX86}Store.{$endif}Overflow2 := Y;
+  Dec(X, SizeOf(Cardinal));
+  Dec(Y, SizeOf(Cardinal));
+  {$ifdef CPUX86}Store.{$endif}Top1 := X;
+  {$ifdef CPUX86}Store.{$endif}Top2 := Y;
+  goto next_iteration;
+
+unterminated_binary_compare:
+  Dec(S1, U);
+  Dec(S2, V);
+  U := {$ifdef CPUX86}Store.{$endif}Overflow1;
+  V := {$ifdef CPUX86}Store.{$endif}Overflow2;
+  Dec(S1);
+  Dec(S2);
+  repeat
+    Inc(S1);
+    Inc(S2);
+    X := PByte(S1)^;
+    Y := PByte(S2)^;
+    if (X <> Y) then goto make_result_swaped;
+    if (NativeUInt(S1) = U) or (NativeUInt(S2) = V) then
+    begin
+      Dec(U, NativeUInt(S1));
+      Dec(V, NativeUInt(S2));
+      X := U;
+      Y := V;
+      if (X{0} <> Y{0}) then goto make_result_swaped;
+      Result := 0;
+      Exit;
+    end;
+  until (False);
+
+compare_difficult:
+  U := UNICONV_UTF8_SIZE[Byte(X)];
+  V := UNICONV_UTF8_SIZE[Byte(Y)] ;
+  Inc(S1, U);
+  Inc(S2, V);
+  if (NativeUInt(S1) > {$ifdef CPUX86}Store.{$endif}Overflow1) then goto unterminated_binary_compare;
+  if (NativeUInt(S2) > {$ifdef CPUX86}Store.{$endif}Overflow2) then goto unterminated_binary_compare;
+  if (U = V) then
+  begin
+    case (U) of
+      0:
+      begin
+        X := Byte(X);
+        Y := Byte(Y);
+        if (X <> Y) then goto make_result_swaped;
+      end;
+      1:
+      begin
+        X := UNICONV_CHARCASE.VALUES[Byte(X)];
+        Y := UNICONV_CHARCASE.VALUES[Byte(Y)];
+        if (X <> Y) then goto make_result_swaped;
+      end;
+      2:
+      begin
+        X := Word(X);
+        Y := Word(Y);
+        if (X = Y) then goto next_iteration;
+
+        if (X and $C0E0 <> $80C0) then goto compare_difficult_4;
+        if (Y and $C0E0 <> $80C0) then goto compare_difficult_4;
+        X := ((X and $1F) shl 6) + ((X shr 8) and $3F);
+        Y := ((Y and $1F) shl 6) + ((Y shr 8) and $3F);
+        X := UNICONV_CHARCASE.VALUES[X];
+        Y := UNICONV_CHARCASE.VALUES[Y];
+        if (X <> Y) then goto make_result_swaped;
+      end;
+      3:
+      begin
+        X := X and $ffffff;
+        Y := Y and $ffffff;
+        if (X = Y) then goto next_iteration;
+
+        if (X and $C0C000 <> $808000) then goto compare_difficult_4;
+        if (Y and $C0C000 <> $808000) then goto compare_difficult_4;
+
+        U := (X and $0F) shl 12;
+        V := (Y and $0F) shl 12;
+        U := U + (X shr 16) and $3F;
+        V := V + (Y shr 16) and $3F;
+        X := (X and $3F00) shr 2;
+        Y := (Y and $3F00) shr 2;
+        Inc(X, U);
+        Inc(Y, V);
+
+        X := UNICONV_CHARCASE.VALUES[X];
+        Y := UNICONV_CHARCASE.VALUES[Y];
+        if (X <> Y) then goto make_result_swaped;
+      end;
+      5:
+      begin
+        if (X <> Y) then goto make_result;
+        X := PByte(PByteArray(S1) - SizeOf(Byte))^;
+        Y := PByte(PByteArray(S2) - SizeOf(Byte))^;
+        goto compare_difficult_4;
+      end;
+      6:
+      begin
+        if (X <> Y) then goto make_result;
+        X := PWord(PByteArray(S1) - SizeOf(Word))^;
+        Y := PWord(PByteArray(S2) - SizeOf(Word))^;
+        goto compare_difficult_4;
+      end;
+    else
+    compare_difficult_4:
+      if (X <> Y) then goto make_result;
+    end;
+  end else
+  // if (U <> V) then
+  begin
+    if (U = 2) then
+    begin
+      if (V <> 3) then goto make_result;
+
+      U := X;
+      X := Y;
+      Y := U;
+      goto X3_Y2;
+    end else
+    if (U = 3) then
+    begin
+      if (V <> 2) then goto make_result;
+    X3_Y2:
+      if (X and $C0C000 <> $808000) then goto make_result;
+      if (Y and $C0E0 <> $80C0) then goto make_result;
+
+      U := (X and $0F) shl 12;
+      U := U + (X shr 16) and $3F;
+      Y := ((Y and $1F) shl 6) + ((Y shr 8) and $3F);      
+      X := (X and $3F00) shr 2;
+      Inc(X, U);
+
+      X := UNICONV_CHARCASE.VALUES[X];
+      Y := UNICONV_CHARCASE.VALUES[Y];
+      if (X <> Y) then goto make_result_swaped;
+    end else
+    goto make_result;
+  end;
+  goto next_iteration;
+
+compare_first_ascii:
+  if (U and $8000 <> 0) then goto ascii_1;
+  if (U and $800000 <> 0) then goto ascii_2;
+  ascii_3:
+    X := X and $ffffff;
+    Y := Y and $ffffff;
+    Inc(S1, 3);
+    Inc(S2, 3);
+    goto compare_ascii;
+  ascii_2:
+    X := X and $ffff;
+    Y := Y and $ffff;
+    Inc(S1, 2);
+    Inc(S2, 2);
+    goto compare_ascii;
+  ascii_1:
+    X := X and $ff;
+    Y := Y and $ff;
+    Inc(S1, 1);
+    Inc(S2, 1);
+    goto compare_ascii;
+ascii_4:
+  Inc(S1, SizeOf(Cardinal));
+  Inc(S2, SizeOf(Cardinal));
+compare_ascii:
+  if (X <> Y) then
+  begin
+    U := X xor MASK_40;
+    V := (U + MASK_65);
+    U := (U + MASK_7F) and Integer(MASK_80);
+    X := X + ((not V) and U) shr 2;
+
+    U := Y xor MASK_40;
+    V := (U + MASK_65);
+    U := (U + MASK_7F) and Integer(MASK_80);
+    Y := Y + ((not V) and U) shr 2;
+
+    if (X <> Y) then goto make_result;
+  end;
+
+  // next interation
+next_iteration:
+  if ((Ord(NativeUInt(S1) >= {$ifdef CPUX86}Store.{$endif}Top1) or Ord(NativeUInt(S2) >= {$ifdef CPUX86}Store.{$endif}Top2)) <> 0) then goto read_small;
+  X := PCardinal(S1)^;
+  Y := PCardinal(S2)^;
+  U := X or Y;
+  if (U and Integer(MASK_80) = 0) then goto ascii_4;
+  if (U and $80 = 0) then goto compare_first_ascii;
+  goto compare_difficult;
+
+read_small:
+  case {Length1}({$ifdef CPUX86}Store.{$endif}Overflow1 - NativeUInt(S1)) of
+    0: begin
+         // -1 or 0
+         Result := -(Ord({$ifdef CPUX86}Store.{$endif}Overflow2 <> NativeUInt(S2))){-Ord(Length2>0)};
+         Exit;
+       end;
+    1: begin
+         X := PByte(S1)^;
+       end;
+    2: begin
+         X := PWord(S1)^;
+       end;
+    3: begin
+         X := P4Bytes(S1)[2];
+         X := (X shl 16) + PWord(S1)^;
+       end;
+  else
+    X := PCardinal(S1)^;
+  end;
+
+  case {Length2}({$ifdef CPUX86}Store.{$endif}Overflow2 - NativeUInt(S2)) of
+    0: begin
+         // 0 or 1
+         Result := 1{Ord(Length1>0)};
+         Exit;
+       end;
+    1: begin
+         Y := PByte(S2)^;
+       end;
+    2: begin
+         Y := PWord(S2)^;
+       end;
+    3: begin
+         Y := P4Bytes(S2)[2];
+         Y := (Y shl 16) + PWord(S2)^;
+       end;
+  else
+    Y := PCardinal(S2)^;
+  end;
+  goto compare_difficult;
+
+
+make_result:
+  X := (Swap(X) shl 16) + Swap(X shr 16);
+  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+
+make_result_swaped:
+  Result := Ord(X > Y)*2 - 1;
+end;
+
+
+// comparison between utf8 and sbcs(conversion to utf16)
+// optional case sensitive (Lookup = @UNICONV_CHARCASE.VALUES)
+// Lookup2 is normal/lower utf16 (PUniConvWB)
+function __uniconv_utf8_compare_sbcs(S1: PUTF8Char; S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
+{$ifNdef CPUX86}
+label
+  read_normal, read, read_small, compare_ascii, next_iteration,
+  return_equal, make_result;
+var
+  UTF8Length, UTF16Length: NativeUInt;
+  lookup_utf16_lower: PUniConvWW{optional(not nil)};
+  lookup_sbcs: PUniConvWB;
+
+  N: Byte;
+  X, Y, U, V: NativeUInt;
+
+  {$ifdef CPUINTEL}
+  const
+    MASK_80 = MASK_80_SMALL;
+    MASK_40 = MASK_40_SMALL;
+    MASK_65 = MASK_65_SMALL;
+    MASK_7F = MASK_7F_SMALL;
+  {$else .CPUARM}
+  var
+    MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
+  {$endif}
+
+  {$ifdef CPUMANYREGS}
+  var
+    UNICONV_UTF8_SIZE: PUniConvBB;
+  {$endif}
+begin
+  {$ifNdef CPUINTEL}
+    // ARM
+    MASK_80 := MASK_80_SMALL;
+    MASK_40 := MASK_40_SMALL;
+    MASK_65 := MASK_65_SMALL;
+    MASK_7F := MASK_7F_SMALL;
+  {$endif}
+  {$ifdef CPUMANYREGS}
+    UNICONV_UTF8_SIZE := @UniConv.UNICONV_UTF8_SIZE;
+  {$endif}
+
+  UTF8Length := Comp.Length;
+  UTF16Length := Comp.Length_2;
+  lookup_utf16_lower := Comp.Lookup;
+  lookup_sbcs := Comp.Lookup_2;
+
+  N := Ord(UTF8Length < 4) + Ord(UTF16Length < 4);
+  if (N <> 0) then goto read_small;
+read_normal:
+  X := PCardinal(S1)^;
+  Y := PCardinal(S2)^;
+read:
+  U := X or Y;
+  if (U and Integer(MASK_80) = 0) then
+  begin
+    Inc(S1, SizeOf(Cardinal));
+    Inc(S2, SizeOf(Cardinal));
+    Dec(UTF8Length, SizeOf(Cardinal));
+    Dec(UTF16Length, SizeOf(Cardinal));
+    goto compare_ascii;
+  end else
+  begin
+    // compare N ascii symbols
+    // N := Ord(U and $80 = 0)+Ord(U and $8080 = 0)+Ord(U and $808080 = 0);
+    // if (N <> 0) then
+    if (U and $80 = 0) then
+    begin
+      // shift X,Y(N)
+      N := Ord(U and $8080 = 0)+Ord(U and $808080 = 0);
+      V := N;
+      N := (4-1)-N;
+      U := -1 shr Byte(N shl 3{*8});
+      Inc(V);
+
+      X := X and U;
+      Y := Y and U;
+      Inc(S1, V);
+      Inc(S2, V);
+      Dec(UTF8Length, V);
+      Dec(UTF16Length, V);
+    compare_ascii:
+      if (X <> Y) then
+      begin
+        if (lookup_utf16_lower <> nil) then
+        begin
+          U := X xor MASK_40;
+          V := (U + MASK_65);
+          U := (U + MASK_7F) and Integer(MASK_80);
+          X := X + ((not V) and U) shr 2;
+
+          U := Y xor MASK_40;
+          V := (U + MASK_65);
+          U := (U + MASK_7F) and Integer(MASK_80);
+          Y := Y + ((not V) and U) shr 2;
+        end;
+
+        if (X <> Y) then
+        begin
+          X := (Swap(X) shl 16) + Swap(X shr 16);
+          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+          goto make_result;
+        end;
+      end;
+
+      if (NativeInt(UTF8Length or UTF16Length) <= 0) then
+      begin
+        X := UTF8Length + SizeOf(Cardinal);
+        Y := UTF16Length + SizeOf(Cardinal);
+        goto make_result;
+      end;
+    end else
+    begin
+      Y := lookup_sbcs[Byte(Y)];
+      Inc(S2);
+      Dec(UTF16Length);
+
+      if (X and $80 = 0) then
+      begin
+        X := X and $7f;
+        Inc(S1);
+        Dec(UTF8Length);
+      end else
+      if (X and $C0E0 = $80C0) then
+      begin
+        // C := ((C and $1F) shl 6) + ((C shr 8) and $3F);
+        U := X;
+        X := X and $1F;
+        U := U shr 8;
+        X := X shl 6;
+        U := U and $3F;
+        Inc(S1, 2);
+        Dec(UTF8Length, 2);
+        Inc(X, U);
+      end else
+      if (X and $C0C000 = $808000) then
+      begin
+        // C := ((C & 0x0f) << 12) | ((C & 0x3f00) >> 2) | (C >> 16) & 0x3f);
+        U := (X and $0F) shl 12;
+        U := U + (X shr 16) and $3F;
+        Inc(S1, 3);
+        X := (X and $3F00) shr 2;
+        Dec(UTF8Length, 3);
+        Inc(X, U);
+      end else
+      begin
+        case UNICONV_UTF8_SIZE[Byte(X)] of
+          0..3: begin
+                  Result := -1;
+                  Exit;
+                end;
+        else
+          Result := 1;
+          Exit;
+        end;
+      end;
+
+      if (lookup_utf16_lower <> nil) then X := lookup_utf16_lower[X];
+      if (X <> Y) then goto make_result;
+    end;
+  end;
+
+  // next interation
+next_iteration:
+  N := Ord(UTF8Length < 4) + Ord(UTF16Length < 4);
+  if (N = 0) then goto read_normal;
+read_small:
+  case UTF8Length of
+    0: begin
+         // -1 or 0
+         Result := -Ord(UTF16Length>0);
+         Exit;
+       end;
+    1: begin
+         X := PByte(S1)^;
+       end;
+    2: begin
+         X := PWord(S1)^;
+       end;
+    3: begin
+         X := P4Bytes(S1)[2];
+         X := (X shl 16) + PWord(S1)^;
+       end;
+  else
+    X := PCardinal(S1)^;
+  end;
+
+  case UTF16Length of
+    0: begin
+         // 0 or 1
+         Result := Ord(UTF8Length>0);
+         Exit;
+       end;
+    1: begin
+         Y := PByte(S2)^;
+       end;
+    2: begin
+         Y := PWord(S2)^;
+       end;
+    3: begin
+         Y := P4Bytes(S2)[2];
+         Y := (Y shl 16) + PWord(S2)^;
+       end;
+  else
+    Y := PCardinal(S2)^;
+  end;
+  goto read;
+
+make_result:
+  Result := Ord(X > Y)*2 - 1;
+end;
+{$else}
+asm
+@prefix:
+  push ebp
+  push esi
+  push edi
+  push ebx
+@begin:
+  mov esi, [ECX].TUniConvCompareOptions.Length   // UTF8Length
+  mov edi, [ECX].TUniConvCompareOptions.Length_2 // UTF16Length
+  mov ebp, [ECX].TUniConvCompareOptions.Lookup_2 // lookup_sbcs
+  push [ECX].TUniConvCompareOptions.Lookup // lookup_utf16_lower (esp+8)
+
+  lea ecx, [edx+edi]
+  lea ebx, [eax+esi]
+  push ecx // TopUTF16Ptr (esp+4)
+  push ebx // TopUTF8Ptr (esp+0)
+
+  cmp esi, 4
+  setb cl
+  cmp edi, 4
+  setb bl
+  add cl, bl
+  jz @read_normal_2
+  jmp @read_small
+
+@read_normal:
+  mov eax, [esp]
+  mov edx, [esp+4]
+  sub eax, esi   // S1 := TopUTF8Ptr-UTF8Length
+  sub edx, edi   // S2 := TopUTF16Ptr-UTF16Length
+@read_normal_2:
+  mov eax, [eax] // X := PCardinal(S1)^;
+  mov edx, [edx] // Y := PCardinal(S2)^;
+@read:
+  // U := X or Y;
+  // if (U and Integer(MASK_80) = 0) then
+  mov ebx, eax
+  or ebx, edx
+  test ebx, MASK_80_SMALL
+  jnz @read_not_4
+  @read_4:
+    lea esi, [esi - 4]  // Dec(UTF8Length, SizeOf(Cardinal));
+    cmp eax, edx
+    lea edi, [edi - 4]  // Dec(UTF16Length, SizeOf(Cardinal));
+    // if (X = Y) then goto @next_iteration
+    mov ecx, esi  //
+    je @is_length_available
+    jmp @compare_ascii
+  @read_not_4:
+    test bl, $80
+    jnz @compare_utf8
+  @compare_ascii_1_3:
+    // shift X,Y(N)
+    // N(ebx) := Ord(U and $8080 = 0)+Ord(U and $808080 = 0);
+    test ebx, $8080
+    setz cl
+    test ebx, $808080
+    setz bl
+    add bl, cl
+    movzx ebx, bl
+    // V := N+1 / N := (4-1)-N
+    mov ecx, 4-1
+    sub ecx, ebx
+    inc ebx
+    // Dec(UTF8Length/UTF16Length, V); / U := -1 shr Byte(N*8);
+    shl ecx, 3
+    sub esi, ebx
+    sub edi, ebx
+    or ebx, -1
+    shr ebx, cl
+    // X, Y
+    and eax, ebx
+    and edx, ebx
+    mov ecx, esi //
+    cmp eax, edx
+    je @is_length_available
+  @compare_ascii:
+    bswap eax
+    bswap edx
+    cmp Cardinal ptr [esp+8], 0  // lookup_utf16_lower
+    jz @compare_ascii_final   // cmp --> @make_result
+
+    // make lower
+    mov ebx, eax
+    xor ebx, MASK_40_SMALL
+    lea ecx, [ebx + MASK_65_SMALL]
+    add ebx, MASK_7F_SMALL
+    not ecx
+    and ebx, MASK_80_SMALL
+    and ecx, ebx
+
+    mov ebx, edx
+    shr ecx, 2
+    xor ebx, MASK_40_SMALL
+    add eax, ecx
+    lea ecx, [ebx + MASK_65_SMALL]
+    add ebx, MASK_7F_SMALL
+    not ecx
+    and ebx, MASK_80_SMALL
+    and ebx, ecx
+    shr ebx, 2
+    mov ecx, esi //
+    add edx, ebx
+
+  @compare_ascii_final:
+    cmp eax, edx
+    jne @make_result
+
+  @is_length_available:
+    // if (NativeInt(UTF8Length or UTF16Length) <= 0) then
+    or ecx, edi
+    jg @next_iteration
+    // Result := Compare(UTF8Length, UTF16Length)
+    add esi, 4
+    add edi, 4
+    cmp esi, edi
+    jmp @make_result
+
+  @compare_utf8:
+    // Y := lookup_sbcs[Byte(Y)] / Dec(UTF16Length)
+    movzx edx, dl
+    mov ebx, eax
+    dec edi
+    mov ecx, eax
+    movzx edx, word ptr [ebp + edx*2]
+  @look_utf8_1:
+    // if (X and $80 = 0) then
+    test al, $80
+    jnz @look_utf8_2
+    // C := C and $7f;
+    and eax, $7f
+    dec esi
+  jmp @look_utf8_done
+  @look_utf8_2:
+    // if (X and $C0E0 = $80C0) then
+    and ecx, $C0E0
+    and ebx, $C0C000
+    cmp ecx, $80C0
+    jne @look_utf8_3
+    // C := ((C and $1F) shl 6) + ((C shr 8) and $3F);
+    mov ebx, eax
+    and eax, $1F
+    shr ebx, 8
+    shl eax, 6
+    and ebx, $3F
+    sub esi, 2
+    add eax, ebx
+  jmp @look_utf8_done
+  @look_utf8_3:
+    // if (X and $C0C000 = $808000) then
+    cmp ebx, $808000
+    jne @look_utf8_else
+    // C := ((C & 0x0f) << 12) | ((C & 0x3f00) >> 2) | (C >> 16) & 0x3f);
+    mov ebx, eax
+    mov ecx, eax
+    and eax, $0f
+    and ebx, $3f00
+    shr ecx, 16
+    shl eax, 12
+    shr ebx, 2
+    and ecx, $3f
+    add eax, ebx
+    sub esi, 3
+    add eax, ecx
+  jmp @look_utf8_done
+  @look_utf8_else:
+    // case UNICONV_UTF8_SIZE[Byte(X)] of
+    // -1 or 1
+    movzx eax, al
+    cmp byte ptr [UNICONV_UTF8_SIZE + eax], 3
+    jmp @make_result
+
+  //if (lookup_utf16_lower <> nil) then X := lookup_utf16_lower[X];
+  //if (X <> Y) then goto make_result;
+  @look_utf8_done:
+    cmp Cardinal ptr [esp+8], 0
+    jz @look_utf8_compare
+    movzx eax, word ptr [UNICONV_CHARCASE + eax*2]
+  @look_utf8_compare:
+  cmp eax, edx
+  jne @make_result
+
+@next_iteration:
+  cmp esi, 4
+  setb cl
+  cmp edi, 4
+  setb bl
+  add cl, bl
+  jz @read_normal
+@read_small:
+  mov eax, [esp]
+  mov edx, [esp+4]
+  sub eax, esi   // S1 := TopUTF8Ptr-UTF8Length
+  sub edx, edi   // S2 := TopUTF16Ptr-UTF16Length
+
+  // case UTF8Length of
+  cmp esi, 4
+  jae @utf8_len_4p
+  jmp [offset @case_utf8_len + esi*4]
+@case_utf8_len: DD @utf8_len_0,@utf8_len_1,@utf8_len_2,@utf8_len_3
+@utf8_len_0:
+  // Result := -Ord(UTF16Length>0) ---> -1 or 0
+  test edi, edi
+  seta al
+  movzx eax, al
+  neg eax
+  jmp @postfix
+@utf8_len_1:
+  movzx eax, byte ptr [eax]
+  jmp @utf8_len_done
+@utf8_len_2:
+  movzx eax, word ptr [eax]
+  jmp @utf8_len_done
+@utf8_len_3:
+  movzx ecx, byte ptr [eax+2]
+  movzx eax, word ptr [eax]
+  shl ecx, 16
+  or eax, ecx
+  jmp @utf8_len_done
+@utf8_len_4p:
+  mov eax, [eax]
+@utf8_len_done:
+
+  // case UTF16Length of
+  cmp edi, 4
+  jae @utf16_len_4p
+  jmp [offset @case_utf16_len + edi*4]
+@case_utf16_len: DD @utf16_len_0,@utf16_len_1,@utf16_len_2,@utf16_len_3
+@utf16_len_0:
+  // Result := Ord(UTF8Length>0) ---> 0 or 1
+  xor eax, eax
+  test esi, esi
+  seta al
+  jmp @postfix
+@utf16_len_1:
+  movzx edx, byte ptr [edx]
+  jmp @read
+@utf16_len_2:
+  movzx edx, word ptr [edx]
+  jmp @read
+@utf16_len_3:
+  movzx ecx, byte ptr [edx+2]
+  movzx edx, word ptr [edx]
+  shl ecx, 16
+  or edx, ecx
+  jmp @read
+@utf16_len_4p:
+  mov edx, [edx]
+  jmp @read
+
+@make_result:
+  seta al
+  movzx eax, al
+  lea eax, [eax*2-1]
+@postfix:
+  add esp, 12
+  pop ebx
+  pop edi
+  pop esi
+  pop ebp
 end;
 {$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
