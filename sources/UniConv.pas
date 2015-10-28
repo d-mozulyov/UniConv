@@ -174,14 +174,15 @@ type
   // compiler independent char/string types
   {$ifdef UNICODE}
     UnicodeChar = Char;
+    PUnicodeChar = ^Char;
   {$else}
     UnicodeChar = WideChar;
+    PUnicodeChar = PWideChar;
     UnicodeString = WideString;
-    PUnicodeString = ^UnicodeString;
+    PUnicodeString = PWideString;
     RawByteString = type AnsiString;
     PRawByteString = ^RawByteString;
   {$endif}
-  PUnicodeChar = ^UnicodeChar;
   {$ifdef NEXTGEN}
     AnsiChar = type Byte;
     PAnsiChar = ^AnsiChar;
@@ -13005,535 +13006,6 @@ begin
 end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
-{$ifdef undef}{$REGION 'low level string types routine'}{$endif}
-type
-  TDynArrayRec = packed record
-    RefCount: Integer;
-    Length: NativeInt; // high in FPC,
-                       // but dynamic array is not used for strings in FPC
-  end;
-  PDynArrayRec = ^TDynArrayRec;
-
-  {$if Defined(FPC) or (not Defined(UNICODE))}
-  TAnsiStrRec = packed record
-    RefCount: Integer;
-    Length: Integer;
-  end;
-  {$else}
-    {$ifdef NEXTGEN}
-      TAnsiStrRec = TDynArrayRec;
-    {$else}
-      TAnsiStrRec = packed record
-      {$ifdef LARGEINT}
-        _Padding: Integer;
-      {$endif}
-        CodePageElemSize: Integer;
-        RefCount: Integer;
-        Length: Integer;
-      end;
-    {$endif}
-  {$ifend}
-  PAnsiStrRec = ^TAnsiStrRec;
-
-  {$ifdef UNICODE}
-    {$ifdef FPC}
-      TUnicodeStrRec = TAnsiStrRec;
-    {$else}
-      TUnicodeStrRec = packed record
-      {$ifdef LARGEINT}
-        _Padding: Integer;
-      {$endif}
-        CodePageElemSize: Integer;
-        RefCount: Integer;
-        Length: Integer;
-      end;
-    {$endif}
-    PUnicodeStrRec = ^TUnicodeStrRec;
-  {$endif}
-
-  {$ifdef MSWINDOWS}
-  TWideStrRec = packed record
-    Length: Integer; // *2: windows BSTR
-  end;
-  {$else}
-  {$ifdef FPC}
-    TWideStrRec = TAnsiStrRec;
-  {$else}
-  {$ifdef NEXTGEN}
-    TWideStrRec = TDynArrayRec;
-  {$else}
-    {$if CompilerVersion >= 22}
-       TWideStrRec = TUnicodeStrRec;
-    {$else}
-       TWideStrRec = TAnsiStrRec;
-    {$ifend}
-  {$endif}
-  {$endif}
-  {$endif}
-  PWideStrRec = ^TWideStrRec;
-
-
-{$ifdef MSWINDOWS}
-const
-  oleaut = 'oleaut32.dll';
-
-  function SysAllocStringLen(P: PWideChar; Len: Integer): PWideChar; stdcall;
-    external oleaut name 'SysAllocStringLen';
-
-  function SysReAllocStringLen(var S{: WideString}; P: PWideChar;
-    Len: Integer): LongBool; stdcall;
-    external oleaut name 'SysReAllocStringLen';
-
-  procedure SysFreeString(const S: PWideChar{WideString}); stdcall;
-    external oleaut name 'SysFreeString';
-{$endif}
-
-const
-  STR_OFFSET_LENGTH = 4;
-  STR_OFFSET_REFCOUNT = 8;
-  STR_OFFSET_CODEPAGE = 12;
-
-  NULL_ANSICHAR = {$ifdef NEXTGEN}0{$else}#0{$endif};
-  NULL_WIDECHAR = #0;
-
-  WIDE_STR_SHIFT  = 
-    {$ifdef MSWINDOWS}
-       1 // windows BSTR
-    {$else}
-    {$ifdef NEXTGEN}
-       0 // dynamic array
-    {$else}
-    {$ifdef FPC}
-       1 // as double ansistring
-    {$else}
-       // non-windows Delphi
-       {$if CompilerVersion >= 22}
-          0 // as unicode string
-       {$else}
-          1 // as double ansistring
-       {$ifend}
-    {$endif}
-    {$endif}
-    {$endif}
-  ;
-
-
-procedure AnsiStringClear(var S{: AnsiString/UTF8String});
-var
-  P: PAnsiStrRec;
-  RefCount: Integer;
-begin
-  P := Pointer(S);
-  if (P = nil) then Exit;
-  Dec(P);
-  Pointer(S) := nil;
-
-  RefCount := P.RefCount;
-  if (RefCount <> 1) then
-  begin
-    if (RefCount < 0) then Exit;
-
-    if (not System.IsMultiThread) then
-    begin
-      P.RefCount := RefCount-1;
-      Exit;
-    end else
-    begin
-      if (AtomicDecrement(P.RefCount) <> 0) then Exit;
-    end;
-  end;
-
-  MemoryManager.FreeMem(P);
-end;
-
-{$ifdef UNICODE}
-{$if SizeOf(TUnicodeStrRec) = SizeOf(TAnsiStrRec)}
-procedure UnicodeStringClear(var S{: UnicodeString}); inline;
-begin
-  AnsiStringClear(S);
-end;
-{$else}
-procedure UnicodeStringClear(var S{: UnicodeString});
-var
-  P: PUnicodeStrRec;
-  RefCount: Integer;
-begin
-  P := Pointer(S);
-  if (P = nil) then Exit;
-  Dec(P);
-  Pointer(S) := nil;
-
-  RefCount := P.RefCount;
-  if (RefCount <> 1) then
-  begin
-    if (RefCount < 0) then Exit;
-
-    if (not System.IsMultiThread) then
-    begin
-      P.RefCount := RefCount-1;
-      Exit;
-    end else
-    begin
-      if (AtomicDecrement(P.RefCount) <> 0) then Exit;
-    end;
-  end;
-
-  MemoryManager.FreeMem(P);
-end;
-{$ifend}
-{$endif}
-
-
-{$ifdef MSWINDOWS}
-procedure WideStringClear(var S{: WideString});
-asm
-  {$ifdef CPUX86}
-    mov edx, [eax]
-    xor ecx, ecx
-    test edx, edx
-  {$else .CPUX64}
-    mov rdx, [rcx]
-    xor rax, rax
-    test rdx, rdx
-  {$endif}
-  jnz @1
-  ret
-@1:
-  {$ifdef CPUX86}
-     mov [eax], ecx
-     push edx
-  {$else .CPUX64}
-     mov [rcx], rax
-     push rdx
-  {$endif}
-  jmp SysFreeString
-end;
-{$else}
-procedure WideStringClear(var S{: WideString}); inline;
-begin
-  {$if SizeOf(TWideStrRec) = SizeOf(TAnsiStrRec)}
-     AnsiStringClear(S);
-  {$else}
-     UnicodeStringClear(S);
-  {$ifend}
-end;
-{$endif}
-
-
-function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
-label
-  allocate_new, done;
-var
-  P: PAnsiStrRec;
-  RefCount: Integer;
-begin
-  if (S <> nil) then
-  begin
-    P := PAnsiStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
-    RefCount := P.RefCount;
-    if (RefCount <> 1) then
-    begin
-      if (not System.IsMultiThread) then
-      begin
-        P.RefCount := RefCount-1;
-        goto allocate_new;
-      end else
-      begin
-        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
-      end;
-    end;
-
-    // use or free
-    if (P.Length >= Length) then
-    begin
-      if (CodePage{Flag} >= 0) and (P.Length <> Length) then
-      begin
-        P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
-      end;
-
-      goto done;
-    end else
-    begin
-      MemoryManager.FreeMem(P);
-    end;
-  end;
-
-allocate_new:
-  P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
-  P.RefCount := 1;
-  P.Length := Length;
-done:
-  {$if SizeOf(TAnsiStrRec) > 8}
-    P.CodePageElemSize := (CodePage and $ffff) or $00010000;
-  {$ifend}
-  Inc(NativeInt(P), SizeOf(P^));
-  {$ifNdef NEXTGEN}
-  PByteArray(P)[Length] := NULL_ANSICHAR;
-  {$endif}
-  Result := P;
-end;
-
-procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-var
-  P: PAnsiStrRec;
-begin
-  P := S;
-  Dec(P);
-
-  if (P.Length = Length) then
-  begin
-    Inc(P);
-    Result := P;
-  end else
-  begin
-    P.Length := Length;
-
-    {$ifNdef NEXTGEN}
-    Inc(P);
-    PByteArray(P)[Length] := NULL_ANSICHAR;
-    Dec(P);
-    {$endif}
-
-    Length := Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif});
-    P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
-  end;
-end;
-
-{$ifdef UNICODE}
-function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
-label
-  allocate_new, done;
-var
-  P: PUnicodeStrRec;
-  RefCount: Integer;
-begin
-  if (S <> nil) then
-  begin
-    P := PUnicodeStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
-    RefCount := P.RefCount;
-    if (RefCount <> 1) then
-    begin
-      if (not System.IsMultiThread) then
-      begin
-        P.RefCount := RefCount-1;
-        goto allocate_new;
-      end else
-      begin
-        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
-      end;
-    end;
-
-    // use or free
-    if (P.Length >= Length) then
-    begin
-      if (Flag >= 0) and (P.Length <> Length) then
-      begin
-        P := MemoryManager.ReallocMem(P, Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
-      end;
-
-      goto done;
-    end else
-    begin
-      MemoryManager.FreeMem(P);
-    end;
-  end;
-
-allocate_new:
-  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
-  P.RefCount := 1;
-  P.Length := Length;
-done:
-  {$if SizeOf(TUnicodeStrRec) > 8}
-    P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
-  {$ifend}
-  Inc(NativeInt(P), SizeOf(P^));
-  PWideChar(P)[Length] := NULL_WIDECHAR;
-  Result := P;
-end;
-
-procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
-var
-  P: PUnicodeStrRec;
-begin
-  P := S;
-  Dec(P);
-
-  if (P.Length = Length) then
-  begin
-    Inc(P);
-    Result := P;
-  end else
-  begin
-    P.Length := Length;
-
-    Inc(P);
-    PWideChar(P)[Length] := NULL_WIDECHAR;
-    Dec(P);
-
-    Length := Length*Length + (SizeOf(P^)+SizeOf(WideChar));
-    P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
-  end;
-end;
-{$endif}
-
-function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
-{$ifdef MSWINDOWS}
-var
-  CurrentLen: Integer;
-  R: Pointer;
-begin
-  if (S = nil) then
-  begin
-    Result := SysAllocStringLen(nil, Length);
-  end else
-  begin
-    Length := Length*2;
-    CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
-
-    if (Flag < 0) then
-    begin
-      if (CurrentLen >= Length) then Result := S
-      else
-      Result := SysAllocStringLen(nil, Length shr 1);
-    end else
-    begin
-      if (CurrentLen = Length) then Result := S
-      else
-      begin
-        SysReAllocStringLen(R, S, Length shr 1);
-        Result := R;
-      end;
-    end;
-  end;
-end;
-{$else}
-label
-  allocate_new, done;
-var
-  P: PWideStrRec;
-  RefCount: Integer;
-begin
-  if (S <> nil) then
-  begin
-    P := PWideStrRec(PByteArray(S) - SizeOf(P^));
-    RefCount := P.RefCount;
-    if (RefCount <> 1) then
-    begin
-      if (not System.IsMultiThread) then
-      begin
-        P.RefCount := RefCount-1;
-        goto allocate_new;
-      end else
-      begin
-        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
-      end;
-    end;
-
-    // use or free
-    if (P.Length >= Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
-    begin
-      if (Flag >= 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
-      begin
-        P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
-      end;
-
-      goto done;
-    end else
-    begin
-      MemoryManager.FreeMem(P);
-    end;
-  end;
-
-allocate_new:
-  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^){$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
-  P.RefCount := 1;
-  P.Length := Length;
-done:
-  {$if SizeOf(TWideStrRec) > 8}
-    {$if CompilerVersion >= 22}
-       // Delphi >= XE (WideString = UnicodeString)
-       P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
-    {$else}
-       // Delphi < XE (WideString = double AnsiString, CodePage default)
-       P.CodePageElemSize := DefaultSystemCodePage or $00010000;
-    {$ifend}
-  {$ifend}
-  Inc(NativeInt(P), SizeOf(P^));
-  {$ifNdef NEXTGEN}
-  PWideChar(P)[Length] := NULL_WIDECHAR;
-  {$endif}
-  Result := P;
-end;
-{$endif}
-
-
-{$ifdef INLINESUPPORT}
-procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
-{$ifdef MSWINDOWS}
-begin
-  Dec(NativeInt(S), 4);
-  Inc(Length, Length);
-  if (PInteger(S)^ = Length) then
-  begin
-    Inc(NativeInt(S), 4);
-    Result := S;
-  end else
-  begin
-    Length := Length shr 1;
-    Inc(NativeInt(S), 4);
-    SysReAllocStringLen(Result, S, Length);
-  end;
-end;
-{$else}
-var
-  P: PWideStrRec;
-begin
-  P := S;
-  Dec(P);
-
-  if (P.Length = Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
-  begin
-    Inc(P);
-    Result := P;
-  end else
-  begin
-    P.Length := Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend};
-
-    {$ifNdef NEXTGEN}
-    Inc(P);
-    PWideChar(P)[Length] := NULL_WIDECHAR;
-    Dec(P);
-    {$endif}
-
-    Length := Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif});
-    P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
-  end;
-end;
-{$endif}
-{$else .WINDOWS.CPUX86}
-procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-asm
-  add ecx, ecx
-  cmp [edx-4], ecx
-  jne @1
-  mov [eax], edx
-  ret
-@1:
-  shr ecx, 1
-  push ecx
-  push edx
-  push eax
-  jmp SysReAllocStringLen
-end;
-{$endif}
-{$ifdef undef}{$ENDREGION}{$endif}
-
 {$ifdef undef}{$REGION 'hieroglyph lookups'}{$endif}
 const
   offsets_gb18030_data: array[0..25-1] of Cardinal = (
@@ -15100,7 +14572,7 @@ loop:
   Inc(Src);
 
   case v of
-  -128: mode_2x3: // 2*3+2 = 1 [1..4]         
+  -128: mode_2x3: // 2*3+2 = 1 [1..4]
   begin
     v := Src^;
     Inc(Src);
@@ -15403,7 +14875,7 @@ loop:
         Dec(cnt);
         Dest^ := current;
         Inc(Dest);
-      until (cnt = 0);   
+      until (cnt = 0);
     end;
 
     case (v shr 5) of
@@ -15447,7 +14919,7 @@ begin
 
   Result := InternalLookupAlloc(Count*2);
   unpack_hieroglyphs(Pointer(Result), Data);
-  
+
   Result := InternalLookupFill(Pointer(Destination), Result);
 end;
 
@@ -15646,6 +15118,541 @@ procedure generate_hash_big5;
 begin
   universal_hash_alloc(hash_big5, 19302, 190, table_big5, generate_table_big5);
 end;
+{$ifdef undef}{$ENDREGION}{$endif}
+
+{$ifdef undef}{$REGION 'low level string types routine'}{$endif}
+type
+  TDynArrayRec = packed record
+    RefCount: Integer;
+    Length: NativeInt; // high in FPC,
+                       // but dynamic array is not used for strings in FPC
+  end;
+  PDynArrayRec = ^TDynArrayRec;
+
+  {$if Defined(FPC) or (not Defined(UNICODE))}
+  TAnsiStrRec = packed record
+    RefCount: Integer;
+    Length: Integer;
+  end;
+  {$else}
+    {$ifdef NEXTGEN}
+      TAnsiStrRec = TDynArrayRec;
+    {$else}
+      TAnsiStrRec = packed record
+      {$ifdef LARGEINT}
+        _Padding: Integer;
+      {$endif}
+        CodePageElemSize: Integer;
+        RefCount: Integer;
+        Length: Integer;
+      end;
+    {$endif}
+  {$ifend}
+  PAnsiStrRec = ^TAnsiStrRec;
+
+  {$ifdef UNICODE}
+    {$ifdef FPC}
+      TUnicodeStrRec = TAnsiStrRec;
+    {$else}
+      TUnicodeStrRec = packed record
+      {$ifdef LARGEINT}
+        _Padding: Integer;
+      {$endif}
+        CodePageElemSize: Integer;
+        RefCount: Integer;
+        Length: Integer;
+      end;
+    {$endif}
+    PUnicodeStrRec = ^TUnicodeStrRec;
+  {$endif}
+
+  {$ifdef MSWINDOWS}
+  TWideStrRec = packed record
+    Length: Integer; // *2: windows BSTR
+  end;
+  {$else}
+  {$ifdef FPC}
+    TWideStrRec = TAnsiStrRec;
+  {$else}
+  {$ifdef NEXTGEN}
+    TWideStrRec = TDynArrayRec;
+  {$else}
+    {$if CompilerVersion >= 22}
+       TWideStrRec = TUnicodeStrRec;
+    {$else}
+       TWideStrRec = TAnsiStrRec;
+    {$ifend}
+  {$endif}
+  {$endif}
+  {$endif}
+  PWideStrRec = ^TWideStrRec;
+
+
+{$ifdef MSWINDOWS}
+const
+  oleaut = 'oleaut32.dll';
+
+  function SysAllocStringLen(P: PWideChar; Len: Integer): PWideChar; stdcall;
+    external oleaut name 'SysAllocStringLen';
+
+  function SysReAllocStringLen(var S{: WideString}; P: PWideChar;
+    Len: Integer): LongBool; stdcall;
+    external oleaut name 'SysReAllocStringLen';
+
+  procedure SysFreeString(const S: PWideChar{WideString}); stdcall;
+    external oleaut name 'SysFreeString';
+{$endif}
+
+const
+  STR_OFFSET_LENGTH = 4;
+  STR_OFFSET_REFCOUNT = 8;
+  STR_OFFSET_CODEPAGE = 12;
+
+  NULL_ANSICHAR = {$ifdef NEXTGEN}0{$else}#0{$endif};
+  NULL_WIDECHAR = #0;
+
+  WIDE_STR_SHIFT  = 
+    {$ifdef MSWINDOWS}
+       1 // windows BSTR
+    {$else}
+    {$ifdef NEXTGEN}
+       0 // dynamic array
+    {$else}
+    {$ifdef FPC}
+       1 // as double ansistring
+    {$else}
+       // non-windows Delphi
+       {$if CompilerVersion >= 22}
+          0 // as unicode string
+       {$else}
+          1 // as double ansistring
+       {$ifend}
+    {$endif}
+    {$endif}
+    {$endif}
+  ;
+
+
+procedure AnsiStringClear(var S{: AnsiString/UTF8String});
+var
+  P: PAnsiStrRec;
+  RefCount: Integer;
+begin
+  P := Pointer(S);
+  if (P = nil) then Exit;
+  Dec(P);
+  Pointer(S) := nil;
+
+  RefCount := P.RefCount;
+  if (RefCount <> 1) then
+  begin
+    if (RefCount < 0) then Exit;
+
+    if (not System.IsMultiThread) then
+    begin
+      P.RefCount := RefCount-1;
+      Exit;
+    end else
+    begin
+      if (AtomicDecrement(P.RefCount) <> 0) then Exit;
+    end;
+  end;
+
+  MemoryManager.FreeMem(P);
+end;
+
+{$ifdef UNICODE}
+{$if SizeOf(TUnicodeStrRec) = SizeOf(TAnsiStrRec)}
+procedure UnicodeStringClear(var S{: UnicodeString}); inline;
+begin
+  AnsiStringClear(S);
+end;
+{$else}
+procedure UnicodeStringClear(var S{: UnicodeString});
+var
+  P: PUnicodeStrRec;
+  RefCount: Integer;
+begin
+  P := Pointer(S);
+  if (P = nil) then Exit;
+  Dec(P);
+  Pointer(S) := nil;
+
+  RefCount := P.RefCount;
+  if (RefCount <> 1) then
+  begin
+    if (RefCount < 0) then Exit;
+
+    if (not System.IsMultiThread) then
+    begin
+      P.RefCount := RefCount-1;
+      Exit;
+    end else
+    begin
+      if (AtomicDecrement(P.RefCount) <> 0) then Exit;
+    end;
+  end;
+
+  MemoryManager.FreeMem(P);
+end;
+{$ifend}
+{$endif}
+
+
+{$ifdef MSWINDOWS}
+procedure WideStringClear(var S{: WideString});
+asm
+  {$ifdef CPUX86}
+    mov edx, [eax]
+    xor ecx, ecx
+    test edx, edx
+  {$else .CPUX64}
+    mov rdx, [rcx]
+    xor rax, rax
+    test rdx, rdx
+  {$endif}
+  jnz @1
+  ret
+@1:
+  {$ifdef CPUX86}
+     mov [eax], ecx
+     push edx
+  {$else .CPUX64}
+     mov [rcx], rax
+     push rdx
+  {$endif}
+  jmp SysFreeString
+end;
+{$else}
+procedure WideStringClear(var S{: WideString}); inline;
+begin
+  {$if SizeOf(TWideStrRec) = SizeOf(TAnsiStrRec)}
+     AnsiStringClear(S);
+  {$else}
+     UnicodeStringClear(S);
+  {$ifend}
+end;
+{$endif}
+
+
+function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
+label
+  allocate_new, done;
+var
+  P: PAnsiStrRec;
+  RefCount: Integer;
+begin
+  if (S <> nil) then
+  begin
+    P := PAnsiStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
+    RefCount := P.RefCount;
+    if (RefCount <> 1) then
+    begin
+      if (RefCount < 0) then goto allocate_new;
+
+      if (not System.IsMultiThread) then
+      begin
+        P.RefCount := RefCount-1;
+        goto allocate_new;
+      end else
+      begin
+        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
+      end;
+    end;
+
+    // use or free
+    if (P.Length >= Length) then
+    begin
+      if (CodePage{Flag} >= 0) and (P.Length <> Length) then
+      begin
+        P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+      end;
+
+      goto done;
+    end else
+    begin
+      MemoryManager.FreeMem(P);
+    end;
+  end;
+
+allocate_new:
+  P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+  P.RefCount := 1;
+  P.Length := Length;
+done:
+  {$if SizeOf(TAnsiStrRec) > 8}
+    P.CodePageElemSize := (CodePage and $ffff) or $00010000;
+  {$ifend}
+  Inc(NativeInt(P), SizeOf(P^));
+  {$ifNdef NEXTGEN}
+  PByteArray(P)[Length] := NULL_ANSICHAR;
+  {$endif}
+  Result := P;
+end;
+
+procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
+var
+  P: PAnsiStrRec;
+begin
+  P := S;
+  Dec(P);
+
+  if (P.Length = Length) then
+  begin
+    Inc(P);
+    Result := P;
+  end else
+  begin
+    P.Length := Length;
+
+    {$ifNdef NEXTGEN}
+    Inc(P);
+    PByteArray(P)[Length] := NULL_ANSICHAR;
+    Dec(P);
+    {$endif}
+
+    Length := Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif});
+    P := MemoryManager.ReallocMem(P, Length);
+    Inc(P);
+    Result := P;
+  end;
+end;
+
+{$ifdef UNICODE}
+function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
+label
+  allocate_new, done;
+var
+  P: PUnicodeStrRec;
+  RefCount: Integer;
+begin
+  if (S <> nil) then
+  begin
+    P := PUnicodeStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
+    RefCount := P.RefCount;
+    if (RefCount <> 1) then
+    begin
+      if (RefCount < 0) then goto allocate_new;
+
+      if (not System.IsMultiThread) then
+      begin
+        P.RefCount := RefCount-1;
+        goto allocate_new;
+      end else
+      begin
+        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
+      end;
+    end;
+
+    // use or free
+    if (P.Length >= Length) then
+    begin
+      if (Flag >= 0) and (P.Length <> Length) then
+      begin
+        P := MemoryManager.ReallocMem(P, Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+      end;
+
+      goto done;
+    end else
+    begin
+      MemoryManager.FreeMem(P);
+    end;
+  end;
+
+allocate_new:
+  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+  P.RefCount := 1;
+  P.Length := Length;
+done:
+  {$if SizeOf(TUnicodeStrRec) > 8}
+    P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
+  {$ifend}
+  Inc(NativeInt(P), SizeOf(P^));
+  PWideChar(P)[Length] := NULL_WIDECHAR;
+  Result := P;
+end;
+
+procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
+var
+  P: PUnicodeStrRec;
+begin
+  P := S;
+  Dec(P);
+
+  if (P.Length = Length) then
+  begin
+    Inc(P);
+    Result := P;
+  end else
+  begin
+    P.Length := Length;
+
+    Inc(P);
+    PWideChar(P)[Length] := NULL_WIDECHAR;
+    Dec(P);
+
+    Length := Length*Length + (SizeOf(P^)+SizeOf(WideChar));
+    P := MemoryManager.ReallocMem(P, Length);
+    Inc(P);
+    Result := P;
+  end;
+end;
+{$endif}
+
+function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
+{$ifdef MSWINDOWS}
+var
+  CurrentLen: Integer;
+  R: Pointer;
+begin
+  if (S = nil) then
+  begin
+    Result := SysAllocStringLen(nil, Length);
+  end else
+  begin
+    Length := Length*2;
+    CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
+
+    if (Flag < 0) then
+    begin
+      if (CurrentLen >= Length) then Result := S
+      else
+      Result := SysAllocStringLen(nil, Length shr 1);
+    end else
+    begin
+      if (CurrentLen = Length) then Result := S
+      else
+      begin
+        SysReAllocStringLen(R, S, Length shr 1);
+        Result := R;
+      end;
+    end;
+  end;
+end;
+{$else}
+label
+  allocate_new, done;
+var
+  P: PWideStrRec;
+  RefCount: Integer;
+begin
+  if (S <> nil) then
+  begin
+    P := PWideStrRec(PByteArray(S) - SizeOf(P^));
+    RefCount := P.RefCount;
+    if (RefCount <> 1) then
+    begin
+      if (RefCount < 0) then goto allocate_new;
+
+      if (not System.IsMultiThread) then
+      begin
+        P.RefCount := RefCount-1;
+        goto allocate_new;
+      end else
+      begin
+        if (AtomicDecrement(P.RefCount) <> 0) then goto allocate_new;
+      end;
+    end;
+
+    // use or free
+    if (P.Length >= Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+    begin
+      if (Flag >= 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+      begin
+        P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+      end;
+
+      goto done;
+    end else
+    begin
+      MemoryManager.FreeMem(P);
+    end;
+  end;
+
+allocate_new:
+  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^){$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+  P.RefCount := 1;
+  P.Length := Length;
+done:
+  {$if SizeOf(TWideStrRec) > 8}
+    {$if CompilerVersion >= 22}
+       // Delphi >= XE (WideString = UnicodeString)
+       P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
+    {$else}
+       // Delphi < XE (WideString = double AnsiString, CodePage default)
+       P.CodePageElemSize := DefaultSystemCodePage or $00010000;
+    {$ifend}
+  {$ifend}
+  Inc(NativeInt(P), SizeOf(P^));
+  {$ifNdef NEXTGEN}
+  PWideChar(P)[Length] := NULL_WIDECHAR;
+  {$endif}
+  Result := P;
+end;
+{$endif}
+
+
+{$ifdef INLINESUPPORT}
+procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
+{$ifdef MSWINDOWS}
+begin
+  Dec(NativeInt(S), 4);
+  Inc(Length, Length);
+  if (PInteger(S)^ = Length) then
+  begin
+    Inc(NativeInt(S), 4);
+    Result := S;
+  end else
+  begin
+    Length := Length shr 1;
+    Inc(NativeInt(S), 4);
+    SysReAllocStringLen(Result, S, Length);
+  end;
+end;
+{$else}
+var
+  P: PWideStrRec;
+begin
+  P := S;
+  Dec(P);
+
+  if (P.Length = Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+  begin
+    Inc(P);
+    Result := P;
+  end else
+  begin
+    P.Length := Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend};
+
+    {$ifNdef NEXTGEN}
+    Inc(P);
+    PWideChar(P)[Length] := NULL_WIDECHAR;
+    Dec(P);
+    {$endif}
+
+    Length := Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif});
+    P := MemoryManager.ReallocMem(P, Length);
+    Inc(P);
+    Result := P;
+  end;
+end;
+{$endif}
+{$else .WINDOWS.CPUX86}
+procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
+asm
+  add ecx, ecx
+  cmp [edx-4], ecx
+  jne @1
+  mov [eax], edx
+  ret
+@1:
+  shr ecx, 1
+  push ecx
+  push edx
+  push eax
+  jmp SysReAllocStringLen
+end;
+{$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
@@ -16297,7 +16304,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16377,7 +16387,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16457,7 +16470,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_lower;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16537,7 +16553,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_lower;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16617,7 +16636,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_upper;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16697,7 +16719,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf8_upper;
   if (Context.convert_sbcs_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16834,7 +16859,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -16876,7 +16904,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -17014,7 +17045,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_lower;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17056,7 +17090,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_lower;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -17194,7 +17231,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_upper;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17236,7 +17276,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.sbcs_from_utf16_upper;
   if (Context.convert_sbcs_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -17731,6 +17774,7 @@ procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: UTF8String);
 var
   Length: NativeUInt;
   Buffer: Pointer;
+  Temp: Pointer;
 begin
   if (Pointer(Src) = nil) then
   begin
@@ -17740,8 +17784,17 @@ begin
   Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
 
   // conversion
-  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
-  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src))-STR_OFFSET_REFCOUNT)^ > 0) then
+  begin
+    Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
+    AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
+    Temp := Pointer(Src);
+    AnsiStringClear(Temp);
+  end else
+  begin
+    Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+    AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
+  end;
 end;
 
 function utf8_from_utf8_lower(const Src: UTF8String): UTF8String;
@@ -17768,7 +17821,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_lower;
   if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17813,7 +17869,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_lower;
   if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17821,6 +17880,7 @@ procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: UTF8String);
 var
   Length: NativeUInt;
   Buffer: Pointer;
+  Temp: Pointer;
 begin
   if (Pointer(Src) = nil) then
   begin
@@ -17830,8 +17890,17 @@ begin
   Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
 
   // conversion
-  Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
-  AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src))-STR_OFFSET_REFCOUNT)^ > 0) then
+  begin
+    Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
+    AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
+    Temp := Pointer(Src);
+    AnsiStringClear(Temp);
+  end else
+  begin
+    Buffer := AnsiStringAlloc(Pointer(Dest), (Length * 3) shr 1, CODEPAGE_UTF8 or (1 shl 31));
+    AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
+  end;
 end;
 
 function utf8_from_utf8_upper(const Src: UTF8String): UTF8String;
@@ -17858,7 +17927,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_upper;
   if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17903,7 +17975,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf8_upper;
   if (Context.convert_utf8_from_utf8 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -17988,7 +18063,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -18012,7 +18090,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -18098,7 +18179,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_lower;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -18122,7 +18206,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_lower;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -18208,7 +18295,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_upper;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 
@@ -18232,7 +18322,10 @@ begin
   // conversion
   Context.FCallbacks.ReaderWriter := @UniConv.utf8_from_utf16_upper;
   if (Context.convert_utf8_from_utf16 < 0) and (Context.DestinationWritten <> NativeUInt(High(Dest))) then
-    Byte(Dest[Context.DestinationWritten + 1]) := UNKNOWN_CHARACTER;
+  begin
+    Inc(Context.FDestinationWritten);
+    Byte(Dest[Context.DestinationWritten]) := UNKNOWN_CHARACTER;
+  end;
   PByte(@Dest)^ := Context.DestinationWritten;
 end;
 {$endif}
@@ -19183,7 +19276,6 @@ begin
 end;
 {$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
-
 
 initialization
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
