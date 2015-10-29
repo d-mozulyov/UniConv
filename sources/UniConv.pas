@@ -19379,8 +19379,8 @@ begin
   end;
 
 make_result:
-  X := (Swap(X) shl 16) + Swap(X shr 16);
-  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+  X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
+  Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
 
 make_result_swaped:
   if (X = Y) then
@@ -19544,8 +19544,8 @@ begin
 
         if (X <> Y) then
         begin
-          X := (Swap(X) shl 16) + Swap(X shr 16);
-          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+          X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
+          Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
           goto make_result;
         end;
       end else
@@ -20491,8 +20491,8 @@ read_small:
 
 
 make_result:
-  X := (Swap(X) shl 16) + Swap(X shr 16);
-  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+  X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
+  Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
 
 make_result_swaped:
   Result := Ord(X > Y)*2 - 1;
@@ -20599,8 +20599,8 @@ read:
 
         if (X <> Y) then
         begin
-          X := (Swap(X) shl 16) + Swap(X shr 16);
-          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
+          X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
+          Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
           goto make_result;
         end;
       end;
