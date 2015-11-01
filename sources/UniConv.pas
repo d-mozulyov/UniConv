@@ -955,7 +955,7 @@ const
 {$ifNdef CPUX86}
 function Swap(const X: NativeUInt): NativeUInt; inline;
 begin
-  Result := (X shl 8) + Byte(X shr 8);
+  Result := (Byte(X) shl 8) + Byte(X shr 8);
 end;
 {$endif}
 
@@ -2297,16 +2297,17 @@ begin
 end;
 
 procedure FillTable_CaseSBCS_Advanced(var Table: TUniConvBB;
-  const UCS2Chars: TUniConvWB; const CharCaseLookup: TUniConvWW);
+  const UCS2Chars: TUniConvWB; const UnCharCaseLookup: TUniConvWW);
 type
   THashItem = packed record
     UCS2: Word;
-    Value: Byte;
+    Index: Byte;
     Next: Byte;
   end;
 var
   P: PByte;
   i, X, Value, Count: NativeUInt;
+  CharCaseLookup: PUniConvWW;
   HashArray: array[0..63] of Byte;
   HashItems: array[0..127] of THashItem;
 begin
@@ -2321,16 +2322,25 @@ begin
   for i := 128 to 255 do
   begin
     X := UCS2Chars[i];
-    Value := CharCaseLookup[X];
+    Value := UnCharCaseLookup[X];
     if (Value = X) or (Value = Ord('?')) then Continue;
 
     HashItems[Count].UCS2 := X;
-    HashItems[Count].Value := i;
+    HashItems[Count].Index := i;
     X := X and High(HashArray);
     HashItems[Count].Next := HashArray[X];
 
     HashArray[X] := Count;
     Inc(Count);
+  end;
+
+  // normalize lookup
+  if (@UnCharCaseLookup = Pointer(@UNICONV_CHARCASE.LOWER)) then
+  begin
+    CharCaseLookup := Pointer(@UNICONV_CHARCASE.UPPER);
+  end else
+  begin
+    CharCaseLookup := Pointer(@UNICONV_CHARCASE.LOWER);
   end;
 
   // fill from hash table
@@ -2345,7 +2355,7 @@ begin
     begin
       if (HashItems[X].UCS2 = Value) then
       begin
-        Table[i] := HashItems[X].Value;
+        Table[i] := HashItems[X].Index;
         Break;
       end;
 
@@ -2486,7 +2496,7 @@ begin
 
   // advanced characters: 128..255
   FillTable_CaseSBCS_Advanced(Table, UCS2Chars^,
-    PUniConvWW(@UNICONV_CHARCASE.VALUES[NativeUInt(Upper) shl 16])^);
+    PUniConvWW(@UNICONV_CHARCASE.VALUES[NativeUInt(not Upper) shl 16])^);
 end;
 
 procedure FillTable_SBCSFromSBCS(var Table: TUniConvBB; const DestSBCS: TUniConvBW;
@@ -16767,7 +16777,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16856,7 +16866,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16953,7 +16963,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17042,7 +17052,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17139,7 +17149,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17228,7 +17238,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18019,7 +18029,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18074,7 +18084,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18135,7 +18145,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18190,7 +18200,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18251,7 +18261,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18306,7 +18316,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19195,7 +19205,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19254,7 +19264,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19379,8 +19389,8 @@ begin
   end;
 
 make_result:
-  X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
-  Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
+  X := (Swap(X) shl 16) + Swap(X shr 16);
+  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
 
 make_result_swaped:
   if (X = Y) then
@@ -19453,8 +19463,8 @@ begin
   Y := 0;
 
 make_result:
-  X := (X shl 16) + (X shr 16);
-  Y := (Y shl 16) + (Y shr 16);
+  X := {$ifdef LARGEINT}Cardinal{$endif}(X shl 16) + (X shr 16);
+  Y := {$ifdef LARGEINT}Cardinal{$endif}(Y shl 16) + (Y shr 16);
 
 make_result_swaped:
   Result := Ord(X > Y)*2 - 1;
@@ -19544,8 +19554,8 @@ begin
 
         if (X <> Y) then
         begin
-          X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
-          Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
+          X := (Swap(X) shl 16) + Swap(X shr 16);
+          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
           goto make_result;
         end;
       end else
@@ -19553,11 +19563,11 @@ begin
         // make lower and swap
         X := (Lookup[X and $ff] shl 24) or
              (Lookup[(X shr 8) and $ff] shl 16) or
-             (Lookup[(X shr 16) and $ff] shl 24) or
+             (Lookup[(X shr 16) and $ff] shl 8) or
              (Lookup[X shr 24]);
         Y := (Lookup[Y and $ff] shl 24) or
              (Lookup[(Y shr 8) and $ff] shl 16) or
-             (Lookup[(Y shr 16) and $ff] shl 24) or
+             (Lookup[(Y shr 16) and $ff] shl 8) or
              (Lookup[Y shr 24]);
         if (X <> Y) then goto make_result;
       end;
@@ -19587,8 +19597,8 @@ begin
     1: begin
          X := PByte(S1)^;
          Y := PByte({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
-         // Inc(S1);
-         // Inc(S2);
+         X := Lookup[X];
+         Y := Lookup[Y];
          if (X <> Y) then goto make_result{compare_chars};
        end;
     2: begin
@@ -19599,14 +19609,19 @@ begin
          if (X <> Y) then goto compare_chars;
        end;
     3: begin
-         X := PByte(S1)^;
-         Y := PByte({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
-         Inc(S1);
-         {$ifdef CPUMANYREGS}Inc(S2);{$endif}
-         X := (X shl 16) or PWord(S1)^;
-         Y := (Y shl 16) or PWord({$ifdef CPUX86}S1+F.Y_Offset{$else}S2{$endif})^;
-         Inc(S1, SizeOf(Word));
-         {$ifdef CPUMANYREGS}Inc(S2, SizeOf(Word));{$endif}
+         {$ifdef CPUMANYREGS}
+           Y := P4Bytes(S2)[2];
+           Y := (Y shl 16) + PWord(S2)^;
+           Inc(S2, 3);
+         {$else}
+           X := NativeInt(S1) + F.Y_Offset;
+           Y := P4Bytes(X)[2];
+           Y := (Y shl 16) + PWord(X)^;
+         {$endif}
+         X := P4Bytes(S1)[2];
+         X := (X shl 16) + PWord(S1)^;
+         Inc(S1, 3);
+
          if (X <> Y) then goto compare_chars;
        end;
   else
@@ -19716,9 +19731,7 @@ begin
     1: begin
          X := PByte(S1)^;
          Y := PByte(S2)^;
-         // Inc(S1);
-         // Inc(S2);
-         if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto make_result{compare_chars};
+         if ({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif}) then goto make_result;
        end;
     2: begin
          X := PWord(S1)^;
@@ -19728,14 +19741,12 @@ begin
          if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto compare_chars;
        end;
     3: begin
-         X := PByte(S1)^;
-         Y := PByte(S2)^;
-         Inc(S1);
-         Inc(S2);
-         X := (X shl 16) or PWord(S1)^;
-         Y := (Y shl 16) or PWord(S2)^;
-         Inc(S1, SizeOf(Word));
-         Inc(S2, SizeOf(Word));
+         X := P4Bytes(S1)[2];
+         X := (X shl 16) + PWord(S1)^;
+         Inc(S1, 3);
+         Y := P4Bytes(S2)[2];
+         Y := (Y shl 16) + PWord(S2)^;
+         Inc(S2, 3);
          if (X <> Y) or ((X or Y) and MASK_80 <> 0) then goto compare_chars;
        end;
   else
@@ -19747,7 +19758,7 @@ begin
   Exit;
 
 make_result:
-  Result := Ord({$ifdef CPUX86}F._1[X and $ff]<>F._2[Y and $ff]{$else}_1[Byte(X)]<>_2[Byte(Y)]{$endif})*2 - 1;
+  Result := Ord({$ifdef CPUX86}F._1[X and $ff]>F._2[Y and $ff]{$else}_1[Byte(X)]>_2[Byte(Y)]{$endif})*2 - 1;
 end;
 
 // case insensitive utf16 comparison
@@ -19796,10 +19807,10 @@ begin
         U := (U + MASK_007F) and MASK_FF80;
         X := X + ((not V) and U) shr 2;
 
-        U := X xor MASK_0040;
+        U := Y xor MASK_0040;
         V := (U + MASK_0065);
         U := (U + MASK_007F) and MASK_FF80;
-        X := X + ((not V) and U) shr 2;
+        Y := Y + ((not V) and U) shr 2;
 
         if (X <> Y) then
         begin
@@ -19821,6 +19832,9 @@ begin
           begin
             X := Cardinal(X);
             Y := Cardinal(Y);
+            Inc(Length, WORDS_IN_NATIVE div 2);
+            Dec(S1, WORDS_IN_NATIVE div 2);
+            Dec(S2, WORDS_IN_NATIVE div 2);
           end;
         {$endif}
 
@@ -19856,6 +19870,9 @@ begin
   begin
     X := PWord(S1)^;
     Y := PWord(S2)^;
+    X := {$ifdef CPUX86}UNICONV_CHARCASE.VALUES{$else}lookup_utf16_lower{$endif}[X];
+    Y := {$ifdef CPUX86}UNICONV_CHARCASE.VALUES{$else}lookup_utf16_lower{$endif}[Y];
+
     if (X <> Y) then goto make_result;
   end;
 
@@ -19899,7 +19916,7 @@ begin
     X := PCardinalArray(S1)[i];
     if (_1 = nil) then
     begin
-      X := (X shl 16) + (X shr 16);
+      X := {$ifdef LARGEINT}Cardinal{$endif}(X shl 16) + (X shr 16);
     end else
     begin
       X := (NativeUInt(_1[Word(X)]) shl 16) + NativeUInt(_1[X shr 16]);
@@ -20040,10 +20057,10 @@ end;
 // optional case sensitive (Lookup = @UNICONV_CHARCASE.VALUES)
 function __uniconv_utf8_compare_utf16(S1: PUTF8Char; S2: PUnicodeChar; const Comp: TUniConvCompareOptions): NativeInt;
 label
-  utf8_read_normal, utf8_read, utf8_read_one, utf8_read_small,
+  utf8_read_normal, utf8_read, utf8_read_one, next_interation, utf8_read_small,
   return_less, return_greater, make_fail_utf8_result, make_result;
 var
-  X, Y: NativeUInt;
+  X, Y, U: NativeUInt;
   UTF8Length: NativeUInt;
 
   {$ifdef CPUX86}
@@ -20083,8 +20100,8 @@ utf8_read:
     begin
       if ({$ifdef CPUX86}F.{$endif}lookup_utf16_lower = nil) then
       begin
-        X := (X shl 16) or (X shr 16);
-        Y := (Y shl 16) or (Y shr 16);
+        X := {$ifdef LARGEINT}Cardinal{$endif}(X shl 16) or (X shr 16);
+        Y := {$ifdef LARGEINT}Cardinal{$endif}(Y shl 16) or (Y shr 16);
         goto make_result;
       end else
       begin
@@ -20124,26 +20141,65 @@ utf8_read_one:
       Y := UNICONV_UTF8_SIZE[Byte(X){ and $ff}];
       Dec(UTF8Length, Y);
       Inc(S1, Y);
-      if (NativeInt(UTF8Length) < 0) or (Y <> 3) then goto make_fail_utf8_result;
+      if (NativeInt(UTF8Length) < 0) then goto make_fail_utf8_result;
 
-      if (X and $C0C000 = $808000) then
-      begin
-        // X := ((X & 0x0f) << 12) | ((X & 0x3f00) >> 2) | ((X >> 16) & 0x3f);
-        Y := (X and $0F) shl 12;
-        Y := Y + (X shr 16) and $3F;
-        X := (X and $3F00) shr 2;
-        Inc(X, Y);
-      end else
-      begin
-        goto make_fail_utf8_result;
+      case Y of
+        0..2: goto make_fail_utf8_result;
+        3:
+        begin
+          if (X and $C0C000 = $808000) then
+          begin
+            Y := (X and $0F) shl 12;
+            Y := Y + (X shr 16) and $3F;
+            X := (X and $3F00) shr 2;
+            Inc(X, Y);
+          end else
+          goto make_fail_utf8_result;
+        end;
+        4:
+        begin
+          if (X and $C0C0C000 = $80808000) then
+          begin
+            Y := (X and $07) shl 18;
+            Y := Y + (X and $3f00) shl 4;
+            Y := Y + (X shr 10) and $0fc0;
+            X := (X shr 24) and $3f;
+            Inc(X, Y);
+          end else
+          goto make_fail_utf8_result;
+        end;
+      else
+        goto return_greater;
       end;
     end;
 
+    // one utf16
     Y := PWord(S2)^;
     Inc(S2);
+    if (Y >= $d800) and (Y < $dc00) and (S2 <= {$ifdef CPUX86}F.{$endif}TopPtr{WideLength >= 1}) then
+    begin
+      U := PWord(S2)^;
+      Inc(S2);
+      Dec(U, $dc00);
+      if (U < ($e000-$dc00)) then
+      begin
+        if (X <= $ffff) then goto return_less;
+
+        Y := (Y - $d800) shl 10;
+        Inc(U, $10000);
+        Inc(Y, U);
+
+        if (X <> Y) then goto make_result;
+        goto next_interation;
+        end else
+      begin
+        Dec(S2);
+      end;
+    end;
+
     if (X <> Y) then
     begin
-      if ({$ifdef CPUX86}F.{$endif}lookup_utf16_lower = nil) then
+      if (X > $ffff) or ({$ifdef CPUX86}F.{$endif}lookup_utf16_lower = nil) then
       begin
         goto make_result;
       end else
@@ -20161,12 +20217,18 @@ utf8_read_one:
   end;
 
   // next interation
+next_interation:
   if (UTF8Length >= 4) then goto utf8_read_normal;
 utf8_read_small:
   case UTF8Length of
     1: begin
          X := PByte(S1)^;
-         goto utf8_read_one;
+
+         if (X and $80 = 0) then
+         begin
+           if (S2 <= {$ifdef CPUX86}F.{$endif}TopPtr{WideLength >= 1}) then goto utf8_read_one;
+           goto return_greater;
+         end;
        end;
     2: begin
          X := PWord(S1)^;
@@ -20206,7 +20268,6 @@ function __uniconv_utf8_compare_utf8(S1, S2: PUTF8Char; const Comp: TUniConvComp
 label
   unterminated_binary_compare, compare_difficult, compare_difficult_4,
   compare_first_ascii, ascii_1, ascii_2, ascii_3, ascii_4, compare_ascii,
-  X3_Y2,
   next_iteration, read_small, make_result, make_result_swaped;
 var
   X, Y, U, V: NativeUInt;
@@ -20371,21 +20432,28 @@ compare_difficult:
     begin
       if (V <> 3) then goto make_result;
 
-      U := X;
-      X := Y;
-      Y := U;
-      goto X3_Y2;
+      if (Y and $C0C000 <> $808000) then goto make_result;
+      if (X and $C0E0 <> $80C0) then goto make_result;
+
+      U := (Y and $0F) shl 12;
+      U := U + (Y shr 16) and $3F;
+      X := ((X and $1F) shl 6) + ((X shr 8) and $3F);
+      Y := (Y and $3F00) shr 2;
+      Inc(Y, U);
+
+      X := UNICONV_CHARCASE.VALUES[X];
+      Y := UNICONV_CHARCASE.VALUES[Y];
+      if (X <> Y) then goto make_result_swaped;
     end else
     if (U = 3) then
     begin
       if (V <> 2) then goto make_result;
-    X3_Y2:
       if (X and $C0C000 <> $808000) then goto make_result;
       if (Y and $C0E0 <> $80C0) then goto make_result;
 
       U := (X and $0F) shl 12;
       U := U + (X shr 16) and $3F;
-      Y := ((Y and $1F) shl 6) + ((Y shr 8) and $3F);      
+      Y := ((Y and $1F) shl 6) + ((Y shr 8) and $3F);
       X := (X and $3F00) shr 2;
       Inc(X, U);
 
@@ -20491,8 +20559,8 @@ read_small:
 
 
 make_result:
-  X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
-  Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
+  X := (Swap(X) shl 16) + Swap(X shr 16);
+  Y := (Swap(Y) shl 16) + Swap(Y shr 16);
 
 make_result_swaped:
   Result := Ord(X > Y)*2 - 1;
@@ -20552,7 +20620,6 @@ begin
 read_normal:
   X := PCardinal(S1)^;
   Y := PCardinal(S2)^;
-read:
   U := X or Y;
   if (U and Integer(MASK_80) = 0) then
   begin
@@ -20599,8 +20666,8 @@ read:
 
         if (X <> Y) then
         begin
-          X := {$ifdef LARGEINT}Cardinal{$endif}(Swap(X) shl 16) + Swap(X shr 16);
-          Y := {$ifdef LARGEINT}Cardinal{$endif}(Swap(Y) shl 16) + Swap(Y shr 16);
+          X := (Swap(X) shl 16) + Swap(X shr 16);
+          Y := (Swap(Y) shl 16) + Swap(Y shr 16);
           goto make_result;
         end;
       end;
@@ -20609,10 +20676,13 @@ read:
       begin
         X := UTF8Length + SizeOf(Cardinal);
         Y := UTF16Length + SizeOf(Cardinal);
-        goto make_result;
+        if (X <> Y) then goto make_result;
+        Result := 0;
+        Exit;
       end;
     end else
     begin
+    read:
       Y := lookup_sbcs[Byte(Y)];
       Inc(S2);
       Dec(UTF16Length);
@@ -20828,7 +20898,9 @@ asm
     add esi, 4
     add edi, 4
     cmp esi, edi
-    jmp @make_result
+    jne @make_result
+    xor eax, eax
+    jmp @postfix
 
   @compare_utf8:
     // Y := lookup_sbcs[Byte(Y)] / Dec(UTF16Length)
