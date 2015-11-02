@@ -1479,7 +1479,7 @@ begin
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
 
-  Result := @UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)];
+  Result := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 end;
 
 // get single-byte encoding lookup index
