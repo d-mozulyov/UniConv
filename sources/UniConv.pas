@@ -878,6 +878,137 @@ type
   function __uniconv_utf8_compare_sbcs(S1: PUTF8Char; S2: PAnsiChar; const Comp: TUniConvCompareOptions): NativeInt;
 {$ifdef undef}{$ENDREGION}{$endif}
 
+{$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 comparisons'}{$endif}
+  function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean; overload;
+  function sbcs_equal_samesbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt): Boolean; overload;
+  function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs(const S1: AnsiString; const S2: AnsiString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs(const S1: ShortString; const S2: ShortString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean; overload;
+  function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
+  function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt; overload;
+  function sbcs_compare_samesbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt): NativeInt; overload;
+  function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt; overload;
+  function sbcs_compare_samesbcs(const S1: AnsiString; const S2: AnsiString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt; overload;
+  function sbcs_compare_samesbcs(const S1: ShortString; const S2: ShortString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+
+  function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean; overload;
+  function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean; overload;
+  function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+
+  function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
+  function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
+  function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+
+  function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean; overload;
+  function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean; overload;
+  function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+
+  function utf8_equal_utf8(S1: PUTF8Char; S2: PUTF8Char; Length: NativeUInt): Boolean; overload;
+  function utf8_equal_utf8(const S1: UTF8String; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_utf8(const S1: ShortString; const S2: ShortString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_utf8_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean; overload;
+  function utf8_equal_utf8_ignorecase(const S1: UTF8String; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_utf8(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt; overload;
+  function utf8_compare_utf8(const S1: UTF8String; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_utf8(const S1: ShortString; const S2: ShortString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_utf8_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt; overload;
+  function utf8_compare_utf8_ignorecase(const S1: UTF8String; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+
+  function utf8_equal_utf16(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): Boolean; overload;
+  function utf8_equal_utf16(const S1: UTF8String; const S2: WideString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_equal_utf16(const S1: UTF8String; const S2: UnicodeString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf8_equal_utf16_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): Boolean; overload;
+  function utf8_equal_utf16_ignorecase(const S1: UTF8String; const S2: WideString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_equal_utf16_ignorecase(const S1: UTF8String; const S2: UnicodeString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf8_compare_utf16(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt; overload;
+  function utf8_compare_utf16(const S1: UTF8String; const S2: WideString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_compare_utf16(const S1: UTF8String; const S2: UnicodeString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf8_compare_utf16_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt; overload;
+  function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: WideString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: UnicodeString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+
+  function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
+  function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
+  function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
+  function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+
+  function utf16_equal_utf8(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean; overload;
+  function utf16_equal_utf8(const S1: WideString; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_utf8(const S1: UnicodeString; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_equal_utf8_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean; overload;
+  function utf16_equal_utf8_ignorecase(const S1: WideString; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_utf8_ignorecase(const S1: UnicodeString; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_utf8(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt; overload;
+  function utf16_compare_utf8(const S1: WideString; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_utf8(const S1: UnicodeString; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_utf8_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt; overload;
+  function utf16_compare_utf8_ignorecase(const S1: WideString; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_utf8_ignorecase(const S1: UnicodeString; const S2: UTF8String): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+
+  function utf16_equal_utf16(S1: PWideChar; S2: PWideChar; Length: NativeUInt): Boolean; overload;
+  function utf16_equal_utf16(const S1: WideString; const S2: WideString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_utf16(const S1: UnicodeString; const S2: UnicodeString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_equal_utf16_ignorecase(S1: PWideChar; S2: PWideChar; Length: NativeUInt): Boolean; overload;
+  function utf16_equal_utf16_ignorecase(const S1: WideString; const S2: WideString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_utf16_ignorecase(const S1: UnicodeString; const S2: UnicodeString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_utf16(S1: PWideChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt; overload;
+  function utf16_compare_utf16(const S1: WideString; const S2: WideString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_utf16(const S1: UnicodeString; const S2: UnicodeString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_utf16_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt; overload;
+  function utf16_compare_utf16_ignorecase(const S1: WideString; const S2: WideString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_utf16_ignorecase(const S1: UnicodeString; const S2: UnicodeString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
+
 implementation
 var
   MemoryManager: {$if Defined(FPC) or (CompilerVersion < 18)}TMemoryManager{$else}TMemoryManagerEx{$ifend};
@@ -21047,6 +21178,6055 @@ asm
 end;
 {$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
+
+{$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 comparisons'}{$endif}
+function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean;
+label
+  same_cp, ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and ((S1 <> S2) or (CP1 <> CP2)) then
+  begin
+    Comp.Length := Length;
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    if (CP1 = CP2) then
+    begin
+    same_cp:
+      Ret := __uniconv_compare_bytes(Pointer(S1), Pointer(S2), Comp.Length);
+    end else
+    begin
+      // Comp.Lookup := SBCS(CP1).OriginalUCS2
+      Index := NativeUInt(CP1);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CP1) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup := SBCS.FUCS2.Original;
+      if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+      Index := NativeUInt(CP2);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CP2) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+      Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(S1), Pointer(S2), Comp);
+    end;
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+function sbcs_equal_samesbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and (S1 <> S2) then
+  begin
+    if (PByte(S1)^ <> PByte(S2)^) then goto ret_false;
+
+    Ret := __uniconv_compare_bytes(Pointer(S1), Pointer(S2), Length);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean;
+label
+  {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifNdef INLINESUPPORT}
+    {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+    Index: NativeUInt;
+    Value: Integer;
+    SBCS: PUniConvSBCS;
+    Comp: TUniConvCompareOptions;
+  {$endif}
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and ((P1 <> P2){$ifNdef INTERNALCODEPAGE}or (CP1 <> CP2){$endif}) then
+  begin
+    C1 := PByte(P1)^;
+    C2 := PByte(P2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    {$ifdef INLINESUPPORT}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Ret := sbcs_compare_sbcs(AnsiString(Pointer(P1)), AnsiString(Pointer(P2)){$ifNdef INTERNALCODEPAGE}, CP1, CP2{$endif});
+    {$else}
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
+      begin
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      same_cp:
+        Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Comp.Length);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).OriginalUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Original;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+
+        // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(P1), Pointer(P2), Comp);
+      end;
+    {$endif}
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_samesbcs(const S1: AnsiString; const S2: AnsiString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    if (PByte(P1)^ <> PByte(P2)^) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Length);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean;
+label
+  {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
+var
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifNdef INLINESUPPORT}
+    Index: NativeUInt;
+    Value: Integer;
+    SBCS: PUniConvSBCS;
+    Comp: TUniConvCompareOptions;
+  {$endif}
+  Ret: NativeInt;
+begin
+  Length := PByte(@S1)^;
+  if (Byte(Length) <> PByte(@S2)^) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  if (Length <> 0) and ((@S1 <> @S2) or (CP1 <> CP2)) then
+  begin
+    {$ifNdef INLINESUPPORT}
+    Comp.Length := Length;
+    {$endif}
+    C1 := Byte(S1[1]);
+    C2 := Byte(S2[1]);
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    {$ifdef INLINESUPPORT}
+      Ret := sbcs_compare_sbcs(S1, S2, CP1, CP2);
+    {$else}
+      if (CP1 = CP2) then
+      begin
+      same_cp:
+        Ret := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]), Comp.Length);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).OriginalUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Original;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end;
+    {$endif}
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_samesbcs(const S1: ShortString; const S2: ShortString): Boolean;
+label
+  ret_false;
+var
+  Length: Word;
+  Ret: NativeInt;
+begin
+  Length := PWord(@S1)^;
+  if (Length <> PWord(@S2)^) then
+  begin
+    Result := (Length and $ff = 0) and (PByte(@S2)^ = 0);
+    Exit;
+  end;
+
+  if (Length and $ff <> 0) and (@S1 <> @S2) then
+  begin
+    Ret := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]), Byte(Length));
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean;
+label
+  same_cp, ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and ((S1 <> S2) or (CP1 <> CP2)) then
+  begin
+    Comp.Length := Length;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    if (CP1 = CP2) then
+    begin
+      // Comp.Lookup := SBCS(CP1).Lower
+      Index := NativeUInt(CP1);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CP1) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    same_cp:
+      Comp.Lookup := SBCS.FLowerCase;
+      if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+      Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(S1), Pointer(S2), Comp);
+    end else
+    begin
+      // Comp.Lookup := SBCS(CP1).LowerUCS2
+      Index := NativeUInt(CP1);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CP1) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup := SBCS.FUCS2.Lower;
+      if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+      Index := NativeUInt(CP2);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CP2) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+      Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(S1), Pointer(S2), Comp);
+    end;
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and (S1 <> S2) then
+  begin
+    Comp.Length := Length;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup := SBCS(CodePage).Lower
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup := SBCS.FLowerCase;
+    if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+    Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean;
+label
+  {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifNdef INLINESUPPORT}
+    {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+    Index: NativeUInt;
+    Value: Integer;
+    SBCS: PUniConvSBCS;
+    Comp: TUniConvCompareOptions;
+  {$endif}
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and ((P1 <> P2){$ifNdef INTERNALCODEPAGE}or (CP1 <> CP2){$endif}) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    {$ifdef INLINESUPPORT}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Ret := sbcs_compare_sbcs_ignorecase(AnsiString(Pointer(P1)), AnsiString(Pointer(P2)){$ifNdef INTERNALCODEPAGE}, CP1, CP2{$endif});
+    {$else}
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
+      begin
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        // Comp.Lookup := SBCS(CP1).Lower
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      same_cp:
+        Comp.Lookup := SBCS.FLowerCase;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+        Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(P1), Pointer(P2), Comp);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).LowerUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Lower;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+
+        // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(P1), Pointer(P2), Comp);
+      end;
+    {$endif}
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Comp.Length := Length;
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P1)^;
+    {$endif}
+    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P2, STR_OFFSET_LENGTH);
+    // Comp.Lookup := SBCS(CodePage).Lower
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup := SBCS.FLowerCase;
+    if (Comp.Lookup = nil) then
+    begin
+      Comp.Lookup_2 := P2;
+      Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+      P2 := Comp.Lookup_2;
+    end;
+
+    Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean;
+label
+  {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
+var
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifNdef INLINESUPPORT}
+    Index: NativeUInt;
+    Value: Integer;
+    SBCS: PUniConvSBCS;
+    Comp: TUniConvCompareOptions;
+  {$endif}
+  Ret: NativeInt;
+begin
+  Length := PByte(@S1)^;
+  if (Byte(Length) <> PByte(@S2)^) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  if (Length <> 0) and ((@S1 <> @S2) or (CP1 <> CP2)) then
+  begin
+    {$ifNdef INLINESUPPORT}
+    Comp.Length := Length;
+    {$endif}
+    C2 := Byte(S1[1]);
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := Byte(S2[1]);
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    {$ifdef INLINESUPPORT}
+      Ret := sbcs_compare_sbcs_ignorecase(S1, S2, CP1, CP2);
+    {$else}
+      if (CP1 = CP2) then
+      begin
+        // Comp.Lookup := SBCS(CP1).Lower
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      same_cp:
+        Comp.Lookup := SBCS.FLowerCase;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+        Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).LowerUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Lower;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Ret := __uniconv_sbcs_compare_sbcs_2(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end;
+    {$endif}
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  Length := PByte(@S1)^;
+  if (Byte(Length) <> PByte(@S2)^) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  if (Length <> 0) and (@S1 <> @S2) then
+  begin
+    Comp.Length := Length;
+    C2 := Byte(S1[1]);
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := Byte(S2[1]);
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup := SBCS(CodePage).Lower
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup := SBCS.FLowerCase;
+    if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+    Ret := __uniconv_sbcs_compare_sbcs_1(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt;
+label
+  same_cp;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) and ((S1 <> S2) or (CP1 <> CP2)) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      if (CP1 = CP2) then
+      begin
+      same_cp:
+        Result := __uniconv_compare_bytes(Pointer(S1), Pointer(S2), Comp.Length);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).OriginalUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Original;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(S1), Pointer(S2), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_compare_samesbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) then
+    begin
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_compare_bytes(Pointer(S1), Pointer(S2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt;
+label
+  same_cp;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and ((P1 <> P2){$ifNdef INTERNALCODEPAGE}or (CP1 <> CP2){$endif}) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
+      begin
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      same_cp:
+        Result := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Comp.Length);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).OriginalUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Original;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+
+        // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(P1), Pointer(P2), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function sbcs_compare_samesbcs(const S1: AnsiString; const S2: AnsiString): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 = L2) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      L1 := __uniconv_compare_bytes(Pointer(P1), Pointer(P2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt;
+label
+  same_cp;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) and ((@S1 <> @S2) or (CP1 <> CP2)) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    L1 := Byte(S1[1]);
+    L2 := Byte(S2[1]);
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      if (CP1 = CP2) then
+      begin
+      same_cp:
+        Result := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]), Comp.Length);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).OriginalUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Original;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_samesbcs(const S1: ShortString; const S2: ShortString): NativeInt;
+var
+  L1, L2: NativeUInt;
+begin
+  L1 := PWord(@S1)^;
+  L2 := PWord(@S2)^;
+
+  if (L1 and $ff <> 0) and (L2 and $ff <> 0) and (@S1 <> @S2) then
+  begin
+    L1 := L1 shr 8;
+    L2 := L2 shr 8;
+    if (L1 = L2) then
+    begin
+      L1 := PByte(@S1)^;
+      L2 := PByte(@S2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(Byte(L1)) - NativeInt(Byte(L2));
+end;
+
+function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt;
+label
+  same_cp;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) and ((S1 <> S2) or (CP1 <> CP2)) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      if (CP1 = CP2) then
+      begin
+        // Comp.Lookup := SBCS(CP1).Lower
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      same_cp:
+        Comp.Lookup := SBCS.FLowerCase;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+        Result := __uniconv_sbcs_compare_sbcs_1(Pointer(S1), Pointer(S2), Comp);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).LowerUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Lower;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(S1), Pointer(S2), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup := SBCS(CodePage).Lower
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup := SBCS.FLowerCase;
+      if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+      Result := __uniconv_sbcs_compare_sbcs_1(Pointer(S1), Pointer(S2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt;
+label
+  same_cp;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and ((P1 <> P2){$ifNdef INTERNALCODEPAGE}or (CP1 <> CP2){$endif}) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
+      begin
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        // Comp.Lookup := SBCS(CP1).Lower
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      same_cp:
+        Comp.Lookup := SBCS.FLowerCase;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+        Result := __uniconv_sbcs_compare_sbcs_1(Pointer(P1), Pointer(P2), Comp);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).LowerUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Lower;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+
+        // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+        Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = {$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif}) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(P1), Pointer(P2), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup := SBCS(CodePage).Lower
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup := SBCS.FLowerCase;
+      if (Comp.Lookup = nil) then
+      begin
+        Comp.Lookup_2 := P2;
+        Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+        P2 := Comp.Lookup_2;
+      end;
+
+      Result := __uniconv_sbcs_compare_sbcs_1(Pointer(P1), Pointer(P2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt;
+label
+  same_cp;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) and ((@S1 <> @S2) or (CP1 <> CP2)) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      if (CP1 = CP2) then
+      begin
+        // Comp.Lookup := SBCS(CP1).Lower
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      same_cp:
+        Comp.Lookup := SBCS.FLowerCase;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+        Result := __uniconv_sbcs_compare_sbcs_1(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end else
+      begin
+        // Comp.Lookup := SBCS(CP1).LowerUCS2
+        Index := NativeUInt(CP1);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP1) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup := SBCS.FUCS2.Lower;
+        if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
+        Index := NativeUInt(CP2);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CP2) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+        if (Comp.Lookup = Comp.Lookup_2) then goto same_cp;
+        Result := __uniconv_sbcs_compare_sbcs_2(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      end;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) and (@S1 <> @S2) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      // Comp.Lookup := SBCS(CodePage).Lower
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup := SBCS.FLowerCase;
+      if (Comp.Lookup = nil) then Comp.Lookup := SBCS.FromSBCS(SBCS, ccLower);
+
+      Result := __uniconv_sbcs_compare_sbcs_1(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P1)^;
+    {$endif}
+    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P2, STR_OFFSET_LENGTH);
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    L1 := Byte(S1[1]);
+    L2 := Byte(S2[1]);
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(@S2[1]), Pointer(@S1[1]), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (L1 = L2);
+end;
+
+function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P1)^;
+    {$endif}
+    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P2, STR_OFFSET_LENGTH);
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(@S2[1]), Pointer(@S1[1]), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (L1 = L2);
+end;
+
+function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PByte(P1)^;
+    C2 := PByte(P2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P2)^;
+      Comp.Length_2 := PCardinal(P1)^;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    L1 := Byte(S1[1]);
+    L2 := Byte(S2[1]);
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(@S2[1]), Pointer(@S1[1]), Comp);
+      Result := -Result;
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P2)^;
+      Comp.Length_2 := PCardinal(P1)^;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(@S2[1]), Pointer(@S1[1]), Comp);
+      Result := -Result;
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) then
+  begin
+    Comp.Length := Length;
+    C1 := PByte(S1)^;
+    C2 := PWord(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      C1 := PByte(P1)^;
+      C2 := PWord(P2)^;
+      if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      if (Length <> PCardinal(P1)^) then goto ret_false;
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Ret := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PByte(P1)^;
+    C2 := PWord(P2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Comp.Length := Length;
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P1)^;
+    {$endif}
+    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P2, STR_OFFSET_LENGTH);
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) then
+  begin
+    Comp.Length := Length;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      C2 := PByte(P1)^;
+      C1 := UNICONV_CHARCASE.VALUES[C2];
+      C2 := PWord(P2)^;
+      C2 := UNICONV_CHARCASE.VALUES[C2];
+      if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      if (Length <> PCardinal(P1)^) then goto ret_false;
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Ret := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Comp.Length := Length;
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P1)^;
+    {$endif}
+    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P2, STR_OFFSET_LENGTH);
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C1 := PByte(S1)^;
+    C2 := PWord(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf16_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      L1 := PByte(P1)^;
+      L2 := PWord(P2)^;
+      if (L1 = L2) or (L1 or L2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^;
+        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        if (L1 <= L2) then
+        begin
+          Comp.Length := L1;
+          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          Comp.Length := L2;
+          Comp.Length_2 := NativeUInt(-1);
+        end;
+
+        {$ifdef INTERNALCODEPAGE}
+        Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        CodePage := PWord(P1)^;
+        {$endif}
+        Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, STR_OFFSET_LENGTH);
+        // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+        Index := NativeUInt(CodePage);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CodePage) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then
+        begin
+          Comp.Lookup := P2;
+          Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+          P2 := Comp.Lookup;
+        end;
+
+        Comp.Lookup := nil;
+        Result := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+        Result := -Result;
+        Inc(Result, Result);
+        Dec(Result, Comp.Length_2);
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PWord(P2)^;
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf16_compare_sbcs(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      L2 := PByte(P1)^;
+      L1 := UNICONV_CHARCASE.VALUES[L2];
+      L2 := PWord(P2)^;
+      L2 := UNICONV_CHARCASE.VALUES[L2];
+      if (L1 = L2) or (L1 or L2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^;
+        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        if (L1 <= L2) then
+        begin
+          Comp.Length := L1;
+          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          Comp.Length := L2;
+          Comp.Length_2 := NativeUInt(-1);
+        end;
+
+        {$ifdef INTERNALCODEPAGE}
+        Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        CodePage := PWord(P1)^;
+        {$endif}
+        Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, STR_OFFSET_LENGTH);
+        // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+        Index := NativeUInt(CodePage);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CodePage) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then
+        begin
+          Comp.Lookup := P2;
+          Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+          P2 := Comp.Lookup;
+        end;
+
+        Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+        Result := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+        Result := -Result;
+        Inc(Result, Result);
+        Dec(Result, Comp.Length_2);
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PWord(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P1)^;
+      {$endif}
+      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P2, STR_OFFSET_LENGTH);
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf16_compare_sbcs(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P2)^;
+    {$endif}
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    L1 := Byte(S1[1]);
+    L2 := Byte(S2[1]);
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (L1 = L2);
+end;
+
+function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P2)^;
+    {$endif}
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_sbcs(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (L1 = L2);
+end;
+
+function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PByte(P1)^;
+    C2 := PByte(P2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P1)^;
+      Comp.Length_2 := PCardinal(P2)^;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    L1 := Byte(S1[1]);
+    L2 := Byte(S2[1]);
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_sbcs(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P1)^;
+      Comp.Length_2 := PCardinal(P2)^;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_sbcs(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function utf8_equal_utf8(S1: PUTF8Char; S2: PUTF8Char; Length: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and (S1 <> S2) then
+  begin
+    if (PByte(S1)^ <> PByte(S2)^) then goto ret_false;
+
+    Ret := __uniconv_compare_bytes(Pointer(S1), Pointer(S2), Length);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function utf8_equal_utf8(const S1: UTF8String; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    if (PByte(P1)^ <> PByte(P2)^) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Length);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function utf8_equal_utf8(const S1: ShortString; const S2: ShortString): Boolean;
+label
+  ret_false;
+var
+  Length: Word;
+  Ret: NativeInt;
+begin
+  Length := PWord(@S1)^;
+  if (Length <> PWord(@S2)^) then
+  begin
+    Result := (Length and $ff = 0) and (PByte(@S2)^ = 0);
+    Exit;
+  end;
+
+  if (Length and $ff <> 0) and (@S1 <> @S2) then
+  begin
+    Ret := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]), Byte(Length));
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+function utf8_equal_utf8_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 >= L2) then
+    begin
+      L2 := L2 * 3;
+      L2 := L2 shr 1;
+      if (L1 > L2) then goto ret_false;
+    end else
+    begin
+      L1 := L1 * 3;
+      L1 := L1 shr 1;
+      if (L2 > L1) then goto ret_false;
+    end;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Ret := __uniconv_utf8_compare_utf8(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf8_equal_utf8_ignorecase(const S1: UTF8String; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 >= L2) then
+    begin
+      L2 := L2 * 3;
+      L2 := L2 shr 1;
+      if (L1 > L2) then goto ret_false;
+    end else
+    begin
+      L1 := L1 * 3;
+      L1 := L1 shr 1;
+      if (L2 > L1) then goto ret_false;
+    end;
+
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Ret := __uniconv_utf8_compare_utf8(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{inline} function utf8_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString): Boolean;
+label
+  ret_false;
+var
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) and (@S1 <> @S2) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 >= L2) then
+    begin
+      L2 := L2 * 3;
+      L2 := L2 shr 1;
+      if (L1 > L2) then goto ret_false;
+    end else
+    begin
+      L1 := L1 * 3;
+      L1 := L1 shr 1;
+      if (L2 > L1) then goto ret_false;
+    end;
+
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Ret := __uniconv_utf8_compare_utf8(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      L2 := UNICONV_CHARCASE.VALUES[Byte(S2[1])];
+      {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (L1 = L2);
+end;
+
+function utf8_compare_utf8(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    C1 := PByte(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) then
+    begin
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_compare_bytes(Pointer(S1), Pointer(S2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_utf8(const S1: UTF8String; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 = L2) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      L1 := __uniconv_compare_bytes(Pointer(P1), Pointer(P2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function utf8_compare_utf8(const S1: ShortString; const S2: ShortString): NativeInt;
+var
+  L1, L2: NativeUInt;
+begin
+  L1 := PWord(@S1)^;
+  L2 := PWord(@S2)^;
+
+  if (L1 and $ff <> 0) and (L2 and $ff <> 0) and (@S1 <> @S2) then
+  begin
+    L1 := L1 shr 8;
+    L2 := L2 shr 8;
+    if (L1 = L2) then
+    begin
+      L1 := PByte(@S1)^;
+      L2 := PByte(@S2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_compare_bytes(Pointer(@S1[1]), Pointer(@S2[1]),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(Byte(L1)) - NativeInt(Byte(L2));
+end;
+
+function utf8_compare_utf8_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Result := __uniconv_utf8_compare_utf8(Pointer(S1), Pointer(S2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PByte(S2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_utf8_ignorecase(const S1: UTF8String; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P1)^;
+      Comp.Length_2 := PCardinal(P2)^;
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Result := __uniconv_utf8_compare_utf8(Pointer(P1), Pointer(P2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PByte(P2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{inline} function utf8_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString): NativeInt;
+var
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  L1 := PByte(@S1)^;
+  L2 := PByte(@S2)^;
+
+  if (L1 <> 0) and (L2 <> 0) and (@S1 <> @S2) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    L2 := Byte(S1[1]);
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := Byte(S2[1]);
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Result := __uniconv_utf8_compare_utf8(Pointer(@S1[1]), Pointer(@S2[1]), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      L2 := UNICONV_CHARCASE.VALUES[Byte(S2[1])];
+      {$endif}
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+function utf8_equal_utf16(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    C1 := PByte(S1)^;
+    C2 := PWord(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_utf16(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf8_equal_utf16(const S1: UTF8String; const S2: WideString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      L1 := PByte(P1)^;
+      L2 := PWord(P2)^;
+      if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Comp.Length := L1;
+      Comp.Length_2 := L2;
+
+      if (L1 < L2) then goto ret_false;
+      L2 := L2 * 3;
+      if (L1 > L2) then goto ret_false;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := nil;
+      Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf8_equal_utf16(const S1: UTF8String; const S2: UnicodeString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PByte(P1)^;
+    L2 := PWord(P2)^;
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf8_equal_utf16_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_utf16(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf8_equal_utf16_ignorecase(const S1: UTF8String; const S2: WideString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      L2 := PByte(P1)^;
+      L1 := UNICONV_CHARCASE.VALUES[L2];
+      L2 := PWord(P2)^;
+      L2 := UNICONV_CHARCASE.VALUES[L2];
+      if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Comp.Length := L1;
+      Comp.Length_2 := L2;
+
+      if (L1 < L2) then goto ret_false;
+      L2 := L2 * 3;
+      if (L1 > L2) then goto ret_false;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf8_equal_utf16_ignorecase(const S1: UTF8String; const S2: UnicodeString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PByte(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PWord(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+
+    if (L1 < L2) then goto ret_false;
+    L2 := L2 * 3;
+    if (L1 > L2) then goto ret_false;
+
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf8_compare_utf16(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    C1 := PByte(S1)^;
+    C2 := PWord(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_utf16(Pointer(S1), Pointer(S2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := PWord(S2)^;
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_utf16(const S1: UTF8String; const S2: WideString): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      C1 := PByte(P1)^;
+      C2 := PWord(P2)^;
+      if (C1 = C2) or (C1 or C2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Comp.Length := PCardinal(P1)^;
+        Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Comp.Lookup := nil;
+        Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+        Exit;
+      end else
+      begin
+        {$ifdef CPUX86}
+        C2 := PWord(P2)^;
+        {$endif}
+        Result := NativeInt(C1) - NativeInt(C2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf8_compare_utf16(const S1: UTF8String; const S2: UnicodeString): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PByte(P1)^;
+    C2 := PWord(P2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P1)^;
+      Comp.Length_2 := PCardinal(P2)^;
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := PWord(P2)^;
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf8_compare_utf16_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L1;
+    Comp.Length_2 := L2;
+    C2 := PByte(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_utf16(Pointer(S1), Pointer(S2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PWord(S2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: WideString): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P2 <> nil) then
+  begin
+    if (P1 <> nil) then
+    begin
+      C2 := PByte(P1)^;
+      C1 := UNICONV_CHARCASE.VALUES[C2];
+      C2 := PWord(P2)^;
+      C2 := UNICONV_CHARCASE.VALUES[C2];
+      if (C1 = C2) or (C1 or C2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Comp.Length := PCardinal(P1)^;
+        Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+        Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+        Exit;
+      end else
+      begin
+        {$ifdef CPUX86}
+        C2 := UNICONV_CHARCASE.VALUES[PWord(P2)^];
+        {$endif}
+        Result := NativeInt(C1) - NativeInt(C2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: UnicodeString): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PByte(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P1)^;
+      Comp.Length_2 := PCardinal(P2)^;
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PWord(P2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) then
+  begin
+    Comp.Length := Length;
+    C1 := PWord(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      C1 := PWord(P1)^;
+      C2 := PByte(P2)^;
+      if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      if (Length <> PCardinal(P2)^) then goto ret_false;
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Ret := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PWord(P1)^;
+    C2 := PByte(P2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Comp.Length := Length;
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P2)^;
+    {$endif}
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Original;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) then
+  begin
+    Comp.Length := Length;
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      C2 := PWord(P1)^;
+      C1 := UNICONV_CHARCASE.VALUES[C2];
+      C2 := PByte(P2)^;
+      C2 := UNICONV_CHARCASE.VALUES[C2];
+      if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      if (Length <> PCardinal(P2)^) then goto ret_false;
+      Comp.Length := Length;
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Ret := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PWord(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Comp.Length := Length;
+    {$ifdef INTERNALCODEPAGE}
+    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    CodePage := PWord(P2)^;
+    {$endif}
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+    Index := NativeUInt(CodePage);
+    Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+    repeat
+      if (Word(Value) = CodePage) or (Value < 0) then Break;
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+    until (False);
+    SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+    Comp.Lookup_2 := SBCS.FUCS2.Lower;
+    if (Comp.Lookup_2 = nil) then
+    begin
+      Comp.Lookup := P2;
+      Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+      P2 := Comp.Lookup;
+    end;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C1 := PWord(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf16_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      L1 := PWord(P1)^;
+      L2 := PByte(P2)^;
+      if (L1 = L2) or (L1 or L2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^;
+        if (L1 <= L2) then
+        begin
+          Comp.Length := L1;
+          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          Comp.Length := L2;
+          Comp.Length_2 := NativeUInt(-1);
+        end;
+
+        {$ifdef INTERNALCODEPAGE}
+        Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        CodePage := PWord(P2)^;
+        {$endif}
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+        Index := NativeUInt(CodePage);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CodePage) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Original;
+        if (Comp.Lookup_2 = nil) then
+        begin
+          Comp.Lookup := P2;
+          Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+          P2 := Comp.Lookup;
+        end;
+
+        Comp.Lookup := nil;
+        Result := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+        Inc(Result, Result);
+        Dec(Result, Comp.Length_2);
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PWord(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Original;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := nil;
+      Result := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    if (L1 <= L2) then
+    begin
+      Comp.Length := L1;
+      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+    end else
+    begin
+      Comp.Length := L2;
+      Comp.Length_2 := NativeUInt(-1);
+    end;
+
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf16_compare_sbcs(Pointer(S1), Pointer(S2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      L2 := PWord(P1)^;
+      L1 := UNICONV_CHARCASE.VALUES[L2];
+      L2 := PByte(P2)^;
+      L2 := UNICONV_CHARCASE.VALUES[L2];
+      if (L1 = L2) or (L1 or L2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^;
+        if (L1 <= L2) then
+        begin
+          Comp.Length := L1;
+          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          Comp.Length := L2;
+          Comp.Length_2 := NativeUInt(-1);
+        end;
+
+        {$ifdef INTERNALCODEPAGE}
+        Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        CodePage := PWord(P2)^;
+        {$endif}
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+        Index := NativeUInt(CodePage);
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+        repeat
+          if (Word(Value) = CodePage) or (Value < 0) then Break;
+          Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+        until (False);
+        SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+        Comp.Lookup_2 := SBCS.FUCS2.Lower;
+        if (Comp.Lookup_2 = nil) then
+        begin
+          Comp.Lookup := P2;
+          Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+          P2 := Comp.Lookup;
+        end;
+
+        Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+        Result := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+        Inc(Result, Result);
+        Dec(Result, Comp.Length_2);
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  {$ifdef INTERNALCODEPAGE}CodePage: Word;{$endif}
+  Index: NativeUInt;
+  Value: Integer;
+  SBCS: PUniConvSBCS;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PWord(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) or (L1 or L2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        Comp.Length := L1;
+        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        Comp.Length := L2;
+        Comp.Length_2 := NativeUInt(-1);
+      end;
+
+      {$ifdef INTERNALCODEPAGE}
+      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      CodePage := PWord(P2)^;
+      {$endif}
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
+      Index := NativeUInt(CodePage);
+      Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
+      repeat
+        if (Word(Value) = CodePage) or (Value < 0) then Break;
+        Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
+      until (False);
+      SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+      Comp.Lookup_2 := SBCS.FUCS2.Lower;
+      if (Comp.Lookup_2 = nil) then
+      begin
+        Comp.Lookup := P2;
+        Comp.Lookup_2 := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
+        P2 := Comp.Lookup;
+      end;
+
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf16_compare_sbcs(Pointer(P1), Pointer(P2), Comp);
+      Inc(Result, Result);
+      Dec(Result, Comp.Length_2);
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_equal_utf8(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    C1 := PWord(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_utf16(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf16_equal_utf8(const S1: WideString; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      L1 := PWord(P1)^;
+      L2 := PByte(P2)^;
+      if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L2 := PCardinal(P2)^;
+      Comp.Length := L2;
+      Comp.Length_2 := L1;
+
+      if (L2 < L1) then goto ret_false;
+      L1 := L1 * 3;
+      if (L2 > L1) then goto ret_false;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := nil;
+      Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_utf8(const S1: UnicodeString; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L1 := PWord(P1)^;
+    L2 := PByte(P2)^;
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Comp.Lookup := nil;
+    Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_equal_utf8_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
+
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_utf16(Pointer(S2), Pointer(S1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := (L1 = L2);
+end;
+
+{inline} function utf16_equal_utf8_ignorecase(const S1: WideString; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      L2 := PWord(P1)^;
+      L1 := UNICONV_CHARCASE.VALUES[L2];
+      L2 := PByte(P2)^;
+      L2 := UNICONV_CHARCASE.VALUES[L2];
+      if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L2 := PCardinal(P2)^;
+      Comp.Length := L2;
+      Comp.Length_2 := L1;
+
+      if (L2 < L1) then goto ret_false;
+      L1 := L1 * 3;
+      if (L2 > L1) then goto ret_false;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+      Result := (Ret = 0);
+      Exit;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_utf8_ignorecase(const S1: UnicodeString; const S2: UTF8String): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    L2 := PWord(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PByte(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    L1 := PCardinal(P1)^;
+    L2 := PCardinal(P2)^;
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+
+    if (L2 < L1) then goto ret_false;
+    L1 := L1 * 3;
+    if (L2 > L1) then goto ret_false;
+
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+    Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_compare_utf8(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    C1 := PWord(S1)^;
+    C2 := PByte(S2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_utf16(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := PByte(S2)^;
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_utf8(const S1: WideString; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      C1 := PWord(P1)^;
+      C2 := PByte(P2)^;
+      if (C1 = C2) or (C1 or C2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Comp.Length := PCardinal(P2)^;
+        Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Comp.Lookup := nil;
+        Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+        Result := -Result;
+        Exit;
+      end else
+      begin
+        {$ifdef CPUX86}
+        C2 := PByte(P2)^;
+        {$endif}
+        Result := NativeInt(C1) - NativeInt(C2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_utf8(const S1: UnicodeString; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C1 := PWord(P1)^;
+    C2 := PByte(P2)^;
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P2)^;
+      Comp.Length_2 := PCardinal(P1)^;
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := nil;
+      Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := PByte(P2)^;
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_compare_utf8_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  if (L1 <> 0) and (L2 <> 0) then
+  begin
+    Comp.Length := L2;
+    Comp.Length_2 := L1;
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_utf16(Pointer(S2), Pointer(S1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PByte(S2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_utf8_ignorecase(const S1: WideString; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) then
+  begin
+    if (P2 <> nil) then
+    begin
+      C2 := PWord(P1)^;
+      C1 := UNICONV_CHARCASE.VALUES[C2];
+      C2 := PByte(P2)^;
+      C2 := UNICONV_CHARCASE.VALUES[C2];
+      if (C1 = C2) or (C1 or C2 > $7f) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Comp.Length := PCardinal(P2)^;
+        Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+        Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+        Result := -Result;
+        Exit;
+      end else
+      begin
+        {$ifdef CPUX86}
+        C2 := UNICONV_CHARCASE.VALUES[PByte(P2)^];
+        {$endif}
+        Result := NativeInt(C1) - NativeInt(C2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_utf8_ignorecase(const S1: UnicodeString; const S2: UTF8String): NativeInt;
+var
+  P1, P2: PByte;
+  C1, C2: NativeUInt;
+  Comp: TUniConvCompareOptions;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) then
+  begin
+    C2 := PWord(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PByte(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) or (C1 or C2 > $7f) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      Comp.Length := PCardinal(P2)^;
+      Comp.Length_2 := PCardinal(P1)^;
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
+      Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
+      Result := -Result;
+      Exit;
+    end else
+    begin
+      {$ifdef CPUX86}
+      C2 := UNICONV_CHARCASE.VALUES[PByte(P2)^];
+      {$endif}
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_equal_utf16(S1: PWideChar; S2: PWideChar; Length: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and (S1 <> S2) then
+  begin
+    if (PWord(S1)^ <> PWord(S2)^) then goto ret_false;
+
+    Ret := __uniconv_compare_words(Pointer(S1), Pointer(S2), Length);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function utf16_equal_utf16(const S1: WideString; const S2: WideString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> P2) then
+  begin
+    if (P1 <> nil) then
+    begin
+      if (P2 <> nil) then
+      begin
+        if (PWord(P1)^ <> PWord(P2)^) then goto ret_false;
+
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Length := PCardinal(P1)^;
+        if (Length <> PCardinal(P2)^) then goto ret_false;
+        {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
+        Result := (Ret = 0);
+        Exit;
+      end else
+      begin
+      {$ifdef MSWINDOWS}
+        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      {$endif}
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_utf16(const S1: UnicodeString; const S2: UnicodeString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    if (PWord(P1)^ <> PWord(P2)^) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_equal_utf16_ignorecase(S1: PWideChar; S2: PWideChar; Length: NativeUInt): Boolean;
+label
+  ret_false;
+var
+  C1, C2: NativeUInt;
+  Ret: NativeInt;
+begin
+  if (Length <> 0) and (S1 <> S2) then
+  begin
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) then goto ret_false;
+
+    Ret := __uniconv_utf16_compare_utf16(Pointer(S1), Pointer(S2), Length);
+    Result := (Ret = 0);
+    Exit;
+  ret_false:
+    Result := False;
+    Exit;
+  end;
+
+  Result := True;
+end;
+
+{inline} function utf16_equal_utf16_ignorecase(const S1: WideString; const S2: WideString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> P2) then
+  begin
+    if (P1 <> nil) then
+    begin
+      if (P2 <> nil) then
+      begin
+        C2 := PWord(P1)^;
+        C1 := UNICONV_CHARCASE.VALUES[C2];
+        C2 := PWord(P2)^;
+        C2 := UNICONV_CHARCASE.VALUES[C2];
+        if (C1 <> C2) then goto ret_false;
+
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        Length := PCardinal(P1)^;
+        if (Length <> PCardinal(P2)^) then goto ret_false;
+        {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
+        Result := (Ret = 0);
+        Exit;
+      end else
+      begin
+      {$ifdef MSWINDOWS}
+        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      {$endif}
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+    {$endif}
+    end;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_equal_utf16_ignorecase(const S1: UnicodeString; const S2: UnicodeString): Boolean;
+label
+  ret_false;
+var
+  P1, P2: PByte;
+  Length: Cardinal;
+  C1, C2: NativeUInt;
+  Ret: NativeInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    C2 := PWord(P1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(P2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 <> C2) then goto ret_false;
+
+    Dec(P1, STR_OFFSET_LENGTH);
+    Dec(P2, STR_OFFSET_LENGTH);
+    Length := PCardinal(P1)^;
+    if (Length <> PCardinal(P2)^) then goto ret_false;
+    Inc(P1, STR_OFFSET_LENGTH);
+    Inc(P2, STR_OFFSET_LENGTH);
+    Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
+    Result := (Ret = 0);
+    Exit;
+  end;
+
+ret_false:
+  Result := (P1 = P2);
+end;
+{$endif}
+
+function utf16_compare_utf16(S1: PWideChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    C1 := PWord(S1)^;
+    C2 := PWord(S2)^;
+    if (C1 = C2) then
+    begin
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_compare_words(Pointer(S1), Pointer(S2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_utf16(const S1: WideString; const S2: WideString): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> P2) then
+  begin
+    if (P1 <> nil) and (P2 <> nil) then
+    begin
+      L1 := PWord(P1)^;
+      L2 := PWord(P2)^;
+      if (L1 = L2) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        if (L1 <= L2) then
+        begin
+          L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          L1 := L2;
+          L2 := NativeUInt(-1);
+        end;
+
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        L1 := __uniconv_compare_words(Pointer(P1), Pointer(P2),  L1);
+        Result := L1 * 2 - L2;
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      if (P2 = nil) then
+      begin
+        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      end else
+      begin
+        P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      end;
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_utf16(const S1: UnicodeString; const S2: UnicodeString): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L1 := PWord(P1)^;
+    L2 := PWord(P2)^;
+    if (L1 = L2) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      L1 := __uniconv_compare_words(Pointer(P1), Pointer(P2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+
+function utf16_compare_utf16_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt): NativeInt;
+var
+  C1, C2: NativeUInt;
+begin
+  if (L1 <> 0) and (L2 <> 0) and (S1 <> S2) then
+  begin
+    C2 := PWord(S1)^;
+    C1 := UNICONV_CHARCASE.VALUES[C2];
+    C2 := PWord(S2)^;
+    C2 := UNICONV_CHARCASE.VALUES[C2];
+    if (C1 = C2) then
+    begin
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      L1 := __uniconv_utf16_compare_utf16(Pointer(S1), Pointer(S2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(C1) - NativeInt(C2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(L1) - NativeInt(L2);
+end;
+
+{inline} function utf16_compare_utf16_ignorecase(const S1: WideString; const S2: WideString): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> P2) then
+  begin
+    if (P1 <> nil) and (P2 <> nil) then
+    begin
+      L2 := PWord(P1)^;
+      L1 := UNICONV_CHARCASE.VALUES[L2];
+      L2 := PWord(P2)^;
+      L2 := UNICONV_CHARCASE.VALUES[L2];
+      if (L1 = L2) then
+      begin
+        Dec(P1, STR_OFFSET_LENGTH);
+        Dec(P2, STR_OFFSET_LENGTH);
+        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        if (L1 <= L2) then
+        begin
+          L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        end else
+        begin
+          L1 := L2;
+          L2 := NativeUInt(-1);
+        end;
+
+        Inc(P1, STR_OFFSET_LENGTH);
+        Inc(P2, STR_OFFSET_LENGTH);
+        L1 := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2),  L1);
+        Result := L1 * 2 - L2;
+        Exit;
+      end else
+      begin
+        Result := NativeInt(L1) - NativeInt(L2);
+        Exit;
+      end;
+    end else
+    begin
+    {$ifdef MSWINDOWS}
+      if (P2 = nil) then
+      begin
+        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      end else
+      begin
+        P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      end;
+    {$endif}
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+
+{$ifdef UNICODE}
+{inline} function utf16_compare_utf16_ignorecase(const S1: UnicodeString; const S2: UnicodeString): NativeInt;
+var
+  P1, P2: PByte;
+  L1, L2: NativeUInt;
+begin
+  P2 := Pointer(S2);
+  P1 := Pointer(S1);
+  if (P1 <> nil) and (P2 <> nil) and (P1 <> P2) then
+  begin
+    L2 := PWord(P1)^;
+    L1 := UNICONV_CHARCASE.VALUES[L2];
+    L2 := PWord(P2)^;
+    L2 := UNICONV_CHARCASE.VALUES[L2];
+    if (L1 = L2) then
+    begin
+      Dec(P1, STR_OFFSET_LENGTH);
+      Dec(P2, STR_OFFSET_LENGTH);
+      L1 := PCardinal(P1)^;
+      L2 := PCardinal(P2)^;
+      if (L1 <= L2) then
+      begin
+        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      end else
+      begin
+        L1 := L2;
+        L2 := NativeUInt(-1);
+      end;
+
+      Inc(P1, STR_OFFSET_LENGTH);
+      Inc(P2, STR_OFFSET_LENGTH);
+      L1 := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2),  L1);
+      Result := L1 * 2 - L2;
+      Exit;
+    end else
+    begin
+      Result := NativeInt(L1) - NativeInt(L2);
+      Exit;
+    end;
+  end;
+
+  Result := NativeInt(P1) - NativeInt(P2);
+end;
+{$endif}
+{$ifdef undef}{$ENDREGION}{$endif}
+
 
 initialization
   {$WARNINGS OFF} // deprecated warning bug fix (like Delphi 2010 compiler)
