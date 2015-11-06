@@ -690,171 +690,171 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
 
 {$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
   procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
-  function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
   procedure sbcs_from_sbcs(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
-  function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
   procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
-  function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
   procedure sbcs_from_sbcs_lower(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
-  function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
   procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
-  function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
   procedure sbcs_from_sbcs_upper(var Dest: AnsiString; const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0); overload;
-  function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}); overload;
 
   procedure sbcs_from_utf8(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure sbcs_from_utf8(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
   procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure sbcs_from_utf8_lower(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8_lower(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
   procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: UTF8String; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure sbcs_from_utf8_upper(var Dest: AnsiString; const Src: ShortString; const CodePage: Word = 0); overload;
-  function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure sbcs_from_utf8_upper(var Dest: ShortString; const Src: UTF8String; const CodePage: Word = 0); overload;
 
   procedure sbcs_from_utf16(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
-  function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure sbcs_from_utf16(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
   procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16_lower(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
-  function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
   procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16_upper(var Dest: AnsiString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
-  function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: WideString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure sbcs_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString; const CodePage: Word = 0); overload; {$endif}
 
   procedure utf8_from_sbcs(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
-  function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure utf8_from_sbcs(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
-  function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
   procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
-  function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure utf8_from_sbcs_lower(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
-  function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs_lower(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
   procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
-  function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: ShortString; const CodePage: Word = 0); overload;
   procedure utf8_from_sbcs_upper(var Dest: UTF8String; const Src: ShortString; const CodePage: Word = 0); overload;
-  function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_sbcs_upper(var Dest: ShortString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
 
   procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: UTF8String); overload;
-  function utf8_from_utf8_lower(const Src: UTF8String): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_utf8_lower(const Src: UTF8String): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: ShortString); overload;
   procedure utf8_from_utf8_lower(var Dest: UTF8String; const Src: ShortString); overload;
-  function utf8_from_utf8_lower(const Src: ShortString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_utf8_lower(const Src: ShortString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_utf8_lower(var Dest: ShortString; const Src: UTF8String); overload;
   procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: UTF8String); overload;
-  function utf8_from_utf8_upper(const Src: UTF8String): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_utf8_upper(const Src: UTF8String): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: ShortString); overload;
   procedure utf8_from_utf8_upper(var Dest: UTF8String; const Src: ShortString); overload;
-  function utf8_from_utf8_upper(const Src: ShortString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
+  function utf8_from_utf8_upper(const Src: ShortString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   procedure utf8_from_utf8_upper(var Dest: ShortString; const Src: UTF8String); overload;
 
   procedure utf8_from_utf16(var Dest: UTF8String; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
-  function utf8_from_utf16(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf8_from_utf16(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function utf8_from_utf16(const Src: WideString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf8_from_utf16(var Dest: ShortString; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
   procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16_lower(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
-  function utf8_from_utf16_lower(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function utf8_from_utf16_lower(const Src: WideString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16_lower(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
   procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16_upper(var Dest: UTF8String; const Src: UnicodeString); overload; {$endif}
-  function utf8_from_utf16_upper(const Src: WideString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  function utf8_from_utf16_upper(const Src: WideString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf8_from_utf16_upper(var Dest: ShortString; const Src: UnicodeString); overload; {$endif}
 
   procedure utf16_from_sbcs(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_sbcs(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_sbcs_lower(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs_lower(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_sbcs_upper(var Dest: WideString; const Src: ShortString; const CodePage: Word = 0); overload;
   {$ifdef UNICODE} procedure utf16_from_sbcs_upper(var Dest: UnicodeString; const Src: ShortString; const CodePage: Word = 0); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 
   procedure utf16_from_utf8(var Dest: WideString; const Src: UTF8String); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8(const Src: UTF8String): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf8(var Dest: WideString; const Src: ShortString); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8(const Src: ShortString): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8(const Src: ShortString): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf8_lower(var Dest: WideString; const Src: UTF8String); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf8_lower(var Dest: WideString; const Src: ShortString); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8_lower(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_lower(const Src: ShortString): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf8_upper(var Dest: WideString; const Src: UTF8String); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: UTF8String); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf8_upper(var Dest: WideString; const Src: ShortString); overload;
   {$ifdef UNICODE} procedure utf16_from_utf8_upper(var Dest: UnicodeString; const Src: ShortString); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf8_upper(const Src: ShortString): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 
   procedure utf16_from_utf16_lower(var Dest: WideString; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf16_from_utf16_lower(var Dest: UnicodeString; const Src: UnicodeString); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf16_lower(const Src: WideString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf16_lower(const Src: WideString): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
   procedure utf16_from_utf16_upper(var Dest: WideString; const Src: WideString); overload;
   {$ifdef UNICODE} procedure utf16_from_utf16_upper(var Dest: UnicodeString; const Src: UnicodeString); overload; {$endif}
-  {$ifNdef UNICODE} function utf16_from_utf16_upper(const Src: WideString): WideString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
-  {$ifdef UNICODE} function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINE_SUPPORT}inline;{$endif}{$endif}
+  {$ifNdef UNICODE} function utf16_from_utf16_upper(const Src: WideString): WideString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  {$ifdef UNICODE} function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'low level comparison routine'}{$endif}
@@ -879,69 +879,69 @@ type
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 comparisons'}{$endif}
-  function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean; overload;
+  function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word = 0; CP2: Word = 0): Boolean; overload;
   function sbcs_equal_samesbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt): Boolean; overload;
-  function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   function sbcs_equal_samesbcs(const S1: AnsiString; const S2: AnsiString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   function sbcs_equal_samesbcs(const S1: ShortString; const S2: ShortString): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean; overload;
-  function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
-  function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt; overload;
+  function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word = 0; CP2: Word = 0): Boolean; overload;
+  function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word = 0; CP2: Word = 0): NativeInt; overload;
   function sbcs_compare_samesbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt): NativeInt; overload;
-  function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt; overload;
+  function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): NativeInt; overload;
   function sbcs_compare_samesbcs(const S1: AnsiString; const S2: AnsiString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt; overload;
+  function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): NativeInt; overload;
   function sbcs_compare_samesbcs(const S1: ShortString; const S2: ShortString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt; overload;
-  function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt; overload;
-  function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt; overload;
-  function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word = 0; CP2: Word = 0): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): NativeInt; overload;
+  function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
 
-  function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean; overload;
-  function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean; overload;
-  function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
 
-  function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
-  function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
-  function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 
-  function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean; overload;
-  function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean; overload;
-  function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
 
   function utf8_equal_utf8(S1: PUTF8Char; S2: PUTF8Char; Length: NativeUInt): Boolean; overload;
   function utf8_equal_utf8(const S1: UTF8String; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
@@ -969,18 +969,18 @@ type
   function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: WideString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
   {$ifdef UNICODE} function utf8_compare_utf16_ignorecase(const S1: UTF8String; const S2: UnicodeString): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 
-  function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
-  function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean; overload;
-  function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
-  function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt; overload;
-  function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
-  {$ifdef UNICODE} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean; overload;
+  function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
+  function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt; overload;
+  function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifdef UNICODE} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt; overload; {$ifdef INLINESUPPORT}inline;{$endif}{$endif}
 
   function utf16_equal_utf8(S1: PWideChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt): Boolean; overload;
   function utf16_equal_utf8(const S1: WideString; const S2: UTF8String): Boolean; overload; {$ifdef INLINESUPPORT}inline;{$endif}
@@ -4465,7 +4465,6 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'fast SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
-
 const
   HIGH_NATIVE_BIT_VALUE = (NativeUInt(1) shl HIGH_NATIVE_BIT);
 
@@ -15290,21 +15289,26 @@ end;
 
 {$ifdef undef}{$REGION 'low level string types routine'}{$endif}
 type
-  TDynArrayRec = packed record
-    RefCount: Integer;
-    Length: NativeInt; // high in FPC,
-                       // but dynamic array is not used for strings in FPC
-  end;
   PDynArrayRec = ^TDynArrayRec;
-
-  {$if Defined(FPC) or (not Defined(UNICODE))}
-  TAnsiStrRec = packed record
+  TDynArrayRec = packed record
+  {$if Defined(LARGEINT) and not Defined(FPC)}
+    _Padding: Integer;
+  {$ifend}
     RefCount: Integer;
-    Length: Integer;
+    Length: NativeInt;
   end;
+
+  PAnsiStrRec = ^TAnsiStrRec;
+  {$if Defined(FPC) or (not Defined(UNICODE))}
+    TAnsiStrRec = packed record
+      RefCount: Integer;
+      Length: Integer;
+    end;
+    const ASTR_OFFSET_LENGTH = SizeOf(Integer);
   {$else}
     {$ifdef NEXTGEN}
       TAnsiStrRec = TDynArrayRec;
+      const ASTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
     {$else}
       TAnsiStrRec = packed record
       {$ifdef LARGEINT}
@@ -15314,46 +15318,64 @@ type
         RefCount: Integer;
         Length: Integer;
       end;
+      const ASTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
     {$endif}
   {$ifend}
-  PAnsiStrRec = ^TAnsiStrRec;
 
-  {$ifdef UNICODE}
-    {$ifdef FPC}
-      TUnicodeStrRec = TAnsiStrRec;
-    {$else}
-      TUnicodeStrRec = packed record
-      {$ifdef LARGEINT}
-        _Padding: Integer;
-      {$endif}
-        CodePageElemSize: Integer;
-        RefCount: Integer;
-        Length: Integer;
-      end;
+{$ifdef UNICODE}
+type
+  PUnicodeStrRec = ^TUnicodeStrRec;
+  {$ifdef FPC}
+    TUnicodeStrRec = TAnsiStrRec;
+    const USTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
+  {$else}
+    TUnicodeStrRec = packed record
+    {$ifdef LARGEINT}
+      _Padding: Integer;
     {$endif}
-    PUnicodeStrRec = ^TUnicodeStrRec;
+      CodePageElemSize: Integer;
+      RefCount: Integer;
+      Length: Integer;
+    end;
+    const USTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
   {$endif}
+{$endif}
 
+type
+  PWideStrRec = ^TWideStrRec;
   {$ifdef MSWINDOWS}
-  TWideStrRec = packed record
-    Length: Integer; // *2: windows BSTR
-  end;
+    TWideStrRec = packed record
+      Length: Integer; // *2: windows BSTR
+    end;
+    const WSTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
   {$else}
   {$ifdef FPC}
     TWideStrRec = TAnsiStrRec;
+    const WSTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
   {$else}
   {$ifdef NEXTGEN}
     TWideStrRec = TDynArrayRec;
+    const WSTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
   {$else}
     {$if CompilerVersion >= 22}
        TWideStrRec = TUnicodeStrRec;
+       const WSTR_OFFSET_LENGTH = USTR_OFFSET_LENGTH;
     {$else}
        TWideStrRec = TAnsiStrRec;
+       const WSTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
     {$ifend}
   {$endif}
   {$endif}
   {$endif}
-  PWideStrRec = ^TWideStrRec;
+
+const
+  ASTR_OFFSET_REFCOUNT = ASTR_OFFSET_LENGTH + SizeOf(Integer);
+  {$ifNdef MSWINDOWS} WSTR_OFFSET_REFCOUNT = WSTR_OFFSET_LENGTH + SizeOf(Integer); {$endif}
+  {$ifdef UNICODE} USTR_OFFSET_REFCOUNT = USTR_OFFSET_LENGTH + SizeOf(Integer); {$endif}
+
+  {$ifdef INTERNALCODEPAGE}
+    ASTR_OFFSET_CODEPAGE = ASTR_OFFSET_REFCOUNT + {ElemSize}SizeOf(Word) + {CodePage}SizeOf(Word);
+  {$endif}
 
 
 {$ifdef MSWINDOWS}
@@ -15372,14 +15394,10 @@ const
 {$endif}
 
 const
-  STR_OFFSET_LENGTH = 4;
-  STR_OFFSET_REFCOUNT = 8;
-  STR_OFFSET_CODEPAGE = 12;
-
   NULL_ANSICHAR = {$ifdef NEXTGEN}0{$else}#0{$endif};
   NULL_WIDECHAR = #0;
 
-  WIDE_STR_SHIFT  = 
+  WIDE_STR_SHIFT  =
     {$ifdef MSWINDOWS}
        1 // windows BSTR
     {$else}
@@ -15640,7 +15658,7 @@ done:
   Result := P;
 end;
 
-procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
+procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer); 
 var
   P: PUnicodeStrRec;
 begin
@@ -15678,8 +15696,8 @@ begin
     Result := SysAllocStringLen(nil, Length);
   end else
   begin
-    Length := Length*2;
-    CurrentLen := PInteger(PByteArray(S) - STR_OFFSET_LENGTH)^;
+    Length := Length * 2;
+    CurrentLen := PInteger(PByteArray(S) - WSTR_OFFSET_LENGTH)^;
 
     if (Flag < 0) then
     begin
@@ -15809,7 +15827,7 @@ end;
 procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 asm
   add ecx, ecx
-  cmp [edx-4], ecx
+  cmp [edx - WSTR_OFFSET_LENGTH], ecx
   jne @1
   mov [eax], edx
   ret
@@ -15839,8 +15857,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -15849,7 +15867,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Index := NativeUInt(SrcCodePage);
@@ -15858,7 +15876,7 @@ begin
     if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+  Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccOriginal);
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
@@ -15866,7 +15884,7 @@ begin
   UniConv.sbcs_from_sbcs(Buffer, Pointer(Src), Length, Converter);
 end;
 
-function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+{inline} function sbcs_from_sbcs(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
 begin
   UniConv.sbcs_from_sbcs(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
 end;
@@ -15895,7 +15913,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Index := NativeUInt(SrcCodePage);
@@ -15904,7 +15922,7 @@ begin
     if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+  Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccOriginal);
 
   // conversion
   UniConv.sbcs_from_sbcs(Pointer(@Dest[1]), Pointer(@Src[1]), Length, Converter);
@@ -15933,7 +15951,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Index := NativeUInt(SrcCodePage);
@@ -15942,7 +15960,7 @@ begin
     if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+  Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccOriginal);
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length, Integer(DestCodePage));
@@ -15950,7 +15968,7 @@ begin
   UniConv.sbcs_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter);
 end;
 
-function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_sbcs(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_sbcs(Result, Src, DestCodePage, SrcCodePage);
 end;
@@ -15969,10 +15987,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -15981,7 +15999,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Index := NativeUInt(SrcCodePage);
@@ -15990,7 +16008,7 @@ begin
     if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccOriginal);
+  Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccOriginal);
 
   // conversion
   UniConv.sbcs_from_sbcs(Pointer(@Dest[1]), Pointer(Src), Length, Converter);
@@ -16011,8 +16029,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16021,7 +16039,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16036,7 +16054,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccLower);
   end;
 
   // conversion
@@ -16045,7 +16063,7 @@ begin
   UniConv.sbcs_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter);
 end;
 
-function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+{inline} function sbcs_from_sbcs_lower(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
 begin
   UniConv.sbcs_from_sbcs_lower(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
 end;
@@ -16074,7 +16092,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16089,7 +16107,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccLower);
   end;
 
   // conversion
@@ -16119,7 +16137,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16134,7 +16152,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccLower);
   end;
 
   // conversion
@@ -16143,7 +16161,7 @@ begin
   UniConv.sbcs_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter);
 end;
 
-function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_sbcs_lower(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_sbcs_lower(Result, Src, DestCodePage, SrcCodePage);
 end;
@@ -16162,10 +16180,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16174,7 +16192,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16189,7 +16207,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccLower);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccLower);
   end;
 
   // conversion
@@ -16211,8 +16229,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16221,7 +16239,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16236,7 +16254,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccUpper);
   end;
 
   // conversion
@@ -16245,7 +16263,7 @@ begin
   UniConv.sbcs_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter);
 end;
 
-function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
+{inline} function sbcs_from_sbcs_upper(const Src: AnsiString; const DestCodePage: Word = 0{$ifNdef INTERNALCODEPAGE}; const SrcCodePage: Word = 0{$endif}): AnsiString;
 begin
   UniConv.sbcs_from_sbcs_upper(Result, Src, DestCodePage{$ifNdef INTERNALCODEPAGE}, SrcCodePage{$endif});
 end;
@@ -16274,7 +16292,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16289,7 +16307,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccUpper);
   end;
 
   // conversion
@@ -16319,7 +16337,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16334,7 +16352,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccUpper);
   end;
 
   // conversion
@@ -16343,7 +16361,7 @@ begin
   UniConv.sbcs_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter);
 end;
 
-function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_sbcs_upper(const Src: ShortString; const DestCodePage: Word = 0; const SrcCodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_sbcs_upper(Result, Src, DestCodePage, SrcCodePage);
 end;
@@ -16362,10 +16380,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16374,7 +16392,7 @@ begin
     if (Word(Value) = DestCodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   if (SrcCodePage = DestCodePage) then
@@ -16389,7 +16407,7 @@ begin
       if (Word(Value) = SrcCodePage) or (Value < 0) then Break;
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
     until (False);
-    Converter := SBCS.FromSBCS(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)], ccUpper);
+    Converter := SBCS.FromSBCS(Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS)), ccUpper);
   end;
 
   // conversion
@@ -16410,7 +16428,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16419,7 +16437,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16430,7 +16448,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8(Result, Src, CodePage);
 end;
@@ -16462,7 +16480,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16502,7 +16520,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16513,7 +16531,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8(const Src: ShortString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8(Result, Src, CodePage);
 end;
@@ -16532,7 +16550,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -16545,7 +16563,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16576,7 +16594,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16585,7 +16603,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16596,7 +16614,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_lower(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8_lower(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8_lower(Result, Src, CodePage);
 end;
@@ -16628,7 +16646,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16668,7 +16686,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16679,7 +16697,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_lower(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8_lower(const Src: ShortString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8_lower(Result, Src, CodePage);
 end;
@@ -16698,7 +16716,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -16711,7 +16729,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16742,7 +16760,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16751,7 +16769,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16762,7 +16780,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_upper(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8_upper(const Src: UTF8String; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8_upper(Result, Src, CodePage);
 end;
@@ -16794,7 +16812,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16834,7 +16852,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16845,7 +16863,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.sbcs_from_utf8_upper(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf8_upper(const Src: ShortString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf8_upper(Result, Src, CodePage);
 end;
@@ -16864,7 +16882,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -16877,7 +16895,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16908,7 +16926,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -16924,7 +16942,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16950,7 +16968,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16959,7 +16977,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -16971,13 +16989,13 @@ begin
 end;
 {$endif}
 
-function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16(const Src: WideString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16(Result, Src, CodePage);
 end;
 
 {$ifdef UNICODE}
-function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16(Result, Src, CodePage);
 end;
@@ -16997,7 +17015,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17017,7 +17035,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17049,7 +17067,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17062,7 +17080,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17094,7 +17112,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17110,7 +17128,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17136,7 +17154,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17145,7 +17163,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17157,13 +17175,13 @@ begin
 end;
 {$endif}
 
-function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16_lower(const Src: WideString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16_lower(Result, Src, CodePage);
 end;
 
 {$ifdef UNICODE}
-function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16_lower(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16_lower(Result, Src, CodePage);
 end;
@@ -17183,7 +17201,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17203,7 +17221,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17235,7 +17253,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17248,7 +17266,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17280,7 +17298,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17296,7 +17314,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17322,7 +17340,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17331,7 +17349,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17343,13 +17361,13 @@ begin
 end;
 {$endif}
 
-function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16_upper(const Src: WideString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16_upper(Result, Src, CodePage);
 end;
 
 {$ifdef UNICODE}
-function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
+{inline} function sbcs_from_utf16_upper(const Src: UnicodeString; const CodePage: Word = 0): AnsiString;
 begin
   UniConv.sbcs_from_utf16_upper(Result, Src, CodePage);
 end;
@@ -17369,7 +17387,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17389,7 +17407,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17421,7 +17439,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17434,7 +17452,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FVALUES;
@@ -17467,8 +17485,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17477,7 +17495,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Original;
@@ -17488,7 +17506,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+{inline} function utf8_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
 begin
   UniConv.utf8_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -17520,7 +17538,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Original;
@@ -17556,7 +17574,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Original;
@@ -17567,7 +17585,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+{inline} function utf8_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UTF8String;
 begin
   UniConv.utf8_from_sbcs(Result, Src, CodePage);
 end;
@@ -17587,12 +17605,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17601,7 +17619,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Original;
@@ -17629,8 +17647,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17639,7 +17657,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Lower;
@@ -17650,7 +17668,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_lower(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+{inline} function utf8_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
 begin
   UniConv.utf8_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -17682,7 +17700,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Lower;
@@ -17718,7 +17736,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Lower;
@@ -17729,7 +17747,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_lower(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+{inline} function utf8_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UTF8String;
 begin
   UniConv.utf8_from_sbcs_lower(Result, Src, CodePage);
 end;
@@ -17749,12 +17767,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17763,7 +17781,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Lower;
@@ -17791,8 +17809,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17801,7 +17819,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Upper;
@@ -17812,7 +17830,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_upper(Buffer, Pointer(Src), Length, Converter));
 end;
 
-function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
+{inline} function utf8_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UTF8String;
 begin
   UniConv.utf8_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -17844,7 +17862,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Upper;
@@ -17880,7 +17898,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Upper;
@@ -17891,7 +17909,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_sbcs_upper(Buffer, Pointer(@Src[1]), Length, Converter));
 end;
 
-function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String;
+{inline} function utf8_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UTF8String;
 begin
   UniConv.utf8_from_sbcs_upper(Result, Src, CodePage);
 end;
@@ -17911,12 +17929,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17925,7 +17943,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUTF8.Upper;
@@ -17949,10 +17967,10 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
-  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src))-STR_OFFSET_REFCOUNT)^ > 0) then
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
   begin
     Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
     AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
@@ -17965,7 +17983,7 @@ begin
   end;
 end;
 
-function utf8_from_utf8_lower(const Src: UTF8String): UTF8String;
+{inline} function utf8_from_utf8_lower(const Src: UTF8String): UTF8String;
 begin
   UniConv.utf8_from_utf8_lower(Result, Src);
 end;
@@ -18013,7 +18031,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(@Src[1]), Length));
 end;
 
-function utf8_from_utf8_lower(const Src: ShortString): UTF8String;
+{inline} function utf8_from_utf8_lower(const Src: ShortString): UTF8String;
 begin
   UniConv.utf8_from_utf8_lower(Result, Src);
 end;
@@ -18028,7 +18046,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18055,10 +18073,10 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
-  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src))-STR_OFFSET_REFCOUNT)^ > 0) then
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
   begin
     Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
     AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
@@ -18071,7 +18089,7 @@ begin
   end;
 end;
 
-function utf8_from_utf8_upper(const Src: UTF8String): UTF8String;
+{inline} function utf8_from_utf8_upper(const Src: UTF8String): UTF8String;
 begin
   UniConv.utf8_from_utf8_upper(Result, Src);
 end;
@@ -18119,7 +18137,7 @@ begin
   AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(@Src[1]), Length));
 end;
 
-function utf8_from_utf8_upper(const Src: ShortString): UTF8String;
+{inline} function utf8_from_utf8_upper(const Src: ShortString): UTF8String;
 begin
   UniConv.utf8_from_utf8_upper(Result, Src);
 end;
@@ -18134,7 +18152,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18160,7 +18178,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18185,7 +18203,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18193,13 +18211,13 @@ begin
 end;
 {$endif}
 
-function utf8_from_utf16(const Src: WideString): UTF8String;
+{inline} function utf8_from_utf16(const Src: WideString): UTF8String;
 begin
   UniConv.utf8_from_utf16(Result, Src);
 end;
 
 {$ifdef UNICODE}
-function utf8_from_utf16(const Src: UnicodeString): UTF8String;
+{inline} function utf8_from_utf16(const Src: UnicodeString): UTF8String;
 begin
   UniConv.utf8_from_utf16(Result, Src);
 end;
@@ -18215,7 +18233,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18249,7 +18267,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18276,7 +18294,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18301,7 +18319,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18309,13 +18327,13 @@ begin
 end;
 {$endif}
 
-function utf8_from_utf16_lower(const Src: WideString): UTF8String;
+{inline} function utf8_from_utf16_lower(const Src: WideString): UTF8String;
 begin
   UniConv.utf8_from_utf16_lower(Result, Src);
 end;
 
 {$ifdef UNICODE}
-function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String;
+{inline} function utf8_from_utf16_lower(const Src: UnicodeString): UTF8String;
 begin
   UniConv.utf8_from_utf16_lower(Result, Src);
 end;
@@ -18331,7 +18349,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18365,7 +18383,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18392,7 +18410,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18417,7 +18435,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18425,13 +18443,13 @@ begin
 end;
 {$endif}
 
-function utf8_from_utf16_upper(const Src: WideString): UTF8String;
+{inline} function utf8_from_utf16_upper(const Src: WideString): UTF8String;
 begin
   UniConv.utf8_from_utf16_upper(Result, Src);
 end;
 
 {$ifdef UNICODE}
-function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String;
+{inline} function utf8_from_utf16_upper(const Src: UnicodeString): UTF8String;
 begin
   UniConv.utf8_from_utf16_upper(Result, Src);
 end;
@@ -18447,7 +18465,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18481,7 +18499,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18513,8 +18531,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18523,7 +18541,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Original;
@@ -18551,8 +18569,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18561,7 +18579,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Original;
@@ -18575,14 +18593,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+{inline} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
 begin
   UniConv.utf16_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+{inline} function utf16_from_sbcs(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
 begin
   UniConv.utf16_from_sbcs(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -18611,7 +18629,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Original;
@@ -18647,7 +18665,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Original;
@@ -18661,14 +18679,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString;
+{inline} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): WideString;
 begin
   UniConv.utf16_from_sbcs(Result, Src, CodePage);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+{inline} function utf16_from_sbcs(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
 begin
   UniConv.utf16_from_sbcs(Result, Src, CodePage);
 end;
@@ -18689,8 +18707,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18699,7 +18717,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Lower;
@@ -18727,8 +18745,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18737,7 +18755,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Lower;
@@ -18751,14 +18769,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+{inline} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
 begin
   UniConv.utf16_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+{inline} function utf16_from_sbcs_lower(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
 begin
   UniConv.utf16_from_sbcs_lower(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -18787,7 +18805,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Lower;
@@ -18823,7 +18841,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Lower;
@@ -18837,14 +18855,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString;
+{inline} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): WideString;
 begin
   UniConv.utf16_from_sbcs_lower(Result, Src, CodePage);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+{inline} function utf16_from_sbcs_lower(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
 begin
   UniConv.utf16_from_sbcs_lower(Result, Src, CodePage);
 end;
@@ -18865,8 +18883,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18875,7 +18893,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Upper;
@@ -18903,8 +18921,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src))-STR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18913,7 +18931,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Upper;
@@ -18927,14 +18945,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
+{inline} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): WideString;
 begin
   UniConv.utf16_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
+{inline} function utf16_from_sbcs_upper(const Src: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): UnicodeString;
 begin
   UniConv.utf16_from_sbcs_upper(Result, Src{$ifNdef INTERNALCODEPAGE}, CodePage{$endif});
 end;
@@ -18963,7 +18981,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Upper;
@@ -18999,7 +19017,7 @@ begin
     if (Word(Value) = CodePage) or (Value < 0) then Break;
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
-  SBCS := Pointer(@UNICONV_SUPPORTED_SBCS[Byte(Value shr 16)]);
+  SBCS := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
 
   // converter
   Converter := SBCS.FUCS2.Upper;
@@ -19013,14 +19031,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString;
+{inline} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): WideString;
 begin
   UniConv.utf16_from_sbcs_upper(Result, Src, CodePage);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
+{inline} function utf16_from_sbcs_upper(const Src: ShortString; const CodePage: Word = 0): UnicodeString;
 begin
   UniConv.utf16_from_sbcs_upper(Result, Src, CodePage);
 end;
@@ -19036,7 +19054,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19054,7 +19072,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19063,14 +19081,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8(const Src: UTF8String): WideString;
+{inline} function utf16_from_utf8(const Src: UTF8String): WideString;
 begin
   UniConv.utf16_from_utf8(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8(const Src: UTF8String): UnicodeString;
+{inline} function utf16_from_utf8(const Src: UTF8String): UnicodeString;
 begin
   UniConv.utf16_from_utf8(Result, Src);
 end;
@@ -19113,14 +19131,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8(const Src: ShortString): WideString;
+{inline} function utf16_from_utf8(const Src: ShortString): WideString;
 begin
   UniConv.utf16_from_utf8(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8(const Src: ShortString): UnicodeString;
+{inline} function utf16_from_utf8(const Src: ShortString): UnicodeString;
 begin
   UniConv.utf16_from_utf8(Result, Src);
 end;
@@ -19136,7 +19154,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19154,7 +19172,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19163,14 +19181,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8_lower(const Src: UTF8String): WideString;
+{inline} function utf16_from_utf8_lower(const Src: UTF8String): WideString;
 begin
   UniConv.utf16_from_utf8_lower(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString;
+{inline} function utf16_from_utf8_lower(const Src: UTF8String): UnicodeString;
 begin
   UniConv.utf16_from_utf8_lower(Result, Src);
 end;
@@ -19213,14 +19231,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8_lower(const Src: ShortString): WideString;
+{inline} function utf16_from_utf8_lower(const Src: ShortString): WideString;
 begin
   UniConv.utf16_from_utf8_lower(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8_lower(const Src: ShortString): UnicodeString;
+{inline} function utf16_from_utf8_lower(const Src: ShortString): UnicodeString;
 begin
   UniConv.utf16_from_utf8_lower(Result, Src);
 end;
@@ -19236,7 +19254,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19254,7 +19272,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19263,14 +19281,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8_upper(const Src: UTF8String): WideString;
+{inline} function utf16_from_utf8_upper(const Src: UTF8String): WideString;
 begin
   UniConv.utf16_from_utf8_upper(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString;
+{inline} function utf16_from_utf8_upper(const Src: UTF8String): UnicodeString;
 begin
   UniConv.utf16_from_utf8_upper(Result, Src);
 end;
@@ -19313,14 +19331,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf8_upper(const Src: ShortString): WideString;
+{inline} function utf16_from_utf8_upper(const Src: ShortString): WideString;
 begin
   UniConv.utf16_from_utf8_upper(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf8_upper(const Src: ShortString): UnicodeString;
+{inline} function utf16_from_utf8_upper(const Src: ShortString): UnicodeString;
 begin
   UniConv.utf16_from_utf8_upper(Result, Src);
 end;
@@ -19336,7 +19354,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19362,7 +19380,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
@@ -19372,14 +19390,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf16_lower(const Src: WideString): WideString;
+{inline} function utf16_from_utf16_lower(const Src: WideString): WideString;
 begin
   UniConv.utf16_from_utf16_lower(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString;
+{inline} function utf16_from_utf16_lower(const Src: UnicodeString): UnicodeString;
 begin
   UniConv.utf16_from_utf16_lower(Result, Src);
 end;
@@ -19395,7 +19413,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19421,7 +19439,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src))-STR_OFFSET_LENGTH)^;
+  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
@@ -19431,14 +19449,14 @@ end;
 {$endif}
 
 {$ifNdef UNICODE}
-function utf16_from_utf16_upper(const Src: WideString): WideString;
+{inline} function utf16_from_utf16_upper(const Src: WideString): WideString;
 begin
   UniConv.utf16_from_utf16_upper(Result, Src);
 end;
 {$endif}
 
 {$ifdef UNICODE}
-function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString;
+{inline} function utf16_from_utf16_upper(const Src: UnicodeString): UnicodeString;
 begin
   UniConv.utf16_from_utf16_upper(Result, Src);
 end;
@@ -21180,7 +21198,7 @@ end;
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 comparisons'}{$endif}
-function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean;
+function sbcs_equal_sbcs(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word = 0; CP2: Word = 0): Boolean;
 label
   same_cp, ret_false;
 var
@@ -21260,7 +21278,7 @@ begin
   Result := True;
 end;
 
-{inline} function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean;
+{inline} function sbcs_equal_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean;
 label
   {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
 var
@@ -21284,25 +21302,25 @@ begin
     C2 := PByte(P2)^;
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     {$ifdef INLINESUPPORT}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Ret := sbcs_compare_sbcs(AnsiString(Pointer(P1)), AnsiString(Pointer(P2)){$ifNdef INTERNALCODEPAGE}, CP1, CP2{$endif});
     {$else}
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
       begin
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       same_cp:
         Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Comp.Length);
       end else
@@ -21319,7 +21337,7 @@ begin
         if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
 
         {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
 
         // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
@@ -21358,12 +21376,12 @@ begin
   begin
     if (PByte(P1)^ <> PByte(P2)^) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, ASTR_OFFSET_LENGTH);
     Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Length);
     Result := (Ret = 0);
     Exit;
@@ -21373,7 +21391,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean;
+{inline} function sbcs_equal_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): Boolean;
 label
   {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
 var
@@ -21475,7 +21493,7 @@ begin
   Result := True;
 end;
 
-function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word; CP2: Word): Boolean;
+function sbcs_equal_sbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CP1: Word = 0; CP2: Word = 0): Boolean;
 label
   same_cp, ret_false;
 var
@@ -21547,7 +21565,7 @@ begin
   Result := True;
 end;
 
-function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+function sbcs_equal_samesbcs_ignorecase(S1: PAnsiChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -21589,7 +21607,7 @@ begin
   Result := True;
 end;
 
-{inline} function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): Boolean;
+{inline} function sbcs_equal_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): Boolean;
 label
   {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
 var
@@ -21615,25 +21633,25 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     {$ifdef INLINESUPPORT}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Ret := sbcs_compare_sbcs_ignorecase(AnsiString(Pointer(P1)), AnsiString(Pointer(P2)){$ifNdef INTERNALCODEPAGE}, CP1, CP2{$endif});
     {$else}
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
       begin
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
         // Comp.Lookup := SBCS(CP1).Lower
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -21661,7 +21679,7 @@ begin
         if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
 
         {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
 
         // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
@@ -21686,7 +21704,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -21710,17 +21728,17 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     Comp.Length := Length;
     {$ifdef INTERNALCODEPAGE}
-    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P1)^;
     {$endif}
-    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+    Inc(P2, ASTR_OFFSET_LENGTH);
     // Comp.Lookup := SBCS(CodePage).Lower
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -21746,7 +21764,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): Boolean;
+{inline} function sbcs_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): Boolean;
 label
   {$ifNdef INLINESUPPORT}same_cp,{$endif} ret_false;
 var
@@ -21834,7 +21852,7 @@ begin
   Result := True;
 end;
 
-{inline} function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+{inline} function sbcs_equal_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -21884,7 +21902,7 @@ begin
   Result := True;
 end;
 
-function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt;
+function sbcs_compare_sbcs(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word = 0; CP2: Word = 0): NativeInt;
 label
   same_cp;
 var
@@ -21986,7 +22004,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt;
+function sbcs_compare_sbcs(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): NativeInt;
 label
   same_cp;
 var
@@ -22006,8 +22024,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -22021,14 +22039,14 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
       begin
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       same_cp:
         Result := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Comp.Length);
       end else
@@ -22045,7 +22063,7 @@ begin
         if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Original, ccOriginal);
 
         {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
 
         // Comp.Lookup_2 := SBCS(CP2).OriginalUCS2
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
@@ -22087,8 +22105,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 = L2) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -22100,8 +22118,8 @@ begin
         L2 := NativeUInt(-1);
       end;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       L1 := __uniconv_compare_bytes(Pointer(P1), Pointer(P2),  L1);
       Result := L1 * 2 - L2;
       Exit;
@@ -22115,7 +22133,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt;
+function sbcs_compare_sbcs(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): NativeInt;
 label
   same_cp;
 var
@@ -22217,7 +22235,7 @@ begin
   Result := NativeInt(Byte(L1)) - NativeInt(Byte(L2));
 end;
 
-function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word; CP2: Word): NativeInt;
+function sbcs_compare_sbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CP1: Word = 0; CP2: Word = 0): NativeInt;
 label
   same_cp;
 var
@@ -22300,7 +22318,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function sbcs_compare_samesbcs_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -22351,7 +22369,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word; const CP2: Word{$endif}): NativeInt;
+function sbcs_compare_sbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CP1: Word = 0; const CP2: Word = 0{$endif}): NativeInt;
 label
   same_cp;
 var
@@ -22373,8 +22391,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -22388,14 +22406,14 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       if ({$ifdef INTERNALCODEPAGE}CodePage = PWord(P2)^{$else}CP1 = CP2{$endif}) then
       begin
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
         // Comp.Lookup := SBCS(CP1).Lower
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP1{$endif});
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -22423,7 +22441,7 @@ begin
         if (Comp.Lookup = nil) then Comp.Lookup := SBCS.AllocFillUCS2(SBCS.FUCS2.Lower, ccLower);
 
         {$ifdef INTERNALCODEPAGE}CodePage := PWord(P2)^;{$endif}
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
 
         // Comp.Lookup_2 := SBCS(CP2).LowerUCS2
         Index := NativeUInt({$ifdef INTERNALCODEPAGE}CodePage{$else}CP2{$endif});
@@ -22452,7 +22470,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-{inline} function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_samesbcs_ignorecase(const S1: AnsiString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -22472,8 +22490,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -22487,11 +22505,11 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, ASTR_OFFSET_LENGTH);
       // Comp.Lookup := SBCS(CodePage).Lower
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -22522,7 +22540,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word; const CP2: Word): NativeInt;
+function sbcs_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CP1: Word = 0; const CP2: Word = 0): NativeInt;
 label
   same_cp;
 var
@@ -22604,7 +22622,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+{inline} function sbcs_compare_samesbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt;
 var
   L1, L2: NativeUInt;
   Index: NativeUInt;
@@ -22654,7 +22672,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean;
+function sbcs_equal_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -22701,7 +22719,7 @@ begin
   Result := (L1 = L2);
 end;
 
-{inline} function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -22722,8 +22740,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L2;
@@ -22734,11 +22752,11 @@ begin
     if (L2 > L1) then goto ret_false;
 
     {$ifdef INTERNALCODEPAGE}
-    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P1)^;
     {$endif}
-    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+    Inc(P2, ASTR_OFFSET_LENGTH);
     // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -22765,7 +22783,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+{inline} function sbcs_equal_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -22813,7 +22831,7 @@ ret_false:
   Result := (L1 = L2);
 end;
 
-function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): Boolean;
+function sbcs_equal_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -22862,7 +22880,7 @@ begin
   Result := (L1 = L2);
 end;
 
-{inline} function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -22885,8 +22903,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L2;
@@ -22897,11 +22915,11 @@ begin
     if (L2 > L1) then goto ret_false;
 
     {$ifdef INTERNALCODEPAGE}
-    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P1)^;
     {$endif}
-    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+    Inc(P2, ASTR_OFFSET_LENGTH);
     // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -22928,7 +22946,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+{inline} function sbcs_equal_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -22978,7 +22996,7 @@ ret_false:
   Result := (L1 = L2);
 end;
 
-function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt;
+function sbcs_compare_utf8(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -23019,7 +23037,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf8(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   C1, C2: NativeUInt;
@@ -23037,16 +23055,16 @@ begin
     C2 := PByte(P2)^;
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P2)^;
       Comp.Length_2 := PCardinal(P1)^;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, ASTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23077,7 +23095,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-{inline} function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+{inline} function sbcs_compare_utf8(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt;
 var
   L1, L2: NativeUInt;
   Index: NativeUInt;
@@ -23117,7 +23135,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word): NativeInt;
+function sbcs_compare_utf8_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PUTF8Char; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -23160,7 +23178,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf8_ignorecase(const S1: AnsiString; const S2: UTF8String{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   C1, C2: NativeUInt;
@@ -23180,16 +23198,16 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P2)^;
       Comp.Length_2 := PCardinal(P1)^;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, ASTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23220,7 +23238,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-{inline} function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+{inline} function sbcs_compare_utf8_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt;
 var
   L1, L2: NativeUInt;
   Index: NativeUInt;
@@ -23262,7 +23280,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean;
+function sbcs_equal_utf16(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -23303,7 +23321,7 @@ begin
   Result := True;
 end;
 
-{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -23327,17 +23345,17 @@ begin
       C2 := PWord(P2)^;
       if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, WSTR_OFFSET_LENGTH);
       Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, WSTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23361,7 +23379,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23371,7 +23389,7 @@ ret_false:
 end;
 
 {$ifdef UNICODE}
-{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -23393,17 +23411,17 @@ begin
     C2 := PWord(P2)^;
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     Comp.Length := Length;
     {$ifdef INTERNALCODEPAGE}
-    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P1)^;
     {$endif}
-    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+    Inc(P2, USTR_OFFSET_LENGTH);
     // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23431,7 +23449,7 @@ ret_false:
 end;
 {$endif}
 
-function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word): Boolean;
+function sbcs_equal_utf16_ignorecase(S1: PAnsiChar; S2: PWideChar; Length: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -23474,7 +23492,7 @@ begin
   Result := True;
 end;
 
-{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -23500,17 +23518,17 @@ begin
       C2 := UNICONV_CHARCASE.VALUES[C2];
       if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, WSTR_OFFSET_LENGTH);
       Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, WSTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23534,7 +23552,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23544,7 +23562,7 @@ ret_false:
 end;
 
 {$ifdef UNICODE}
-{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function sbcs_equal_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -23568,17 +23586,17 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     Comp.Length := Length;
     {$ifdef INTERNALCODEPAGE}
-    Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P1)^;
     {$endif}
-    Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+    Inc(P2, USTR_OFFSET_LENGTH);
     // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23606,7 +23624,7 @@ ret_false:
 end;
 {$endif}
 
-function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function sbcs_compare_utf16(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -23657,7 +23675,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -23677,8 +23695,8 @@ begin
       L2 := PWord(P2)^;
       if (L1 = L2) or (L1 or L2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, ASTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
         L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         if (L1 <= L2) then
@@ -23692,11 +23710,11 @@ begin
         end;
 
         {$ifdef INTERNALCODEPAGE}
-        Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
         CodePage := PWord(P1)^;
         {$endif}
-        Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+        Inc(P2, WSTR_OFFSET_LENGTH);
         // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
         Index := NativeUInt(CodePage);
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23727,7 +23745,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23736,7 +23754,7 @@ begin
 end;
 
 {$ifdef UNICODE}
-{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf16(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -23754,8 +23772,8 @@ begin
     L2 := PWord(P2)^;
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -23769,11 +23787,11 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, USTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23807,7 +23825,7 @@ begin
 end;
 {$endif}
 
-function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function sbcs_compare_utf16_ignorecase(S1: PAnsiChar; L1: NativeUInt; S2: PWideChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -23860,7 +23878,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: WideString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -23882,8 +23900,8 @@ begin
       L2 := UNICONV_CHARCASE.VALUES[L2];
       if (L1 = L2) or (L1 or L2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, ASTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
         L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         if (L1 <= L2) then
@@ -23897,11 +23915,11 @@ begin
         end;
 
         {$ifdef INTERNALCODEPAGE}
-        Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
         CodePage := PWord(P1)^;
         {$endif}
-        Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+        Inc(P2, WSTR_OFFSET_LENGTH);
         // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
         Index := NativeUInt(CodePage);
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -23932,7 +23950,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23941,7 +23959,7 @@ begin
 end;
 
 {$ifdef UNICODE}
-{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function sbcs_compare_utf16_ignorecase(const S1: AnsiString; const S2: UnicodeString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -23961,8 +23979,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -23976,11 +23994,11 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P1, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P1, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P1)^;
       {$endif}
-      Inc(P1, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
+      Inc(P2, USTR_OFFSET_LENGTH);
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -24014,7 +24032,7 @@ begin
 end;
 {$endif}
 
-function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean;
+function utf8_equal_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -24061,7 +24079,7 @@ begin
   Result := (L1 = L2);
 end;
 
-{inline} function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf8_equal_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -24082,8 +24100,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L1;
@@ -24094,11 +24112,11 @@ begin
     if (L1 > L2) then goto ret_false;
 
     {$ifdef INTERNALCODEPAGE}
-    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P2)^;
     {$endif}
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
     // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -24125,7 +24143,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+{inline} function utf8_equal_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -24173,7 +24191,7 @@ ret_false:
   Result := (L1 = L2);
 end;
 
-function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): Boolean;
+function utf8_equal_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -24222,7 +24240,7 @@ begin
   Result := (L1 = L2);
 end;
 
-{inline} function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf8_equal_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -24245,8 +24263,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L1;
@@ -24257,11 +24275,11 @@ begin
     if (L1 > L2) then goto ret_false;
 
     {$ifdef INTERNALCODEPAGE}
-    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P2)^;
     {$endif}
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
     // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -24288,7 +24306,7 @@ ret_false:
   Result := (P1 = P2);
 end;
 
-{inline} function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): Boolean;
+{inline} function utf8_equal_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -24338,7 +24356,7 @@ ret_false:
   Result := (L1 = L2);
 end;
 
-function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function utf8_compare_sbcs(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -24378,7 +24396,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf8_compare_sbcs(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   C1, C2: NativeUInt;
@@ -24396,16 +24414,16 @@ begin
     C2 := PByte(P2)^;
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P1)^;
       Comp.Length_2 := PCardinal(P2)^;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -24435,7 +24453,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-{inline} function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+{inline} function utf8_compare_sbcs(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt;
 var
   L1, L2: NativeUInt;
   Index: NativeUInt;
@@ -24474,7 +24492,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function utf8_compare_sbcs_ignorecase(S1: PUTF8Char; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -24516,7 +24534,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf8_compare_sbcs_ignorecase(const S1: UTF8String; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   C1, C2: NativeUInt;
@@ -24536,16 +24554,16 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P1)^;
       Comp.Length_2 := PCardinal(P2)^;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -24575,7 +24593,7 @@ begin
   Result := NativeInt(P1) - NativeInt(P2);
 end;
 
-{inline} function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word): NativeInt;
+{inline} function utf8_compare_sbcs_ignorecase(const S1: ShortString; const S2: ShortString; const CodePage: Word = 0): NativeInt;
 var
   L1, L2: NativeUInt;
   Index: NativeUInt;
@@ -24651,12 +24669,12 @@ begin
   begin
     if (PByte(P1)^ <> PByte(P2)^) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, ASTR_OFFSET_LENGTH);
     Ret := __uniconv_compare_bytes(Pointer(P1), Pointer(P2), Length);
     Result := (Ret = 0);
     Exit;
@@ -24754,8 +24772,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L1;
@@ -24773,8 +24791,8 @@ begin
       if (L2 > L1) then goto ret_false;
     end;
 
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, ASTR_OFFSET_LENGTH);
     Ret := __uniconv_utf8_compare_utf8(Pointer(P1), Pointer(P2), Comp);
     Result := (Ret = 0);
     Exit;
@@ -24878,8 +24896,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 = L2) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -24891,8 +24909,8 @@ begin
         L2 := NativeUInt(-1);
       end;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       L1 := __uniconv_compare_bytes(Pointer(P1), Pointer(P2),  L1);
       Result := L1 * 2 - L2;
       Exit;
@@ -24985,12 +25003,12 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P1)^;
       Comp.Length_2 := PCardinal(P2)^;
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Result := __uniconv_utf8_compare_utf8(Pointer(P1), Pointer(P2), Comp);
       Exit;
     end else
@@ -25089,8 +25107,8 @@ begin
       L2 := PWord(P2)^;
       if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       Comp.Length := L1;
@@ -25100,8 +25118,8 @@ begin
       L2 := L2 * 3;
       if (L1 > L2) then goto ret_false;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, WSTR_OFFSET_LENGTH);
       Comp.Lookup := nil;
       Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
       Result := (Ret = 0);
@@ -25109,7 +25127,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25136,8 +25154,8 @@ begin
     L2 := PWord(P2)^;
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L1;
@@ -25147,8 +25165,8 @@ begin
     L2 := L2 * 3;
     if (L1 > L2) then goto ret_false;
 
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, USTR_OFFSET_LENGTH);
     Comp.Lookup := nil;
     Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
     Result := (Ret = 0);
@@ -25216,8 +25234,8 @@ begin
       L2 := UNICONV_CHARCASE.VALUES[L2];
       if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       Comp.Length := L1;
@@ -25227,8 +25245,8 @@ begin
       L2 := L2 * 3;
       if (L1 > L2) then goto ret_false;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, WSTR_OFFSET_LENGTH);
       Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
       Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
       Result := (Ret = 0);
@@ -25236,7 +25254,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25265,8 +25283,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, ASTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L1;
@@ -25276,8 +25294,8 @@ begin
     L2 := L2 * 3;
     if (L1 > L2) then goto ret_false;
 
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, ASTR_OFFSET_LENGTH);
+    Inc(P2, USTR_OFFSET_LENGTH);
     Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
     Ret := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
     Result := (Ret = 0);
@@ -25334,12 +25352,12 @@ begin
       C2 := PWord(P2)^;
       if (C1 = C2) or (C1 or C2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, ASTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
         Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, ASTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
         Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
         Exit;
@@ -25354,7 +25372,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25377,12 +25395,12 @@ begin
     C2 := PWord(P2)^;
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P1)^;
       Comp.Length_2 := PCardinal(P2)^;
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, USTR_OFFSET_LENGTH);
       Comp.Lookup := nil;
       Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
       Exit;
@@ -25449,12 +25467,12 @@ begin
       C2 := UNICONV_CHARCASE.VALUES[C2];
       if (C1 = C2) or (C1 or C2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, ASTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
         Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, ASTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
         Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
         Exit;
@@ -25469,7 +25487,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25494,12 +25512,12 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, ASTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P1)^;
       Comp.Length_2 := PCardinal(P2)^;
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, ASTR_OFFSET_LENGTH);
+      Inc(P2, USTR_OFFSET_LENGTH);
       Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
       Result := __uniconv_utf8_compare_utf16(Pointer(P1), Pointer(P2), Comp);
       Exit;
@@ -25517,7 +25535,7 @@ begin
 end;
 {$endif}
 
-function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+function utf16_equal_sbcs(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -25558,7 +25576,7 @@ begin
   Result := True;
 end;
 
-{inline} function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf16_equal_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -25582,17 +25600,17 @@ begin
       C2 := PByte(P2)^;
       if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, WSTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, WSTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -25616,7 +25634,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25626,7 +25644,7 @@ ret_false:
 end;
 
 {$ifdef UNICODE}
-{inline} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf16_equal_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -25648,17 +25666,17 @@ begin
     C2 := PByte(P2)^;
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     Comp.Length := Length;
     {$ifdef INTERNALCODEPAGE}
-    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P2)^;
     {$endif}
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
     // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -25686,7 +25704,7 @@ ret_false:
 end;
 {$endif}
 
-function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word): Boolean;
+function utf16_equal_sbcs_ignorecase(S1: PWideChar; S2: PAnsiChar; Length: NativeUInt; CodePage: Word = 0): Boolean;
 label
   ret_false;
 var
@@ -25729,7 +25747,7 @@ begin
   Result := True;
 end;
 
-{inline} function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf16_equal_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -25755,17 +25773,17 @@ begin
       C2 := UNICONV_CHARCASE.VALUES[C2];
       if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, WSTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, WSTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -25789,7 +25807,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25799,7 +25817,7 @@ ret_false:
 end;
 
 {$ifdef UNICODE}
-{inline} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): Boolean;
+{inline} function utf16_equal_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): Boolean;
 label
   ret_false;
 var
@@ -25823,17 +25841,17 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 <> C2) and (C1 or C2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
     Comp.Length := Length;
     {$ifdef INTERNALCODEPAGE}
-    Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+    Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
     CodePage := PWord(P2)^;
     {$endif}
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
     // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
     Index := NativeUInt(CodePage);
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -25861,7 +25879,7 @@ ret_false:
 end;
 {$endif}
 
-function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function utf16_compare_sbcs(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -25911,7 +25929,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf16_compare_sbcs(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -25931,8 +25949,8 @@ begin
       L2 := PByte(P2)^;
       if (L1 = L2) or (L1 or L2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, ASTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
@@ -25946,11 +25964,11 @@ begin
         end;
 
         {$ifdef INTERNALCODEPAGE}
-        Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
         CodePage := PWord(P2)^;
         {$endif}
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
         // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
         Index := NativeUInt(CodePage);
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -25980,7 +25998,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25989,7 +26007,7 @@ begin
 end;
 
 {$ifdef UNICODE}
-{inline} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf16_compare_sbcs(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -26007,8 +26025,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -26022,11 +26040,11 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).OriginalUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -26059,7 +26077,7 @@ begin
 end;
 {$endif}
 
-function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word): NativeInt;
+function utf16_compare_sbcs_ignorecase(S1: PWideChar; L1: NativeUInt; S2: PAnsiChar; L2: NativeUInt; CodePage: Word = 0): NativeInt;
 var
   C1, C2: NativeUInt;
   Index: NativeUInt;
@@ -26111,7 +26129,7 @@ begin
   Result := NativeInt(L1) - NativeInt(L2);
 end;
 
-{inline} function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf16_compare_sbcs_ignorecase(const S1: WideString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -26133,8 +26151,8 @@ begin
       L2 := UNICONV_CHARCASE.VALUES[L2];
       if (L1 = L2) or (L1 or L2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, ASTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
@@ -26148,11 +26166,11 @@ begin
         end;
 
         {$ifdef INTERNALCODEPAGE}
-        Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+        Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
         CodePage := PWord(P2)^;
         {$endif}
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
         // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
         Index := NativeUInt(CodePage);
         Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -26182,7 +26200,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26191,7 +26209,7 @@ begin
 end;
 
 {$ifdef UNICODE}
-{inline} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word{$endif}): NativeInt;
+{inline} function utf16_compare_sbcs_ignorecase(const S1: UnicodeString; const S2: AnsiString{$ifNdef INTERNALCODEPAGE}; const CodePage: Word = 0{$endif}): NativeInt;
 var
   P1, P2: PByte;
   L1, L2: NativeUInt;
@@ -26211,8 +26229,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 = L2) or (L1 or L2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -26226,11 +26244,11 @@ begin
       end;
 
       {$ifdef INTERNALCODEPAGE}
-      Dec(P2, (STR_OFFSET_CODEPAGE-STR_OFFSET_LENGTH));
+      Dec(P2, (ASTR_OFFSET_CODEPAGE-ASTR_OFFSET_LENGTH));
       CodePage := PWord(P2)^;
       {$endif}
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, {$ifdef INTERNALCODEPAGE}STR_OFFSET_CODEPAGE{$else}STR_OFFSET_LENGTH{$endif});
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, {$ifdef INTERNALCODEPAGE}ASTR_OFFSET_CODEPAGE{$else}ASTR_OFFSET_LENGTH{$endif});
       // Comp.Lookup_2 := SBCS(CodePage).LowerUCS2
       Index := NativeUInt(CodePage);
       Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[Index and High(UNICONV_SUPPORTED_SBCS_HASH)]);
@@ -26315,8 +26333,8 @@ begin
       L2 := PByte(P2)^;
       if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, WSTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
@@ -26326,8 +26344,8 @@ begin
       L1 := L1 * 3;
       if (L2 > L1) then goto ret_false;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, WSTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Comp.Lookup := nil;
       Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
       Result := (Ret = 0);
@@ -26335,7 +26353,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26362,8 +26380,8 @@ begin
     L2 := PByte(P2)^;
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L2;
@@ -26373,8 +26391,8 @@ begin
     L1 := L1 * 3;
     if (L2 > L1) then goto ret_false;
 
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, ASTR_OFFSET_LENGTH);
     Comp.Lookup := nil;
     Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
     Result := (Ret = 0);
@@ -26442,8 +26460,8 @@ begin
       L2 := UNICONV_CHARCASE.VALUES[L2];
       if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, WSTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
@@ -26453,8 +26471,8 @@ begin
       L1 := L1 * 3;
       if (L2 > L1) then goto ret_false;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, WSTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
       Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
       Result := (Ret = 0);
@@ -26462,7 +26480,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26491,8 +26509,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 <> L2) and (L1 or L2 <= $7f) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, ASTR_OFFSET_LENGTH);
     L1 := PCardinal(P1)^;
     L2 := PCardinal(P2)^;
     Comp.Length := L2;
@@ -26502,8 +26520,8 @@ begin
     L1 := L1 * 3;
     if (L2 > L1) then goto ret_false;
 
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, ASTR_OFFSET_LENGTH);
     Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
     Ret := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
     Result := (Ret = 0);
@@ -26561,12 +26579,12 @@ begin
       C2 := PByte(P2)^;
       if (C1 = C2) or (C1 or C2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
         Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
         Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
         Result := -Result;
@@ -26582,7 +26600,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26605,12 +26623,12 @@ begin
     C2 := PByte(P2)^;
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P2)^;
       Comp.Length_2 := PCardinal(P1)^;
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Comp.Lookup := nil;
       Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
       Result := -Result;
@@ -26679,12 +26697,12 @@ begin
       C2 := UNICONV_CHARCASE.VALUES[C2];
       if (C1 = C2) or (C1 or C2 > $7f) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
         Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
         Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
         Result := -Result;
@@ -26700,7 +26718,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26725,12 +26743,12 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 = C2) or (C1 or C2 > $7f) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, ASTR_OFFSET_LENGTH);
       Comp.Length := PCardinal(P2)^;
       Comp.Length_2 := PCardinal(P1)^;
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, ASTR_OFFSET_LENGTH);
       Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
       Result := __uniconv_utf8_compare_utf16(Pointer(P2), Pointer(P1), Comp);
       Result := -Result;
@@ -26788,26 +26806,26 @@ begin
       begin
         if (PWord(P1)^ <> PWord(P2)^) then goto ret_false;
 
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
         {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
         Result := (Ret = 0);
         Exit;
       end else
       begin
       {$ifdef MSWINDOWS}
-        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       {$endif}
       end;
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26831,12 +26849,12 @@ begin
   begin
     if (PWord(P1)^ <> PWord(P2)^) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, USTR_OFFSET_LENGTH);
     Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
     Result := (Ret = 0);
     Exit;
@@ -26896,26 +26914,26 @@ begin
         C2 := UNICONV_CHARCASE.VALUES[C2];
         if (C1 <> C2) then goto ret_false;
 
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
         {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
         Result := (Ret = 0);
         Exit;
       end else
       begin
       {$ifdef MSWINDOWS}
-        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       {$endif}
       end;
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26944,12 +26962,12 @@ begin
     C2 := UNICONV_CHARCASE.VALUES[C2];
     if (C1 <> C2) then goto ret_false;
 
-    Dec(P1, STR_OFFSET_LENGTH);
-    Dec(P2, STR_OFFSET_LENGTH);
+    Dec(P1, USTR_OFFSET_LENGTH);
+    Dec(P2, USTR_OFFSET_LENGTH);
     Length := PCardinal(P1)^;
     if (Length <> PCardinal(P2)^) then goto ret_false;
-    Inc(P1, STR_OFFSET_LENGTH);
-    Inc(P2, STR_OFFSET_LENGTH);
+    Inc(P1, USTR_OFFSET_LENGTH);
+    Inc(P2, USTR_OFFSET_LENGTH);
     Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
     Result := (Ret = 0);
     Exit;
@@ -27007,8 +27025,8 @@ begin
       L2 := PWord(P2)^;
       if (L1 = L2) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         if (L1 <= L2) then
@@ -27020,8 +27038,8 @@ begin
           L2 := NativeUInt(-1);
         end;
 
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         L1 := __uniconv_compare_words(Pointer(P1), Pointer(P2),  L1);
         Result := L1 * 2 - L2;
         Exit;
@@ -27035,10 +27053,10 @@ begin
     {$ifdef MSWINDOWS}
       if (P2 = nil) then
       begin
-        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       end else
       begin
-        P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+        P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
       end;
     {$endif}
     end;
@@ -27061,8 +27079,8 @@ begin
     L2 := PWord(P2)^;
     if (L1 = L2) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -27074,8 +27092,8 @@ begin
         L2 := NativeUInt(-1);
       end;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, USTR_OFFSET_LENGTH);
       L1 := __uniconv_compare_words(Pointer(P1), Pointer(P2),  L1);
       Result := L1 * 2 - L2;
       Exit;
@@ -27141,8 +27159,8 @@ begin
       L2 := UNICONV_CHARCASE.VALUES[L2];
       if (L1 = L2) then
       begin
-        Dec(P1, STR_OFFSET_LENGTH);
-        Dec(P2, STR_OFFSET_LENGTH);
+        Dec(P1, WSTR_OFFSET_LENGTH);
+        Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
         if (L1 <= L2) then
@@ -27154,8 +27172,8 @@ begin
           L2 := NativeUInt(-1);
         end;
 
-        Inc(P1, STR_OFFSET_LENGTH);
-        Inc(P2, STR_OFFSET_LENGTH);
+        Inc(P1, WSTR_OFFSET_LENGTH);
+        Inc(P2, WSTR_OFFSET_LENGTH);
         L1 := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2),  L1);
         Result := L1 * 2 - L2;
         Exit;
@@ -27169,10 +27187,10 @@ begin
     {$ifdef MSWINDOWS}
       if (P2 = nil) then
       begin
-        P1 := Pointer(PCardinal(PByteArray(P1) - STR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       end else
       begin
-        P2 := Pointer(PCardinal(PByteArray(P2) - STR_OFFSET_LENGTH)^ <> 0);
+        P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
       end;
     {$endif}
     end;
@@ -27197,8 +27215,8 @@ begin
     L2 := UNICONV_CHARCASE.VALUES[L2];
     if (L1 = L2) then
     begin
-      Dec(P1, STR_OFFSET_LENGTH);
-      Dec(P2, STR_OFFSET_LENGTH);
+      Dec(P1, USTR_OFFSET_LENGTH);
+      Dec(P2, USTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
@@ -27210,8 +27228,8 @@ begin
         L2 := NativeUInt(-1);
       end;
 
-      Inc(P1, STR_OFFSET_LENGTH);
-      Inc(P2, STR_OFFSET_LENGTH);
+      Inc(P1, USTR_OFFSET_LENGTH);
+      Inc(P2, USTR_OFFSET_LENGTH);
       L1 := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2),  L1);
       Result := L1 * 2 - L2;
       Exit;
