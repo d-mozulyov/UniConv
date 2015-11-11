@@ -15397,26 +15397,11 @@ const
   NULL_ANSICHAR = {$ifdef NEXTGEN}0{$else}#0{$endif};
   NULL_WIDECHAR = #0;
 
-  WIDE_STR_SHIFT  =
-    {$ifdef MSWINDOWS}
-       1 // windows BSTR
-    {$else}
-    {$ifdef NEXTGEN}
-       0 // dynamic array
-    {$else}
-    {$ifdef FPC}
-       1 // as double ansistring
-    {$else}
-       // non-windows Delphi
-       {$if CompilerVersion >= 22}
-          0 // as unicode string
-       {$else}
-          1 // as double ansistring
-       {$ifend}
-    {$endif}
-    {$endif}
-    {$endif}
-  ;
+  {$if Defined(MSWINDOWS) or Defined(FPC) or (CompilerVersion < 22)}
+    {$define WIDE_STR_SHIFT}
+  {$else}
+    {$undef WIDE_STR_SHIFT}
+  {$ifend}
 
 
 procedure AnsiStringClear(var S{: AnsiString/UTF8String});
@@ -15741,9 +15726,9 @@ begin
     end;
 
     // use or free
-    if (P.Length >= Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+    if (P.Length >= Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
     begin
-      if (Flag >= 0) and (P.Length <> Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+      if (Flag >= 0) and (P.Length <> Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
       end;
@@ -15802,13 +15787,13 @@ begin
   P := S;
   Dec(P);
 
-  if (P.Length = Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend}) then
+  if (P.Length = Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
   begin
     Inc(P);
     Result := P;
   end else
   begin
-    P.Length := Length {$if WIDE_STR_SHIFT = 1}shl 1{$ifend};
+    P.Length := Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif};
 
     {$ifNdef NEXTGEN}
     Inc(P);
@@ -16926,7 +16911,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17015,7 +17000,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17112,7 +17097,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17201,7 +17186,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17298,7 +17283,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17387,7 +17372,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18178,7 +18163,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18233,7 +18218,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18294,7 +18279,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18349,7 +18334,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18410,7 +18395,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18465,7 +18450,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19354,7 +19339,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19413,7 +19398,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^{$if WIDE_STR_SHIFT=1} shr 1{$ifend};
+  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -23347,7 +23332,7 @@ begin
 
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
-      Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Length := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -23520,7 +23505,7 @@ begin
 
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
-      Length := PCardinal(P2)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Length := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -23698,7 +23683,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
-        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
@@ -23903,7 +23888,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
-        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
@@ -25110,7 +25095,7 @@ begin
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
-      L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       Comp.Length := L1;
       Comp.Length_2 := L2;
 
@@ -25237,7 +25222,7 @@ begin
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
-      L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       Comp.Length := L1;
       Comp.Length_2 := L2;
 
@@ -25355,7 +25340,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
-        Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         Inc(P1, ASTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
@@ -25470,7 +25455,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
-        Comp.Length_2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         Inc(P1, ASTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
@@ -25602,7 +25587,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Length := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -25775,7 +25760,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      Length := PCardinal(P1)^ {$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      Length := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -25951,7 +25936,7 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
         begin
@@ -26153,7 +26138,7 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
         begin
@@ -26335,7 +26320,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
       Comp.Length_2 := L1;
@@ -26462,7 +26447,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+      L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
       Comp.Length_2 := L1;
@@ -26582,7 +26567,7 @@ begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
-        Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
@@ -26700,7 +26685,7 @@ begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
-        Comp.Length_2 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
@@ -26810,7 +26795,7 @@ begin
         Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
-        {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
+        {$ifdef WIDE_STR_SHIFT}Length := Length shr 1;{$endif}
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
@@ -26918,7 +26903,7 @@ begin
         Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
-        {$if WIDE_STR_SHIFT = 1}Length := Length shr 1;{$ifend}
+        {$ifdef WIDE_STR_SHIFT}Length := Length shr 1;{$endif}
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
@@ -27027,8 +27012,8 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
@@ -27161,8 +27146,8 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
-        L2 := PCardinal(P2)^{$if WIDE_STR_SHIFT = 1} shr 1{$ifend};
+        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
