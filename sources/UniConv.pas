@@ -15429,7 +15429,9 @@ begin
     end;
   end;
 
-  MemoryManager.FreeMem(P);
+  RefCount := MemoryManager.FreeMem(P);
+  if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+    Error(reInvalidPtr);
 end;
 
 {$ifdef UNICODE}
@@ -15464,7 +15466,9 @@ begin
     end;
   end;
 
-  MemoryManager.FreeMem(P);
+  RefCount := MemoryManager.FreeMem(P);
+  if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+    Error(reInvalidPtr);
 end;
 {$ifend}
 {$endif}
@@ -15508,7 +15512,7 @@ end;
 
 function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
 label
-  allocate_new, done;
+  out_of_memory, allocate_new, done;
 var
   P: PAnsiStrRec;
   RefCount: Integer;
@@ -15537,17 +15541,31 @@ begin
       if (CodePage{Flag} >= 0) and (P.Length <> Length) then
       begin
         P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+        if (P = nil) then
+        begin
+        out_of_memory:
+          Error(reOutOfMemory);
+          Result := nil;
+          Exit;
+        end;
       end;
 
       goto done;
     end else
     begin
-      MemoryManager.FreeMem(P);
+      RefCount := MemoryManager.FreeMem(P);
+      if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+      begin
+        Error(reInvalidPtr);
+        Result := nil;
+        Exit;
+      end;
     end;
   end;
 
 allocate_new:
   P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+  if (P = nil) then goto out_of_memory;  
   P.RefCount := 1;
   P.Length := Length;
 done:
@@ -15572,6 +15590,7 @@ begin
   begin
     Inc(P);
     Result := P;
+    Exit;
   end else
   begin
     P.Length := Length;
@@ -15584,15 +15603,23 @@ begin
 
     Length := Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif});
     P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
+    if (P <> nil) then
+    begin
+      Inc(P);
+      Result := P;
+      Exit;
+    end else
+    begin
+      Error(reOutOfMemory);
+      Result := nil;
+    end;
   end;
 end;
 
 {$ifdef UNICODE}
 function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
 label
-  allocate_new, done;
+  out_of_memory, allocate_new, done;
 var
   P: PUnicodeStrRec;
   RefCount: Integer;
@@ -15621,17 +15648,31 @@ begin
       if (Flag >= 0) and (P.Length <> Length) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+        if (P = nil) then
+        begin
+        out_of_memory:
+          Error(reOutOfMemory);
+          Result := nil;
+          Exit;
+        end;
       end;
 
       goto done;
     end else
     begin
-      MemoryManager.FreeMem(P);
+      RefCount := MemoryManager.FreeMem(P);
+      if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+      begin
+        Error(reInvalidPtr);
+        Result := nil;
+        Exit;
+      end;
     end;
   end;
 
 allocate_new:
   P := MemoryManager.GetMem(Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+  if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
   P.Length := Length;
 done:
@@ -15654,6 +15695,7 @@ begin
   begin
     Inc(P);
     Result := P;
+    Exit;
   end else
   begin
     P.Length := Length;
@@ -15664,8 +15706,15 @@ begin
 
     Length := Length*Length + (SizeOf(P^)+SizeOf(WideChar));
     P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
+    if (P <> nil) then
+    begin
+      Inc(P);
+      Result := P;
+      Exit;
+    end else
+    begin
+      Error(reOutOfMemory);
+    end;
   end;
 end;
 {$endif}
@@ -15679,30 +15728,44 @@ begin
   if (S = nil) then
   begin
     Result := SysAllocStringLen(nil, Length);
+    if (Result <> nil) then Exit;
   end else
   begin
-    Length := Length * 2;
+    Length := Length + Length;
     CurrentLen := PInteger(PByteArray(S) - WSTR_OFFSET_LENGTH)^;
 
     if (Flag < 0) then
     begin
-      if (CurrentLen >= Length) then Result := S
-      else
-      Result := SysAllocStringLen(nil, Length shr 1);
+      if (CurrentLen >= Length) then
+      begin
+        Result := S;
+        Exit;
+      end else
+      begin
+        Result := SysAllocStringLen(nil, Length shr 1);
+        if (Result <> nil) then Exit;
+      end;
     end else
     begin
-      if (CurrentLen = Length) then Result := S
-      else
+      if (CurrentLen = Length) then
+      begin
+        Result := S;
+        Exit;
+      end else
       begin
         SysReAllocStringLen(R, S, Length shr 1);
         Result := R;
+        if (Result <> nil) then Exit;
       end;
     end;
   end;
+
+  Error(reOutOfMemory){WStrError};
+  Result := nil;
 end;
 {$else}
 label
-  allocate_new, done;
+  out_of_memory, allocate_new, done;
 var
   P: PWideStrRec;
   RefCount: Integer;
@@ -15731,17 +15794,31 @@ begin
       if (Flag >= 0) and (P.Length <> Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
       begin
         P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+        if (P = nil) then
+        begin
+        out_of_memory:
+          Error(reOutOfMemory);
+          Result := nil;
+          Exit;
+        end;
       end;
 
       goto done;
     end else
     begin
-      MemoryManager.FreeMem(P);
+      RefCount := MemoryManager.FreeMem(P);
+      if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+      begin
+        Error(reInvalidPtr);
+        Result := nil;
+        Exit;
+      end;
     end;
   end;
 
 allocate_new:
   P := MemoryManager.GetMem(Length+Length+(SizeOf(P^){$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+  if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
   P.Length := Length;
 done:
@@ -15766,6 +15843,8 @@ end;
 {$ifdef INLINESUPPORT}
 procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
 {$ifdef MSWINDOWS}
+var
+  Done: LongBool;
 begin
   Dec(NativeInt(S), 4);
   Inc(Length, Length);
@@ -15777,7 +15856,9 @@ begin
   begin
     Length := Length shr 1;
     Inc(NativeInt(S), 4);
-    SysReAllocStringLen(Result, S, Length);
+    Done := SysReAllocStringLen(Result, S, Length);
+    if (not Done) then
+      Error(reOutOfMemory){WStrError};
   end;
 end;
 {$else}
@@ -15791,6 +15872,7 @@ begin
   begin
     Inc(P);
     Result := P;
+    Exit;
   end else
   begin
     P.Length := Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif};
@@ -15803,8 +15885,16 @@ begin
 
     Length := Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif});
     P := MemoryManager.ReallocMem(P, Length);
-    Inc(P);
-    Result := P;
+    if (P <> nil) then
+    begin
+      Inc(P);
+      Result := P;
+      Exit;
+    end else
+    begin
+      Error(reOutOfMemory);
+      Result := nil;
+    end;
   end;
 end;
 {$endif}
@@ -15821,7 +15911,13 @@ asm
   push ecx
   push edx
   push eax
-  jmp SysReAllocStringLen
+  call SysReAllocStringLen
+  test eax, eax
+  je @2
+  ret
+@2:
+  mov al, 1
+  jmp System.Error
 end;
 {$endif}
 {$ifdef undef}{$ENDREGION}{$endif}
