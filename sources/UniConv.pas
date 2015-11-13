@@ -15704,7 +15704,7 @@ begin
     PWideChar(P)[Length] := NULL_WIDECHAR;
     Dec(P);
 
-    Length := Length*Length + (SizeOf(P^)+SizeOf(WideChar));
+    Length := Length+Length + (SizeOf(P^)+SizeOf(WideChar));
     P := MemoryManager.ReallocMem(P, Length);
     if (P <> nil) then
     begin
