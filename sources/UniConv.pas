@@ -15512,7 +15512,7 @@ end;
 
 function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
 label
-  out_of_memory, allocate_new, done;
+  out_of_memory, allocate_new, length_done, done;
 var
   P: PAnsiStrRec;
   RefCount: Integer;
@@ -15548,6 +15548,7 @@ begin
           Result := nil;
           Exit;
         end;
+        goto length_done;
       end;
 
       goto done;
@@ -15567,6 +15568,7 @@ allocate_new:
   P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
   if (P = nil) then goto out_of_memory;  
   P.RefCount := 1;
+length_done:
   P.Length := Length;
 done:
   {$if SizeOf(TAnsiStrRec) > 8}
@@ -15619,7 +15621,7 @@ end;
 {$ifdef UNICODE}
 function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
 label
-  out_of_memory, allocate_new, done;
+  out_of_memory, allocate_new, length_done, done;
 var
   P: PUnicodeStrRec;
   RefCount: Integer;
@@ -15655,6 +15657,7 @@ begin
           Result := nil;
           Exit;
         end;
+        goto length_done;
       end;
 
       goto done;
@@ -15674,6 +15677,7 @@ allocate_new:
   P := MemoryManager.GetMem(Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
   if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
+length_done:
   P.Length := Length;
 done:
   {$if SizeOf(TUnicodeStrRec) > 8}
@@ -15765,7 +15769,7 @@ begin
 end;
 {$else}
 label
-  out_of_memory, allocate_new, done;
+  out_of_memory, allocate_new, length_done, done;
 var
   P: PWideStrRec;
   RefCount: Integer;
@@ -15801,6 +15805,7 @@ begin
           Result := nil;
           Exit;
         end;
+        goto length_done;
       end;
 
       goto done;
@@ -15820,6 +15825,7 @@ allocate_new:
   P := MemoryManager.GetMem(Length+Length+(SizeOf(P^){$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
   if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
+length_done:
   P.Length := Length;
 done:
   {$if SizeOf(TWideStrRec) > 8}
