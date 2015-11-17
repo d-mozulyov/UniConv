@@ -463,7 +463,7 @@ var
   end;
 
   // utf8 character size by first byte
-  UNICONV_UTF8_SIZE: TUniConvBB;
+  UNICONV_UTF8CHAR_SIZE: TUniConvBB;
 
 type
   // single-byte encodings lookups:
@@ -1462,9 +1462,9 @@ begin
     Inc(L);
   end;
 
-  // UNICONV_UTF8_SIZE
+  // UNICONV_UTF8CHAR_SIZE
   begin
-    NativeArr := Pointer(@UNICONV_UTF8_SIZE);
+    NativeArr := Pointer(@UNICONV_UTF8CHAR_SIZE);
 
     // 0..127
     U := {$ifdef LARGEINT}$0101010101010101{$else}$01010101{$endif};
@@ -3978,7 +3978,7 @@ char_read:
         goto char_read_done;
       end else
       begin
-        Y := UNICONV_UTF8_SIZE[Byte(X)];
+        Y := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         Dec(SrcSize, Y);
         Inc(Src, Y);
         if (NativeInt(SrcSize) < 0) then goto convert_finish;
@@ -5113,7 +5113,7 @@ begin
     FStore.Options.SourceSize := SrcSize;
     FStore.Options.DestinationSize := DestSize;
     repeat
-      Length := UNICONV_UTF8_SIZE[PByte(FStore.Options.Source)^];
+      Length := UNICONV_UTF8CHAR_SIZE[PByte(FStore.Options.Source)^];
       Done := SmallConversion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
       SrcSize := FStore.Options.SourceSize;
     until (Done);
@@ -5221,13 +5221,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         Inc(Dest, 2);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -5271,7 +5271,7 @@ begin
         end;
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -5348,7 +5348,7 @@ small_length:
     if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -5492,13 +5492,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         Inc(Dest, 2);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -5542,7 +5542,7 @@ begin
         end;
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -5619,7 +5619,7 @@ small_length:
     if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -6534,7 +6534,7 @@ begin
     FStore.Options.SourceSize := SrcSize;
     FStore.Options.DestinationSize := DestSize;
     repeat
-      Length := UNICONV_UTF8_SIZE[PByte(FStore.Options.Source)^];
+      Length := UNICONV_UTF8CHAR_SIZE[PByte(FStore.Options.Source)^];
       Done := SmallConversion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
       SrcSize := FStore.Options.SourceSize;
     until (Done);
@@ -6630,13 +6630,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         Inc(Dest, 2);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -6651,7 +6651,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -6705,7 +6705,7 @@ small_length:
     if (NativeUInt(Src) <> {$ifdef CPUX86}Store.{$endif}TopSrc) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -6849,13 +6849,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         Inc(Dest, 2);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -6870,7 +6870,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -6922,7 +6922,7 @@ small_length:
     if (NativeUInt(Src) <> {$ifdef CPUX86}Store.{$endif}TopSrc) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -7066,13 +7066,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         Inc(Dest, 2);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest);
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -7087,7 +7087,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -7139,7 +7139,7 @@ small_length:
     if (NativeUInt(Src) <> {$ifdef CPUX86}Store.{$endif}TopSrc) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -9084,7 +9084,7 @@ begin
     FStore.Options.SourceSize := SrcSize;
     FStore.Options.DestinationSize := DestSize;
     repeat
-      Length := UNICONV_UTF8_SIZE[PByte(FStore.Options.Source)^];
+      Length := UNICONV_UTF8CHAR_SIZE[PByte(FStore.Options.Source)^];
       Done := SmallConversion(FStore.Options, Length + Byte(Length = 0), SMALL_CONVERSION_FLAGS);
       SrcSize := FStore.Options.SourceSize;
     until (Done);
@@ -9190,13 +9190,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -9211,7 +9211,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -9286,7 +9286,7 @@ small_length:
     if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -9440,13 +9440,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -9461,7 +9461,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -9535,7 +9535,7 @@ small_length:
     if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -9689,13 +9689,13 @@ begin
         X := X shr 16;
         Inc(Src, 2);
         {$ifdef LARGEINT}Inc(Dest, 2);{$endif}
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 2) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 2) then goto process_standard;
         goto next_iteration;
       ascii_1:
         X := X shr 8;
         Inc(Src);
         Inc(Dest, 1{$ifdef SMALLINT}- 2{$endif});
-        if (UNICONV_UTF8_SIZE[Byte(X)] <= 3) then goto process_standard;
+        if (UNICONV_UTF8CHAR_SIZE[Byte(X)] <= 3) then goto process_standard;
         // goto next_iteration;
     end else
     begin
@@ -9710,7 +9710,7 @@ begin
         Inc(Dest);
       end else
       begin
-        U := UNICONV_UTF8_SIZE[Byte(X)];
+        U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
         case (U) of
           1:
           begin
@@ -9784,7 +9784,7 @@ small_length:
     if (NativeUInt(Src) <> Length{TopSrc}) then goto small_length;
     goto done;
   end;
-  X := UNICONV_UTF8_SIZE[X];
+  X := UNICONV_UTF8CHAR_SIZE[X];
   Dec(U, NativeUInt(Src));
   if (X{char size} > U{available source length}) then
   begin
@@ -20374,7 +20374,7 @@ utf8_read_one:
       //if (NativeInt(UTF8Length) < 0) then goto make_fail_utf8_result;
     end else
     begin
-      Y := UNICONV_UTF8_SIZE[Byte(X){ and $ff}];
+      Y := UNICONV_UTF8CHAR_SIZE[Byte(X){ and $ff}];
       Dec(UTF8Length, Y);
       Inc(S1, Y);
       if (NativeInt(UTF8Length) < 0) then goto make_fail_utf8_result;
@@ -20507,6 +20507,7 @@ label
   next_iteration, read_small, make_result, make_result_swaped;
 var
   X, Y, U, V: NativeUInt;
+  CompareFlagMask: NativeInt;
 
   {$ifdef CPUX86}
   Store: record
@@ -20535,7 +20536,7 @@ var
 
   {$ifdef CPUMANYREGS}
   var
-    UNICONV_UTF8_SIZE: PUniConvBB;
+    UNICONV_UTF8CHAR_SIZE: PUniConvBB;
   {$endif}
 begin
   {$ifNdef CPUINTEL}
@@ -20546,11 +20547,13 @@ begin
     MASK_7F := MASK_7F_SMALL;
   {$endif}
   {$ifdef CPUMANYREGS}
-    UNICONV_UTF8_SIZE := @UniConv.UNICONV_UTF8_SIZE;
+    UNICONV_UTF8CHAR_SIZE := @UniConv.UNICONV_UTF8CHAR_SIZE;
   {$endif}
 
   // store parameters
-  X := NativeUInt(S1) + Comp.Length;
+  X := Comp.Length;
+  CompareFlagMask := (X shr HIGH_NATIVE_BIT) - 1;
+  X := NativeUInt(S1) + X and (HIGH_NATIVE_BIT_VALUE - 1);
   Y := NativeUInt(S2) + Comp.Length_2;
   {$ifdef CPUX86}Store.{$endif}Overflow1 := X;
   {$ifdef CPUX86}Store.{$endif}Overflow2 := Y;
@@ -20586,8 +20589,8 @@ unterminated_binary_compare:
   until (False);
 
 compare_difficult:
-  U := UNICONV_UTF8_SIZE[Byte(X)];
-  V := UNICONV_UTF8_SIZE[Byte(Y)] ;
+  U := UNICONV_UTF8CHAR_SIZE[Byte(X)];
+  V := UNICONV_UTF8CHAR_SIZE[Byte(Y)] ;
   Inc(S1, U);
   Inc(S2, V);
   if (NativeUInt(S1) > {$ifdef CPUX86}Store.{$endif}Overflow1) then goto unterminated_binary_compare;
@@ -20775,7 +20778,7 @@ read_small:
   case {Length2}({$ifdef CPUX86}Store.{$endif}Overflow2 - NativeUInt(S2)) of
     0: begin
          // 0 or 1
-         Result := 1{Ord(Length1>0)};
+         Result := CompareFlagMask and 1{Ord(Length1>0)};
          Exit;
        end;
     1: begin
@@ -20832,7 +20835,7 @@ var
 
   {$ifdef CPUMANYREGS}
   var
-    UNICONV_UTF8_SIZE: PUniConvBB;
+    UNICONV_UTF8CHAR_SIZE: PUniConvBB;
   {$endif}
 begin
   {$ifNdef CPUINTEL}
@@ -20843,7 +20846,7 @@ begin
     MASK_7F := MASK_7F_SMALL;
   {$endif}
   {$ifdef CPUMANYREGS}
-    UNICONV_UTF8_SIZE := @UniConv.UNICONV_UTF8_SIZE;
+    UNICONV_UTF8CHAR_SIZE := @UniConv.UNICONV_UTF8CHAR_SIZE;
   {$endif}
 
   UTF8Length := Comp.Length;
@@ -20952,7 +20955,7 @@ read_normal:
         Inc(X, U);
       end else
       begin
-        case UNICONV_UTF8_SIZE[Byte(X)] of
+        case UNICONV_UTF8CHAR_SIZE[Byte(X)] of
           0..3: begin
                   Result := -1;
                   Exit;
@@ -21186,10 +21189,10 @@ asm
     add eax, ecx
   jmp @look_utf8_done
   @look_utf8_else:
-    // case UNICONV_UTF8_SIZE[Byte(X)] of
+    // case UNICONV_UTF8CHAR_SIZE[Byte(X)] of
     // -1 or 1
     movzx eax, al
-    cmp byte ptr [UNICONV_UTF8_SIZE + eax], 3
+    cmp byte ptr [UNICONV_UTF8CHAR_SIZE + eax], 3
     jmp @make_result
 
   //if (lookup_utf16_lower <> nil) then X := lookup_utf16_lower[X];
