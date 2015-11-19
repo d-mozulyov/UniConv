@@ -45,7 +45,7 @@ unit UniConv;
 *)
 
 {  ------------------- SUPPORTED NON-UNICODE ENCODINGS --------------------  }
-(*                                                     
+(*
      ANSI Code Pages(may be returned by Windows.GetACP):
          874 – Thai
          1250 – Central and East European Latin
@@ -522,11 +522,13 @@ type
     case Integer of
       0: (Original, Lower, Upper: PUniConvUS);
       1: (Items: array[TCharCase] of PUniConvUS);
+      2: (NumericItems: array[0..2] of PUniConvUS);
     end;
     FUTF8: packed record
     case Integer of
       0: (Original, Lower, Upper: PUniConvMS);
       1: (Items: array[TCharCase] of PUniConvMS);
+      2: (NumericItems: array[0..2] of PUniConvMS);
     end;
     // unicode
     FVALUES: PUniConvSBCSValues;
@@ -27346,4 +27348,3 @@ finalization
 
 
 end.
-
