@@ -505,7 +505,7 @@ type
     {$HINTS OFF}
     FAlign: packed record
       Ptrs: array[0..4] of Pointer;
-      {$if SizeOf(NativeInt) = 8}C: Cardinal;{$ifend}
+      {$ifdef LARGEINT}C: Cardinal;{$endif}
     end;
     {$HINTS ON}
   protected
@@ -15405,6 +15405,10 @@ const
     {$undef WIDE_STR_SHIFT}
   {$ifend}
 
+  {$if not Defined(FPC) and (CompilerVersion >= 20)}
+    {$define INTERNALSTRFLAGS}
+  {$ifend}
+
 
 procedure AnsiStringClear(var S{: AnsiString/UTF8String});
 var
@@ -15573,9 +15577,9 @@ allocate_new:
 length_done:
   P.Length := Length;
 done:
-  {$if SizeOf(TAnsiStrRec) > 8}
+  {$ifdef INTERNALCODEPAGE}
     P.CodePageElemSize := (CodePage and $ffff) or $00010000;
-  {$ifend}
+  {$endif}
   Inc(NativeInt(P), SizeOf(P^));
   {$ifNdef NEXTGEN}
   PByteArray(P)[Length] := NULL_ANSICHAR;
@@ -15682,9 +15686,9 @@ allocate_new:
 length_done:
   P.Length := Length;
 done:
-  {$if SizeOf(TUnicodeStrRec) > 8}
+  {$ifdef INTERNALSTRFLAGS}
     P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
-  {$ifend}
+  {$endif}
   Inc(NativeInt(P), SizeOf(P^));
   PWideChar(P)[Length] := NULL_WIDECHAR;
   Result := P;
@@ -15830,7 +15834,7 @@ allocate_new:
 length_done:
   P.Length := Length;
 done:
-  {$if SizeOf(TWideStrRec) > 8}
+  {$ifdef INTERNALSTRFLAGS}
     {$if CompilerVersion >= 22}
        // Delphi >= XE (WideString = UnicodeString)
        P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
@@ -15838,7 +15842,7 @@ done:
        // Delphi < XE (WideString = double AnsiString, CodePage default)
        P.CodePageElemSize := DefaultSystemCodePage or $00010000;
     {$ifend}
-  {$ifend}
+  {$endif}
   Inc(NativeInt(P), SizeOf(P^));
   {$ifNdef NEXTGEN}
   PWideChar(P)[Length] := NULL_WIDECHAR;
