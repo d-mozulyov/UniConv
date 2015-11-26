@@ -3289,7 +3289,7 @@ begin
       {$ifdef CPUX86}SBCS := Store.SBCS;{$endif}
       F.SourceCodePage := SBCS.CodePage;
       FCallbacks.Reader := SBCS.FUCS2.Items[F.CharCase];
-      if (FCallbacks.Reader = nil) then FCallbacks.Reader := SBCS.AllocFillUCS2(SBCS.FUCS2.Items[F.CharCase], ccOriginal);
+      if (FCallbacks.Reader = nil) then FCallbacks.Reader := SBCS.AllocFillUCS2(SBCS.FUCS2.Items[F.CharCase], F.CharCase);
     end;
     ENC_UTF1:
     begin
