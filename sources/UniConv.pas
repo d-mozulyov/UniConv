@@ -4639,6 +4639,7 @@ var
   MASK_80: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -4775,6 +4776,7 @@ var
   MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -4927,6 +4929,7 @@ var
   MASK_80, MASK_60, MASK_65, MASK_7F: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -5169,6 +5172,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;  
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
@@ -5440,6 +5444,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
@@ -5940,6 +5945,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -6118,6 +6124,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -6319,6 +6326,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -6591,6 +6599,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -6796,6 +6805,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -7013,6 +7023,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
   {$ifdef CPUX86}Store.{$endif}TopSrc := Length;
@@ -7239,6 +7250,7 @@ var
   MASK_80: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;  
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -7347,6 +7359,7 @@ var
   MASK_80, MASK_40, MASK_65, MASK_7F: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -7462,6 +7475,7 @@ var
   MASK_80, MASK_60, MASK_65, MASK_7F: NativeUInt;
 {$endif}
 begin
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -7674,6 +7688,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -7860,6 +7875,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -8063,6 +8079,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -8343,6 +8360,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -8570,6 +8588,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -8817,6 +8836,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, Length);
   Inc(Length, NativeUInt(Src));
   Dec(Length, (2 * SizeOf(Cardinal)));
@@ -9135,6 +9155,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
@@ -9371,6 +9392,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
@@ -9620,6 +9642,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
