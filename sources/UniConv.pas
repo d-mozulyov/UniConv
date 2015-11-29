@@ -174,7 +174,7 @@ type
   // compiler independent char/string types
   {$ifdef UNICODE}
     UnicodeChar = Char;
-    PUnicodeChar = ^Char;
+    PUnicodeChar = PChar;
   {$else}
     UnicodeChar = WideChar;
     PUnicodeChar = PWideChar;
