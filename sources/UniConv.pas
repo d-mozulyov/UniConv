@@ -15520,10 +15520,12 @@ asm
 @1:
   {$ifdef CPUX86}
      mov [eax], ecx
+     pop ecx
      push edx
+     push ecx
   {$else .CPUX64}
      mov [rcx], rax
-     push rdx
+     mov rcx, rdx
   {$endif}
   jmp SysFreeString
 end;
@@ -15786,6 +15788,7 @@ begin
         Exit;
       end else
       begin
+        R := S;
         SysReAllocStringLen(R, S, Length shr 1);
         Result := R;
         if (Result <> nil) then Exit;
