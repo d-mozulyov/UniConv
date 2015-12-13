@@ -98,6 +98,7 @@ unit UniConv;
   {$mode delphi}
   {$asmmode intel}
   {$define INLINESUPPORT}
+  {$define INLINESUPPORTSIMPLE}
   {$ifdef CPU386}
     {$define CPUX86}
   {$endif}
@@ -113,8 +114,11 @@ unit UniConv;
     {$WARN UNSAFE_TYPE OFF}
     {$WARN UNSAFE_CAST OFF}
   {$ifend}
-  {$if CompilerVersion >= 17}
+  {$if CompilerVersion >= 20}
     {$define INLINESUPPORT}
+  {$ifend}
+  {$if CompilerVersion >= 17}
+    {$define INLINESUPPORTSIMPLE}
   {$ifend}
   {$if CompilerVersion < 23}
     {$define CPUX86}
@@ -142,6 +146,10 @@ unit UniConv;
 {$ifdef KOL_MCK}
   {$define KOL}
 {$endif}
+{$if Defined(FPC) or (CompilerVersion >= 18)}
+  {$define OPERATORSUPPORT}
+{$ifend}
+
 
 interface
 
@@ -155,7 +163,7 @@ type
       UInt64 = Int64;
       PUInt64 = ^UInt64;
     {$ifend}
-    {$if CompilerVersion < 19}
+    {$if CompilerVersion < 21}
       NativeInt = Integer;
       NativeUInt = Cardinal;
     {$ifend}
@@ -618,15 +626,15 @@ var
 
 
 // detect single-byte encoding
-function UniConvIsSBCS(const CodePage: Word): Boolean; {$ifdef INLINESUPPORT}inline;{$endif}
+function UniConvIsSBCS(const CodePage: Word): Boolean; {$ifdef INLINESUPPORTSIMPLE}inline;{$endif}
 
 // get single-byte encoding lookup
 // UNICONV_SUPPORTED_SBCS[0] if not found of raw data (CP $ffff)
-function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORT}inline;{$endif}
+function UniConvSBCS(const CodePage: Word): PUniConvSBCS; {$ifdef INLINESUPPORTSIMPLE}inline;{$endif}
 
 // get single-byte encoding lookup index
 // 0 if not found of raw data (CP $ffff)
-function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORT}inline;{$endif}
+function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPORTSIMPLE}inline;{$endif}
 
 
 {$ifdef undef}{$REGION 'low level SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
@@ -1612,7 +1620,9 @@ begin
     Value := Integer(UNICONV_SUPPORTED_SBCS_HASH[NativeUInt(Value) shr 24]);
   until (False);
 
+  {$T-} // internal compiler (like Delphi 2007) bug fix
   Result := Pointer(NativeUInt(Byte(Value shr 16)) * SizeOf(TUniConvSBCS) + NativeUInt(@UNICONV_SUPPORTED_SBCS));
+  {$T+}
 end;
 
 // get single-byte encoding lookup index
@@ -3431,21 +3441,19 @@ begin
   SBCS := UniConvSBCS(ADestinationCodePage);
   F.DestinationCodePage := SBCS.CodePage;
   F.SourceCodePage := CODEPAGE_UTF16;
+  FCallbacks.Converter := SBCS.VALUES;
 
   case Self.CharCase of
     ccLower:
     begin
-      FCallbacks.Converter := SBCS.VALUES;
       FCallbacks.ReaderWriter := @sbcs_from_utf16_lower;
     end;
     ccUpper:
     begin
-      FCallbacks.Converter := SBCS.VALUES;
       FCallbacks.ReaderWriter := @sbcs_from_utf16_upper;
     end;
   else
     // ccOriginal:
-    FCallbacks.Converter := SBCS.VALUES;
     FCallbacks.ReaderWriter := @sbcs_from_utf16;
   end;
 end;
@@ -15329,7 +15337,7 @@ type
       RefCount: Integer;
       Length: Integer;
     end;
-    const ASTR_OFFSET_LENGTH = SizeOf(Integer);
+    const ASTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
   {$else}
     {$ifdef NEXTGEN}
       TAnsiStrRec = TDynArrayRec;
@@ -22039,7 +22047,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -22106,7 +22114,7 @@ begin
     begin
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -22153,7 +22161,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -22233,7 +22241,7 @@ begin
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -22273,7 +22281,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -22341,7 +22349,7 @@ begin
       L2 := PByte(@S2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -22372,7 +22380,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -22453,7 +22461,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -22520,7 +22528,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -22619,7 +22627,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -22680,7 +22688,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -22760,7 +22768,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -23759,7 +23767,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -23824,7 +23832,7 @@ begin
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
-          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           Comp.Length := L2;
@@ -23901,7 +23909,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -23960,7 +23968,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -24029,7 +24037,7 @@ begin
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
-          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           Comp.Length := L2;
@@ -24108,7 +24116,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -24985,7 +24993,7 @@ begin
     begin
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -25024,7 +25032,7 @@ begin
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -25063,7 +25071,7 @@ begin
       L2 := PByte(@S2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -26014,7 +26022,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -26078,7 +26086,7 @@ begin
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
-          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           Comp.Length := L2;
@@ -26154,7 +26162,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -26212,7 +26220,7 @@ begin
     if (L1 <= L2) then
     begin
       Comp.Length := L1;
-      Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+      Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
     end else
     begin
       Comp.Length := L2;
@@ -26280,7 +26288,7 @@ begin
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
-          Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           Comp.Length := L2;
@@ -26358,7 +26366,7 @@ begin
       if (L1 <= L2) then
       begin
         Comp.Length := L1;
-        Comp.Length_2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        Comp.Length_2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         Comp.Length := L2;
@@ -27112,7 +27120,7 @@ begin
     begin
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -27153,7 +27161,7 @@ begin
         L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
-          L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           L1 := L2;
@@ -27207,7 +27215,7 @@ begin
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -27244,7 +27252,7 @@ begin
     begin
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
@@ -27287,7 +27295,7 @@ begin
         L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
-          L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+          L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
         end else
         begin
           L1 := L2;
@@ -27343,7 +27351,7 @@ begin
       L2 := PCardinal(P2)^;
       if (L1 <= L2) then
       begin
-        L2 := (-(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
+        L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
       end else
       begin
         L1 := L2;
