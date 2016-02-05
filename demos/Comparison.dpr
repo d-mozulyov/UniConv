@@ -23,7 +23,7 @@ program Comparison;
 uses {$ifdef UNITSCOPENAMES}
        Winapi.Windows, System.SysUtils,
      {$else}
-       Windows, SysUtils,,
+       Windows, SysUtils,
      {$endif}
      UniConv;
 

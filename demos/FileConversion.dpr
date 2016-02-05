@@ -63,7 +63,7 @@ begin
   F1 := TFileStream.Create(CORRECT_FILE_NAME, fmOpenRead or fmShareDenyWrite);
   try
     Size := F1.Size;
-    F2 := TFileStream.Create(CORRECT_FILE_NAME, fmOpenRead or fmShareDenyWrite);
+    F2 := TFileStream.Create(OUTPUT_FILE_NAME, fmOpenRead or fmShareDenyWrite);
     try
       if (Size <> F2.Size) then
       begin
@@ -186,6 +186,8 @@ begin
         Size := SizeOf(SourceBuffer) - SourceOffset;
         SourceSize := SourceStream.Read(SourceBuffer[SourceOffset], Size);
         Done := (SourceSize <> Size);
+        Inc(SourceSize, SourceOffset);
+        SourceOffset := 0;
       until (False);
     finally
       SourceStream.Free;
