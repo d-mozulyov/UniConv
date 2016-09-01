@@ -15864,7 +15864,7 @@ allocate_new:
 length_done:
   P.Length := Length;
 done:
-  {$ifdef INTERNALSTRFLAGS}
+  {$if Defined(INTERNALSTRFLAGS) and not Defined(NEXTGEN)}
     {$if CompilerVersion >= 22}
        // Delphi >= XE (WideString = UnicodeString)
        P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
@@ -15872,7 +15872,7 @@ done:
        // Delphi < XE (WideString = double AnsiString, CodePage default)
        P.CodePageElemSize := DefaultSystemCodePage or $00010000;
     {$ifend}
-  {$endif}
+  {$ifend}
   Inc(NativeInt(P), SizeOf(P^));
   {$ifNdef NEXTGEN}
   PWideChar(P)[Length] := NULL_WIDECHAR;
