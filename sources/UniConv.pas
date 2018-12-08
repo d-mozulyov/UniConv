@@ -1,7 +1,7 @@
 unit UniConv;
 
 {******************************************************************************}
-{ Copyright (c) 2014 Dmitry Mozulyov                                           }
+{ Copyright (c) 2018 Dmitry Mozulyov                                           }
 {                                                                              }
 { Permission is hereby granted, free of charge, to any person obtaining a copy }
 { of this software and associated documentation files (the "Software"), to deal}
@@ -105,6 +105,9 @@ unit UniConv;
   {$ifdef CPUX86_64}
     {$define CPUX64}
   {$endif}
+  {$if Defined(CPUARM) or Defined(UNIX)}
+    {$define POSIX}
+  {$ifend}
 {$else}
   {$if CompilerVersion >= 24}
     {$LEGACYIFEND ON}
@@ -135,9 +138,20 @@ unit UniConv;
 {$endif}
 {$U-}{$V+}{$B-}{$X+}{$T+}{$P+}{$H+}{$J-}{$Z1}{$A4}
 {$O+}{$R-}{$I-}{$Q-}{$W-}
-{$if Defined(CPUX86) or Defined(CPUX64)}
+{$ifdef CPUX86}
+  {$ifNdef NEXTGEN}
+    {$define CPUX86ASM}
+    {$define CPUINTELASM}
+  {$endif}
   {$define CPUINTEL}
-{$ifend}
+{$endif}
+{$ifdef CPUX64}
+  {$ifNdef NEXTGEN}
+    {$define CPUX64ASM}
+    {$define CPUINTELASM}
+  {$endif}
+  {$define CPUINTEL}
+{$endif}
 {$if Defined(CPUX64) or Defined(CPUARM64)}
   {$define LARGEINT}
 {$else}
@@ -172,7 +186,7 @@ type
       PNativeUInt = ^NativeUInt;
     {$ifend}
   {$endif}
-  TBytes = array of Byte;
+  TBytes = {$if CompilerVersion >= 23}TArray<Byte>{$else}array of Byte{$ifend};
   PBytes = ^TBytes;
 
   // compiler independent char/string types
@@ -337,7 +351,7 @@ type
     function convert_utf16_from_utf8: NativeInt;
 
     // temporary convertible routine
-    function call_convertible(X: NativeUInt; Callback: Pointer): Boolean; {$ifNdef CPUINTEL}inline;{$endif}
+    function call_convertible(X: NativeUInt; Callback: Pointer): Boolean; {$ifNdef CPUINTELASM}inline;{$endif}
     function sbcs_convertible(X: NativeUInt): Boolean;
 
     // difficult double/multy-byte encodings conversion callbacks
@@ -3666,7 +3680,7 @@ begin
   FSourceSize := ASourceSize;
   Result := FConvertProc(@Self);
 end;
-{$else}
+{$else .CPUX86}
 asm
   mov [EAX].TUniConvContext.FDestination, edx
   mov [EAX].TUniConvContext.FDestinationSize, ecx
@@ -3814,15 +3828,19 @@ ret_true:
 end;
 
 function TUniConvContext.call_convertible(X: NativeUInt; Callback: Pointer): Boolean;
-{$if Defined(CPUX86)}
+{$if Defined(CPUX86ASM)}
 asm
   jmp ecx
 end;
-{$elseif Defined(CPUX64)}
+{$elseif Defined(CPUX64ASM)}
 asm
-  jmp r8
+  {$ifdef POSIX}
+    jmp rdi
+  {$else}
+    jmp r8
+  {$endif}
 end;
-{$else .CPUARM}
+{$else .NEXTGEN}
 type
   TCallback = function(const Context: PUniConvContext; X: NativeUInt): Boolean;
 begin
@@ -10573,7 +10591,8 @@ const
   reservedStart = $A8; { values between reservedStart and fixedThreshold are reserved }
   fixedThreshold = $F9; { use table of predefined fixed offsets for values from fixedThreshold }
 
-  staticOffsets: array[0..8-1] of Cardinal = (
+
+  staticOffsets: array[0..8-1] of Cardinal = (
     $0000, { ASCII for quoted tags }
     $0080, { Latin - 1 Supplement (for access to punctuation) }
     $0100, { Latin Extended-A }
@@ -11279,7 +11298,8 @@ loop:
   Dec(Count);
   goto loop;
 
-calc_prev:
+
+calc_prev:
   case Ret of
     $3040..$309f: Prev := $3070;
     $4e00..$9fa5: Prev := $4e00 - BOCU1_REACH_NEG_2;
@@ -11416,7 +11436,8 @@ begin
     Result := False;
     Exit;
   end;
-  Result := True;
+
+  Result := True;
   if (X <> $30fb) and (X <> $2015)  then
   begin
     W := hash_gb2312.Find(X);
@@ -11492,7 +11513,8 @@ const
   table_cp936ext_2: array[0..5] of Word = 
   ($0251, $fffd, $0144, $0148, $fffd, $0261);
 
-function TUniConvContext.gb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
+
+function TUniConvContext.gb2312_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
 label
   look_gbkext, user_defined,
   unknown, fail, done;
@@ -12054,8 +12076,10 @@ begin
   end;
 end;
 
-function TUniConvContext.gb18030_convertible(X: NativeUInt): Boolean;
-begin
+
+function TUniConvContext.gb18030_convertible(X: NativeUInt): Boolean;
+
+begin
   case (X) of
     $E78D..$E796,
     $E7C7..$E7C7,
@@ -21056,7 +21080,7 @@ read_small:
 make_result:
   Result := Ord(X > Y)*2 - 1;
 end;
-{$else}
+{$else .CPUX86}
 asm
 @prefix:
   push ebp
