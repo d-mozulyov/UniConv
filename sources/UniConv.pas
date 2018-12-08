@@ -1209,7 +1209,7 @@ const
   (CODEPAGE_RAWDATA,874,1250,1251,1252,1253,1254,1255,1256,1257,1258,866,28592,28593,28594,
    28595,28596,28597,28598,28600,28603,28604,28605,28606,20866,21866,10000,10007,CODEPAGE_USERDEFINED);
 
-  CHARS_TABLE: array[0..12-1+1] of Cardinal  = 
+  CHARS_TABLE: array[0..12-1+1] of Cardinal  =
   (
     ($0041{A..Z} shl 16) or $2000{correction $20} or ($005A-$0041+1){count},
     ($00C0 shl 16) or $2000{correction $20} or ($00D6-$00C0+1),
@@ -1226,7 +1226,7 @@ const
     (Cardinal($FF21) shl 16) or $2000{correction $20} or ($FF3A-$FF21+1)
   );
 
-  CHARS_TABLE_INVERT: array[0..18] of Cardinal  = 
+  CHARS_TABLE_INVERT: array[0..18] of Cardinal  =
   (
     ($1F08 shl 16) or $0800{correction -$08} or ($1F0F-$1F08+1){count},
     ($1F18 shl 16) or $0800{correction -$08} or ($1F1D-$1F18+1),
@@ -1248,8 +1248,8 @@ const
     ($1FF8 shl 16) or $8000{correction -$80} or ($1FF9-$1FF8+1),
     ($1FFA shl 16) or $7E00{correction -$7E} or ($1FFB-$1FFA+1)
   );
-            
-  ONE_TABLE: array[0..38] of Cardinal  = 
+
+  ONE_TABLE: array[0..38] of Cardinal  =
   (
     ($0100 shl 16) or ($012E-$0100+2) shr 1{count},
     ($0132 shl 16) or ($0136-$0132+2) shr 1,
@@ -1292,7 +1292,7 @@ const
     (Cardinal($A77E) shl 16) or ($A786-$A77E+2) shr 1
   );
 
-  SINGLE_TABLE: array[0..67] of Cardinal  = 
+  SINGLE_TABLE: array[0..67] of Cardinal  =
   (
      $017800FF,$01810253,$01860254,$018E01DD,$018F0259,$0190025B,
      $01930260,$01940263,$01960269,$01970268,$019C026F,$019D0272,
@@ -2915,7 +2915,7 @@ type
   TWordHashItem = packed record
     X: Word;
     Value: Word;
-    
+
     Next: Word;
     __align: Word;
   end;
@@ -2940,7 +2940,7 @@ var
   table_gbkext2: PWordTable;
   table_gb18030ext: PWordTable;
   table_big5: PWordTable;
-  
+
   range_gb18030_read: PWordTable;
   range_gb18030_write: PWordTable;
   offsets_gb18030: PWordTable;
@@ -3713,7 +3713,7 @@ begin
 
   ADestinationWritten := FDestinationWritten;
   ASourceRead := FSourceRead;
-end;                                   
+end;
 
 
 function TUniConvContext.Convertible(const C: UCS4Char): Boolean;
@@ -4519,7 +4519,7 @@ const
   FLAG_SOURCE_UTF16 = 1;
   FLAG_DESTINATION_UTF16 = 2;
   FLAG_USE_CONVERTER = 4;
-  
+
 function SmallConversion(var Options: TExtendedConversionOptions; Length: NativeUInt;
   Flags: NativeUInt): Boolean;
 label
@@ -4532,7 +4532,7 @@ var
   NewSource: Pointer;
   Value: NativeUInt;
   Destination: PByte;
-  X: Cardinal;  
+  X: Cardinal;
 begin
   // source size
   Size := Length;
@@ -4562,12 +4562,12 @@ begin
   Options.DestinationSize := Value;
   if (NativeInt(Value) < 0) then
   begin
-    if (Options.SourceSize = 0) then Options.SourceSize := 1;    
+    if (Options.SourceSize = 0) then Options.SourceSize := 1;
     Result := True;
     Exit;
-  end;    
-    
-  // data copy  
+  end;
+
+  // data copy
   Destination := Options.Destination;
   X := PCardinal(@Options.CharBuffer[0])^;
   if (Size >= SizeOf(Cardinal)) then
@@ -4596,8 +4596,8 @@ begin
       PByte(Destination)^ := X;
       Inc(Destination, 1);
     end;
-  end;  
-  
+  end;
+
   // result
   Options.Source := NewSource;
   Options.Destination := Destination;
@@ -5194,7 +5194,7 @@ begin
     Store.Dest := Dest;
     Store.Options := nil;
   end;
-  if (Length = 0) then goto done;  
+  if (Length = 0) then goto done;
   Inc(Length, NativeUInt(Src));
   Dec(Length, MAX_UTF8CHAR_SIZE);
 
@@ -7272,7 +7272,7 @@ var
   MASK_80: NativeUInt;
 {$endif}
 begin
-  if (Length = 0) then Exit;  
+  if (Length = 0) then Exit;
   // store parameters
   Inc(Length, NativeUInt(Src));
   Dec(Length, SizeOf(Cardinal));
@@ -9938,7 +9938,7 @@ begin
     begin
       Inc(Count, 2){2};
       if (SrcSize < Count) then goto too_small;
-      
+
       Result := (Result-$A1)*$BE + U[Src^] + $100;
     end;
     $F6..$FC-1:
@@ -10525,7 +10525,7 @@ const
   $DC, $DD, $DE, $DF, $E1, $EA, $EB, $EC, $ED, $EE, $EF, $FA, $FB, $FC, $FD, $FE);
 
 var
-  Shift: Integer; 
+  Shift: Integer;
 begin
   Result := 1;
   case X of
@@ -10952,7 +10952,7 @@ const
   // unicode High(single char) = $EO..$F2
   UQU = $F0; { Quote a single Unicode character }
 
-  modified_1_states: array[0..1] of Cardinal  = 
+  modified_1_states: array[0..1] of Cardinal  =
     (
        {Byte_mode:} (SD0 shl 16) + (($100 shr 7) shl 24) + is_modified_1
                    +(1{w} shl 16) + (1{w})
@@ -11138,7 +11138,7 @@ done:
     4: begin
        fill_four:
          PCardinal(PDest)^ := X;
-       end;  
+       end;
   end;
 end;
 
@@ -11475,7 +11475,7 @@ begin
         PWord(Buf)^ := W + $40a8 + Ord(W >= $3f00) shl 8;
         Exit;
       end;
-      
+
       Result := False;
     end else
     case Byte(X) of
@@ -11501,16 +11501,16 @@ begin
     else
       goto look_inv;
     end;
-  end;  
+  end;
 end;
 
 
 const
-  table_cp936ext_1: array[0..21] of Word  = 
+  table_cp936ext_1: array[0..21] of Word  =
   ($fe35, $fe36, $fe39, $fe3a, $fe3f, $fe40, $fe3d, $fe3e,
    $fe41, $fe42, $fe43, $fe44, $fffd, $fffd, $fe3b, $fe3c,
    $fe37, $fe38, $fe31, $fffd, $fe33, $fe34);
-  table_cp936ext_2: array[0..5] of Word = 
+  table_cp936ext_2: array[0..5] of Word =
   ($0251, $fffd, $0144, $0148, $fffd, $0261);
 
 
@@ -11623,7 +11623,7 @@ look_gbkext:
       goto done;
     end;
 
-user_defined:    
+user_defined:
     // User-defined characters
     case S1 of
       $a1..$a2:
@@ -11718,7 +11718,7 @@ begin
     0..$7f, $20ac, $e000..$e586-1: Result := True;
   else
     Result := gbk_wctomb(X, Pointer(@Buf));
-  end;  
+  end;
 end;
 
 function TUniConvContext.gb18030_reader(SrcSize: Cardinal; Src: PByte; out SrcRead: Cardinal): Cardinal;
@@ -11809,7 +11809,7 @@ look_gbkext:
 
       Result := table_gbkext2[Result];
       if (Result <> $fffd) then Exit;
-      
+
       goto look_gb18030ext;
     end;
 
@@ -12022,7 +12022,7 @@ begin
   begin
   fail:
     Result := 0;
-    Exit;  
+    Exit;
   end;
 
   if (X <= $ffff) then
@@ -12302,7 +12302,7 @@ end;
 function TUniConvContext.big5_writer(X: Cardinal; Dest: PByte; DestSize: Cardinal; ModeFinal: Boolean): Cardinal;
 label
   unknown, done_1, done;
-var  
+var
   W: Word;
 begin
   if (X <= $7f) then
@@ -12388,7 +12388,7 @@ begin
         S2 := S2 - Ord(S2 >= $80) - ($40-$21);
         S1 := 2*S1 + $21 + Ord(S2 >= ($5e+$21));
         if (S2 >= ($5e+$21)) then Dec(S2, $5e);
-        
+
         if (S1 in [$21..$28, $21..$7e]) then
         begin
           Result := 94 * (S1 - $21) + (S2 - $21);
@@ -12396,7 +12396,7 @@ begin
           goto done;
         end;
       end;
-    end;  
+    end;
     $f0..$f9:
     begin
       if (SrcSize < 2) then goto fail;
@@ -12410,7 +12410,7 @@ begin
     end;
   end;
 
-  
+
 fail: // SrcRead := SrcSize+1;
 unknown: // Result := '?';
   Result := UNKNOWN_CHARACTER;
@@ -12427,7 +12427,7 @@ var
   W: Word;
 begin
   Result := 1;
-  
+
   case X of
     0..$7f:
     begin
@@ -12467,7 +12467,7 @@ begin
       Exit;
     end;
   end;
-  
+
 not_jisx0201:
   Inc(Result){2};
   if (DestSize < Result) then {too small}
@@ -12860,7 +12860,7 @@ begin
     begin
       X := $5c;
       Mask := MASK_X0201ROMAN;
-      goto std_write;      
+      goto std_write;
     end;
     $203e:
     begin
@@ -13062,7 +13062,7 @@ function TUniConvContext.cp949_writer(X: Cardinal; Dest: PByte; DestSize: Cardin
 label
   unknown;
 var
-  W: Word;  
+  W: Word;
 begin
   Result := 1;
 
@@ -13130,7 +13130,7 @@ begin
   unknown:
     Dec(Result);
     Dest^ := UNKNOWN_CHARACTER;
-  end;  
+  end;
 end;
 
 function TUniConvContext.cp949_convertible(X: NativeUInt): Boolean;
@@ -13148,7 +13148,7 @@ begin
       $c8a5..$d7a3: Result := (hash_uhc_2.Find(X) <> High(Word));
     else
       Result := False;
-    end;  
+    end;
   end;
 end;
 
@@ -13188,7 +13188,7 @@ function TUniConvContext.euc_kr_writer(X: Cardinal; Dest: PByte; DestSize: Cardi
 label
   unknown, single_Byte;
 var
-  W: Word;  
+  W: Word;
 begin
   if (X > $7f) then
   begin
@@ -15625,7 +15625,7 @@ begin
 
 allocate_new:
   P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
-  if (P = nil) then goto out_of_memory;  
+  if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
 length_done:
   P.Length := Length;
@@ -15747,7 +15747,7 @@ done:
   Result := P;
 end;
 
-procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer); 
+procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 var
   P: PUnicodeStrRec;
 begin
