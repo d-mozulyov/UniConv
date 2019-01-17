@@ -1,7 +1,7 @@
 unit UniConv;
 
 {******************************************************************************}
-{ Copyright (c) 2018 Dmitry Mozulyov                                           }
+{ Copyright (c) 2019 Dmitry Mozulyov                                           }
 {                                                                              }
 { Permission is hereby granted, free of charge, to any person obtaining a copy }
 { of this software and associated documentation files (the "Software"), to deal}
@@ -47,16 +47,16 @@ unit UniConv;
 {  ------------------- SUPPORTED NON-UNICODE ENCODINGS --------------------  }
 (*
      ANSI Code Pages(may be returned by Windows.GetACP):
-         874 – Thai
-         1250 – Central and East European Latin
-         1251 – Cyrillic
-         1252 – West European Latin
-         1253 – Greek
-         1254 – Turkish
-         1255 – Hebrew
-         1256 – Arabic
-         1257 – Baltic
-         1258 – Vietnamese
+         874 - Thai
+         1250 - Central and East European Latin
+         1251 - Cyrillic
+         1252 - West European Latin
+         1253 - Greek
+         1254 - Turkish
+         1255 - Hebrew
+         1256 - Arabic
+         1257 - Baltic
+         1258 - Vietnamese
 
      Another (multy-byte) encodings, that may be specified as default in POSIX systems:
          932 - Japanese (shift_jis)
@@ -95,10 +95,18 @@ unit UniConv;
 
 // compiler directives
 {$ifdef FPC}
-  {$mode delphi}
-  {$asmmode intel}
+  {$MODE DELPHIUNICODE}
+  {$ASMMODE INTEL}
   {$define INLINESUPPORT}
   {$define INLINESUPPORTSIMPLE}
+  {$define OPERATORSUPPORT}
+  {$define ANSISTRSUPPORT}
+  {$define SHORTSTRSUPPORT}
+  {$define WIDESTRSUPPORT}
+  {$ifdef MSWINDOWS}
+    {$define WIDESTRLENSHIFT}
+  {$endif}
+  {$define INTERNALCODEPAGE}
   {$ifdef CPU386}
     {$define CPUX86}
   {$endif}
@@ -123,6 +131,9 @@ unit UniConv;
   {$if CompilerVersion >= 17}
     {$define INLINESUPPORTSIMPLE}
   {$ifend}
+  {$if CompilerVersion >= 18}
+    {$define OPERATORSUPPORT}
+  {$ifend}
   {$if CompilerVersion < 23}
     {$define CPUX86}
   {$else}
@@ -132,24 +143,36 @@ unit UniConv;
     {$WEAKLINKRTTI ON}
     {$RTTI EXPLICIT METHODS([]) PROPERTIES([]) FIELDS([])}
   {$ifend}
-  {$if (not Defined(NEXTGEN)) and (CompilerVersion >= 20)}
+  {$if (not Defined(NEXTGEN)) or (CompilerVersion >= 31)}
+    {$define ANSISTRSUPPORT}
+  {$ifend}
+  {$ifNdef NEXTGEN}
+    {$define SHORTSTRSUPPORT}
+  {$endif}
+  {$if Defined(MSWINDOWS) or Defined(MACOS)}
+    {$define WIDESTRSUPPORT}
+  {$ifend}
+  {$if Defined(MSWINDOWS) or (Defined(WIDESTRSUPPORT) and (CompilerVersion <= 21))}
+    {$define WIDESTRLENSHIFT}
+  {$ifend}
+  {$if Defined(ANSISTRSUPPORT) and (CompilerVersion >= 20)}
     {$define INTERNALCODEPAGE}
   {$ifend}
 {$endif}
 {$U-}{$V+}{$B-}{$X+}{$T+}{$P+}{$H+}{$J-}{$Z1}{$A4}
 {$O+}{$R-}{$I-}{$Q-}{$W-}
 {$ifdef CPUX86}
-  {$ifNdef NEXTGEN}
+  {$if not Defined(NEXTGEN)}
     {$define CPUX86ASM}
     {$define CPUINTELASM}
-  {$endif}
+  {$ifend}
   {$define CPUINTEL}
 {$endif}
 {$ifdef CPUX64}
-  {$ifNdef NEXTGEN}
+  {$if (not Defined(POSIX)) or Defined(FPC)}
     {$define CPUX64ASM}
     {$define CPUINTELASM}
-  {$endif}
+  {$ifend}
   {$define CPUINTEL}
 {$endif}
 {$if Defined(CPUX64) or Defined(CPUARM64)}
@@ -160,18 +183,19 @@ unit UniConv;
 {$ifdef KOL_MCK}
   {$define KOL}
 {$endif}
-{$if Defined(FPC) or (CompilerVersion >= 18)}
-  {$define OPERATORSUPPORT}
-{$ifend}
 
 
 interface
-
+  {$if Defined(FPC) and Defined(POSIX)}
+    uses BaseUnix;
+  {$ifend}
 
 type
   // standard types
   {$ifdef FPC}
     PUInt64 = ^UInt64;
+    PBoolean = ^Boolean;
+    PString = ^string;
   {$else}
     {$if CompilerVersion < 16}
       UInt64 = Int64;
@@ -185,38 +209,93 @@ type
       PNativeInt = ^NativeInt;
       PNativeUInt = ^NativeUInt;
     {$ifend}
+    PWord = ^Word;
   {$endif}
-  TBytes = {$if CompilerVersion >= 23}TArray<Byte>{$else}array of Byte{$ifend};
+  {$if SizeOf(Extended) >= 10}
+    {$define EXTENDEDSUPPORT}
+  {$ifend}
+  TBytes = {$if (not Defined(FPC)) and (CompilerVersion >= 23)}TArray<Byte>{$else}array of Byte{$ifend};
   PBytes = ^TBytes;
 
   // compiler independent char/string types
-  {$ifdef UNICODE}
-    UnicodeChar = Char;
-    PUnicodeChar = PChar;
+  {$ifdef ANSISTRSUPPORT}
+    {$if Defined(NEXTGEN) and (CompilerVersion >= 31)}
+      AnsiChar = type System.UTF8Char;
+      PAnsiChar = ^AnsiChar;
+      AnsiString = type System.RawByteString;
+      PAnsiString = ^AnsiString;
+      UTF8Char = System.UTF8Char;
+      PUTF8Char = System.PUTF8Char;
+      {$POINTERMATH ON}
+    {$else}
+      AnsiChar = System.AnsiChar;
+      PAnsiChar = System.PAnsiChar;
+      AnsiString = System.AnsiString;
+      PAnsiString = System.PAnsiString;
+      UTF8Char = type System.AnsiChar;
+      PUTF8Char = ^UTF8Char;
+    {$ifend}
+    UTF8String = System.UTF8String;
+    PUTF8String = System.PUTF8String;
+    {$ifdef UNICODE}
+      RawByteString = System.RawByteString;
+      {$ifdef FPC}
+      PRawByteString = ^RawByteString;
+      {$else}
+      PRawByteString = System.PRawByteString;
+      {$endif}
+    {$else}
+      RawByteString = type AnsiString;
+      PRawByteString = ^RawByteString;
+    {$endif}
   {$else}
-    UnicodeChar = WideChar;
-    PUnicodeChar = PWideChar;
-    UnicodeString = WideString;
-    PUnicodeString = PWideString;
-    RawByteString = type AnsiString;
-    PRawByteString = ^RawByteString;
-  {$endif}
-  {$ifdef NEXTGEN}
     AnsiChar = type Byte;
     PAnsiChar = ^AnsiChar;
+    UTF8Char = type AnsiChar;
+    PUTF8Char = ^UTF8Char;
     AnsiString = array of AnsiChar;
     PAnsiString = ^AnsiString;
     UTF8String = type AnsiString;
     PUTF8String = ^UTF8String;
     RawByteString = type AnsiString;
     PRawByteString = ^RawByteString;
-    WideString = array of WideChar;
-    PWideString = ^WideString;
-    ShortString = array[0{len}..255] of Byte{AnsiChar/UTF8Char};
+  {$endif}
+  {$ifdef SHORTSTRSUPPORT}
+    ShortString = System.ShortString;
+    PShortString = System.PShortString;
+  {$else}
+    ShortString = array[0{length}..255] of AnsiChar{/UTF8Char};
     PShortString = ^ShortString;
   {$endif}
-  UTF8Char = type AnsiChar;
-  PUTF8Char = ^UTF8Char;
+  {$ifdef WIDESTRSUPPORT}
+    WideString = System.WideString;
+    PWideString = System.PWideString;
+  {$else}
+    WideString = array of WideChar;
+    PWideString = ^WideString;
+  {$endif}
+  {$ifdef UNICODE}
+    {$ifdef FPC}
+    UnicodeChar = System.WideChar;
+    PUnicodeChar = System.PWideChar;
+    {$else}
+    UnicodeChar = System.Char;
+    PUnicodeChar = System.PChar;
+    {$endif}
+    UnicodeString = System.UnicodeString;
+    PUnicodeString = System.PUnicodeString;
+  {$else}
+    UnicodeChar = System.WideChar;
+    PUnicodeChar = System.PWideChar;
+    UnicodeString = System.WideString;
+    PUnicodeString = System.PWideString;
+  {$endif}
+  WideChar = System.WideChar;
+  PWideChar = System.PWideChar;
+  UCS4Char = System.UCS4Char;
+  PUCS4Char = System.PUCS4Char;
+  UCS4String = System.UCS4String;
+  PUCS4String = ^UCS4String;
 
 
 type
@@ -488,16 +567,16 @@ type
   // sbcs --> utf16(ucs2), sbcs --> utf8, utf16(ucs2) --> sbcs, sbcs --> sbcs
   //
   //(0) 0xFFFF - Raw data
-  //(1) 874 – Thai
-  //(2) 1250 – Central and East European Latin
-  //(3) 1251 – Cyrillic
-  //(4) 1252 – West European Latin
-  //(5) 1253 – Greek
-  //(6) 1254 – Turkish
-  //(7) 1255 – Hebrew
-  //(8) 1256 – Arabic
-  //(9) 1257 – Baltic
-  //(10) 1258 – Vietnamese
+  //(1) 874 - Thai
+  //(2) 1250 - Central and East European Latin
+  //(3) 1251 - Cyrillic
+  //(4) 1252 - West European Latin
+  //(5) 1253 - Greek
+  //(6) 1254 - Turkish
+  //(7) 1255 - Hebrew
+  //(8) 1256 - Arabic
+  //(9) 1257 - Baltic
+  //(10) 1258 - Vietnamese
   //(11) 866 - Cyrillic (OEM)
   //(12) 28592 - Central European (iso-8859-2)
   //(13) 28593 - Latin 3 (iso-8859-3)
@@ -693,16 +772,16 @@ function UniConvSBCSIndex(const CodePage: Word): NativeUInt; {$ifdef INLINESUPPO
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'low level string types routine'}{$endif}
-  procedure AnsiStringClear(var S{: AnsiString/UTF8String});
-  function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
+  procedure AnsiStringClear(var S{: AnsiString/UTF8String/RawByteString});
+  function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String/RawByteString}; Length, CodePage: Integer): Pointer;
   procedure AnsiStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 
-  procedure WideStringClear(var S{: WideString}); {$ifNdef MSWINDOWS}inline;{$endif}
+  procedure WideStringClear(var S{: WideString});
   function WideStringAlloc(S: Pointer{last WideString}; Length, Flag: Integer): Pointer;
   procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
 
   {$ifdef UNICODE}
-  procedure UnicodeStringClear(var S{: UnicodeString}); {$ifNdef NEXTGEN}inline;{$endif}
+  procedure UnicodeStringClear(var S{: UnicodeString});
   function UnicodeStringAlloc(S: Pointer{last UnicodeString}; Length, Flag: Integer): Pointer;
   procedure UnicodeStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
   {$endif}
@@ -1034,12 +1113,6 @@ var
   MemoryManager: {$if Defined(FPC) or (CompilerVersion < 18)}TMemoryManager{$else}TMemoryManagerEx{$ifend};
 
 type
-  {$ifdef NEXTGEN}
-    PByteArray = PByte;
-  {$else}
-    PByteArray = PAnsiChar;
-  {$endif}
-
   T4Bytes = array[0..3] of Byte;
   P4Bytes = ^T4Bytes;
 
@@ -1116,7 +1189,7 @@ function AtomicCmpExchange(var Target: Pointer; NewValue: Pointer; Comparand: Po
 begin
   Result := InterlockedCompareExchange(Target, NewValue, Comparand);
 end;
-{$else}
+{$else .DELPHI}
 function AtomicCmpExchange(var Target: Pointer; NewValue: Pointer; Comparand: Pointer): Pointer;
 asm
   {$ifdef CPUX86}
@@ -1132,11 +1205,11 @@ end;
 
 {$if Defined(FPC) or (CompilerVersion < 24)}
 {$ifdef FPC}
-function AtomicDecrement(var Target: Integer): Integer; inline;
+function AtomicDecrement(var Target: Integer): Integer; {$if Defined(FPC) and Defined(LARGEINT)}overload;{$ifend} inline;
 begin
   Result := InterLockedDecrement(Target);
 end;
-{$else}
+{$else .DELPHI}
 function AtomicDecrement(var Target: Integer): Integer;
 asm
   {$ifdef CPUX86}
@@ -1152,6 +1225,12 @@ end;
 {$endif}
 {$ifend}
 
+{$if Defined(FPC) and Defined(LARGEINT)}
+function AtomicDecrement(var Target: Int64): Int64; {$if Defined(FPC) and Defined(LARGEINT)}overload;{$ifend} inline;
+begin
+  Result := InterLockedDecrement64(Target);
+end;
+{$ifend}
 
 var
   InternalLookups: Pointer = nil;
@@ -1199,9 +1278,217 @@ begin
 end;
 
 
-{$ifdef MSWINDOWS}
+{$if Defined(MSWINDOWS)}
 function GetACP: Cardinal; external 'kernel32.dll' name 'GetACP';
-{$endif}
+{$elseif Defined(FPC)}
+type
+  TCodePageMapEntry = record
+    LocaleName: string;
+    CodePage: Cardinal;
+  end;
+
+const
+  // Predefined set of Name <=> CP mappings for POSIX
+  CodePageMapA: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'ar'; CodePage: 1256),
+    (LocaleName: 'az-cyrl'; CodePage: 1251),
+    (LocaleName: 'az-latn'; CodePage: 1254));
+
+  CodePageMapBC: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'be'; CodePage: 1251),
+    (LocaleName: 'bg'; CodePage: 1251),
+    (LocaleName: 'cs'; CodePage: 1250));
+
+  CodePageMapEF: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'el'; CodePage: 1253),
+    (LocaleName: 'et'; CodePage: 1257),
+    (LocaleName: 'fa'; CodePage: 1256));
+
+  CodePageMapH: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'he'; CodePage: 1255),
+    (LocaleName: 'hr'; CodePage: 1250),
+    (LocaleName: 'hu'; CodePage: 1250));
+
+  CodePageMapJK: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'ja'; CodePage: 932),
+    (LocaleName: 'kk'; CodePage: 1251),
+    (LocaleName: 'ko'; CodePage: 949));
+
+  CodePageMapLM: array[0..2] of TCodePageMapEntry = (
+    (LocaleName: 'lt'; CodePage: 1257),
+    (LocaleName: 'lv'; CodePage: 1257),
+    (LocaleName: 'mk'; CodePage: 1251));
+
+  CodePageMapP: array[0..1] of TCodePageMapEntry = (
+    (LocaleName: 'pa-arab'; CodePage: 1256),
+    (LocaleName: 'pl'; CodePage: 1250));
+
+  CodePageMapR: array[0..1] of TCodePageMapEntry = (
+    (LocaleName: 'ro'; CodePage: 1250),
+    (LocaleName: 'ru'; CodePage: 1251));
+
+  CodePageMapS: array[0..4] of TCodePageMapEntry = (
+    (LocaleName: 'sk'; CodePage: 1250),
+    (LocaleName: 'sl'; CodePage: 1250),
+    (LocaleName: 'sq'; CodePage: 1250),
+    (LocaleName: 'sr-cyrl'; CodePage: 1251),
+    (LocaleName: 'sr-latn'; CodePage: 1250));
+
+  CodePageMapT: array[0..1] of TCodePageMapEntry = (
+    (LocaleName: 'th'; CodePage: 874),
+    (LocaleName: 'tr'; CodePage: 1254));
+
+  CodePageMapUV: array[0..5] of TCodePageMapEntry = (
+    (LocaleName: 'uk'; CodePage: 1251),
+    (LocaleName: 'ur'; CodePage: 1256),
+    (LocaleName: 'uz-arab'; CodePage: 1256),
+    (LocaleName: 'uz-cyrl'; CodePage: 1251),
+    (LocaleName: 'uz-latn'; CodePage: 1254),
+    (LocaleName: 'vi'; CodePage: 1258));
+
+  // Special case - needs full LANG_CNTRY to determine proper codepage
+  CodePageMapZH: array[0..6] of TCodePageMapEntry = (
+    (LocaleName: 'zh_cn'; CodePage: 936),
+    (LocaleName: 'zh_hk'; CodePage: 950),
+    (LocaleName: 'zh-hans_hk'; CodePage: 936),
+    (LocaleName: 'zh_mo'; CodePage: 950),
+    (LocaleName: 'zh-hans_mo'; CodePage: 936),
+    (LocaleName: 'zh_sg'; CodePage: 936),
+    (LocaleName: 'zh_tw'; CodePage: 950));
+
+function GetPosixLocaleName: string;
+{$IF defined(MACOS)}
+var
+  Locale: CFLocaleRef;
+begin
+  Locale := CFLocaleCopyCurrent;
+  try
+    Result := StringRefToString(CFLocaleGetIdentifier(Locale));
+  finally
+    CFRelease(Locale);
+  end;
+end;
+{$ELSEIF defined(ANDROID)}
+begin
+  Result := GetAndroidLocaleName;
+end;
+{$ELSE !MACOS and !ANDROID}
+var
+  Env: PAnsiChar;
+  I, Len: Integer;
+begin
+  Env := FpGetEnv('LANG');
+  Result := '';
+  if Assigned(Env) then
+  begin
+    // LANG environment variable is treated as 7-bit ASCII encoding
+    Len := 0;
+    while (Env[Len] <> #0) and (Env[Len] <> '.') do
+      Inc(Len);
+
+    SetLength(Result, Len);
+    for I := 0 to Len - 1 do
+      Result[I + 1] := Char(Ord(Env[I]));
+  end;
+end;
+{$IFEND !MACOS and !ANDROID}
+
+function GetACP: Cardinal;
+
+  function FindCodePage(const Name: string; const Map: array of TCodePageMapEntry;
+    var CodePage: Cardinal): Boolean;
+  var
+    I: Integer;
+  begin
+    for I := Low(Map) to High(Map) do
+      if Map[I].LocaleName = Name then
+      begin
+        CodePage := Map[I].CodePage;
+        Exit(True);
+      end;
+    Result := False;
+  end;
+
+var
+  I: Integer;
+  LName: string;
+  LCodePage: Cardinal;
+begin
+  LName := GetPosixLocaleName;
+  I := Low(string);
+  while I <= High(LName) do
+  begin
+    if AnsiChar(LName[I]) in ['A'..'Z'] then         // do not localize
+      Inc(LName[I], Ord('a') - Ord('A'))   // do not localize
+    else if LName[I] = '_' then            // do not localize
+    begin
+      SetLength(LName, I - Low(string));
+      Break;
+    end;
+    Inc(I);
+  end;
+
+  Result := 1252; // Default codepage
+  if Length(LName) > 0 then
+    case LName[Low(string)] of
+      'a':
+        if FindCodePage(LName, CodePageMapA, LCodePage) then
+          Result := LCodePage;
+      'b','c':
+        if FindCodePage(LName, CodePageMapBC, LCodePage) then
+          Result := LCodePage;
+      'e','f':
+        if FindCodePage(LName, CodePageMapEF, LCodePage) then
+          Result := LCodePage;
+      'h':
+        if FindCodePage(LName, CodePageMapH, LCodePage) then
+          Result := LCodePage;
+      'j','k':
+        if FindCodePage(LName, CodePageMapJK, LCodePage) then
+          Result := LCodePage;
+      'l','m':
+        if FindCodePage(LName, CodePageMapLM, LCodePage) then
+          Result := LCodePage;
+      'p':
+        if FindCodePage(LName, CodePageMapP, LCodePage) then
+          Result := LCodePage;
+      'r':
+        if FindCodePage(LName, CodePageMapR, LCodePage) then
+          Result := LCodePage;
+      's':
+        if FindCodePage(LName, CodePageMapS, LCodePage) then
+          Result := LCodePage;
+      't':
+        if FindCodePage(LName, CodePageMapT, LCodePage) then
+          Result := LCodePage;
+      'u','v':
+        if FindCodePage(LName, CodePageMapUV, LCodePage) then
+          Result := LCodePage;
+      'z':
+        begin
+          LName := GetPosixLocaleName;
+          I := Low(string);
+          while I <= High(LName) do
+          begin
+            if AnsiChar(LName[I]) in ['A'..'Z'] then         // do not localize
+              Inc(LName[I], Ord('a') - Ord('A'))   // do not localize
+            else if LName[I] = '@' then            // do not localize
+            // Non Gregorian calendars include "@calendar=<calendar>" on MACOS
+            begin
+              SetLength(LName, I - Low(string));
+              Break;
+            end;
+            Inc(I);
+          end;
+          if FindCodePage(LName, CodePageMapZH, LCodePage) then
+            Result := LCodePage
+          else if (Length(LName) >= 2) and (LName[Low(string) + 1] = 'h') then
+            // Fallback for Chinese in countries other than cn, hk, mo, tw, sg
+            Result := 936;
+        end;
+    end;
+end;
+{$ifend}
 
 procedure InternalLookupsInitialize;
 const
@@ -3662,7 +3949,7 @@ function TUniConvContext.Convert: NativeInt;
 begin
   Result := FConvertProc(@Self);
 end;
-{$else .CPUX86}
+{$else .CPUX86.DELPHI}
 asm
   jmp [EAX].TUniConvContext.FConvertProc
 end;
@@ -3680,7 +3967,7 @@ begin
   FSourceSize := ASourceSize;
   Result := FConvertProc(@Self);
 end;
-{$else .CPUX86}
+{$else .CPUX86.DELPHI}
 asm
   mov [EAX].TUniConvContext.FDestination, edx
   mov [EAX].TUniConvContext.FDestinationSize, ecx
@@ -3828,11 +4115,11 @@ ret_true:
 end;
 
 function TUniConvContext.call_convertible(X: NativeUInt; Callback: Pointer): Boolean;
-{$if Defined(CPUX86ASM)}
+{$if Defined(CPUX86ASM)} {$ifdef FPC}assembler; nostackframe;{$endif}
 asm
   jmp ecx
 end;
-{$elseif Defined(CPUX64ASM)}
+{$elseif Defined(CPUX64ASM)} {$ifdef FPC}assembler; nostackframe;{$endif}
 asm
   {$ifdef POSIX}
     jmp rdi
@@ -3840,7 +4127,7 @@ asm
     jmp r8
   {$endif}
 end;
-{$else .NEXTGEN}
+{$else .POSIX}
 type
   TCallback = function(const Context: PUniConvContext; X: NativeUInt): Boolean;
 begin
@@ -11133,7 +11420,7 @@ done:
     3: begin
          PWord(PDest)^ := X;
          X := X shr 16;
-         Byte(PByteArray(PDest)[2]) := X;
+         Byte(PAnsiChar(PDest)[2]) := X;
        end;
     4: begin
        fill_four:
@@ -11392,7 +11679,7 @@ begin
       end;
     end;
 
-    Result := (PByteArray(Dest)-PByteArray(SavedDest))+1;
+    Result := (PAnsiChar(Dest)-PAnsiChar(SavedDest))+1;
     if (DestSize < Result) then
     begin
       // too_small
@@ -12389,7 +12676,7 @@ begin
         S1 := 2*S1 + $21 + Ord(S2 >= ($5e+$21));
         if (S2 >= ($5e+$21)) then Dec(S2, $5e);
 
-        if (S1 in [$21..$28, $21..$7e]) then
+        if (S1 in [$21..$28, $30..$74]) then
         begin
           Result := 94 * (S1 - $21) + (S2 - $21);
           Result := table_jisx0208[Result];
@@ -15344,91 +15631,91 @@ end;
 type
   PDynArrayRec = ^TDynArrayRec;
   TDynArrayRec = packed record
-  {$if Defined(LARGEINT) and not Defined(FPC)}
-    _Padding: Integer;
-  {$ifend}
+  {$ifdef FPC}
+    RefCount: NativeInt;
+    High: NativeInt;
+  {$else .DELPHI}
+    {$ifdef LARGEINT}_Padding: Integer;{$endif}
     RefCount: Integer;
     Length: NativeInt;
+  {$endif}
   end;
 
+  {$ifdef UNICODE}
+    PUnicodeStrRec = ^TUnicodeStrRec;
+    TUnicodeStrRec = packed record
+    {$ifdef FPC}
+      CodePageElemSize: Integer;
+      {$ifdef LARGEINT}_Padding: Integer;{$endif}
+      RefCount: NativeInt;
+      Length: NativeInt;
+    {$else .DELPHI}
+      {$ifdef LARGEINT}_Padding: Integer;{$endif}
+      CodePageElemSize: Integer;
+      RefCount: Integer;
+      Length: Integer;
+    {$endif}
+    end;
+    const
+      {$ifdef FPC}
+        USTR_OFFSET_LENGTH = SizeOf(NativeInt);
+        USTR_OFFSET_REFCOUNT = USTR_OFFSET_LENGTH + SizeOf(NativeInt);
+        USTR_OFFSET_CODEPAGE = SizeOf(TUnicodeStrRec);
+      {$else .DELPHI}
+        USTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
+        USTR_OFFSET_REFCOUNT = USTR_OFFSET_LENGTH + SizeOf(Integer);
+        USTR_OFFSET_CODEPAGE = USTR_OFFSET_REFCOUNT + {ElemSize}SizeOf(Word) + {CodePage}SizeOf(Word);
+      {$endif}
+  {$endif}
+
+type
   PAnsiStrRec = ^TAnsiStrRec;
-  {$if Defined(FPC) or (not Defined(UNICODE))}
+  {$if not Defined(ANSISTRSUPPORT)}
+    TAnsiStrRec = TDynArrayRec;
+    const
+      {$ifdef FPC}
+        // None
+      {$else .DELPHI}
+        ASTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
+        ASTR_OFFSET_REFCOUNT = ASTR_OFFSET_LENGTH + SizeOf(Integer);
+      {$endif}
+  {$elseif not Defined(INTERNALCODEPAGE)}
     TAnsiStrRec = packed record
       RefCount: Integer;
       Length: Integer;
     end;
-    const ASTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
-  {$else}
-    {$ifdef NEXTGEN}
-      TAnsiStrRec = TDynArrayRec;
-      const ASTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
-    {$else}
-      TAnsiStrRec = packed record
-      {$ifdef LARGEINT}
-        _Padding: Integer;
+    const
+      {$ifdef FPC}
+        // None
+      {$else .DELPHI}
+        ASTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
+        ASTR_OFFSET_REFCOUNT = ASTR_OFFSET_LENGTH + SizeOf(Integer);
       {$endif}
-        CodePageElemSize: Integer;
-        RefCount: Integer;
-        Length: Integer;
-      end;
-      const ASTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
-    {$endif}
+  {$else .INTERNALCODEPAGE}
+    TAnsiStrRec = TUnicodeStrRec;
+    const
+      ASTR_OFFSET_LENGTH = USTR_OFFSET_LENGTH;
+      ASTR_OFFSET_REFCOUNT = USTR_OFFSET_REFCOUNT;
+      ASTR_OFFSET_CODEPAGE = USTR_OFFSET_CODEPAGE;
   {$ifend}
-
-{$ifdef UNICODE}
-type
-  PUnicodeStrRec = ^TUnicodeStrRec;
-  {$ifdef FPC}
-    TUnicodeStrRec = TAnsiStrRec;
-    const USTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
-  {$else}
-    TUnicodeStrRec = packed record
-    {$ifdef LARGEINT}
-      _Padding: Integer;
-    {$endif}
-      CodePageElemSize: Integer;
-      RefCount: Integer;
-      Length: Integer;
-    end;
-    const USTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
-  {$endif}
-{$endif}
 
 type
   PWideStrRec = ^TWideStrRec;
-  {$ifdef MSWINDOWS}
+  {$if not Defined(WIDESTRSUPPORT)}
+    TWideStrRec = TDynArrayRec;
+    const
+      WSTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
+  {$elseif Defined(MSWINDOWS)}
     TWideStrRec = packed record
       Length: Integer; // *2: windows BSTR
     end;
-    const WSTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
-  {$else}
-  {$ifdef FPC}
-    TWideStrRec = TAnsiStrRec;
-    const WSTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
-  {$else}
-  {$ifdef NEXTGEN}
-    TWideStrRec = TDynArrayRec;
-    const WSTR_OFFSET_LENGTH = {$ifdef SMALLINT}4{$else}8{$endif}{SizeOf(NativeInt), inline bug fix};
-  {$else}
-    {$if CompilerVersion >= 22}
-       TWideStrRec = TUnicodeStrRec;
-       const WSTR_OFFSET_LENGTH = USTR_OFFSET_LENGTH;
-    {$else}
-       TWideStrRec = TAnsiStrRec;
-       const WSTR_OFFSET_LENGTH = ASTR_OFFSET_LENGTH;
-    {$ifend}
-  {$endif}
-  {$endif}
-  {$endif}
-
-const
-  ASTR_OFFSET_REFCOUNT = ASTR_OFFSET_LENGTH + SizeOf(Integer);
-  {$ifNdef MSWINDOWS} WSTR_OFFSET_REFCOUNT = WSTR_OFFSET_LENGTH + SizeOf(Integer); {$endif}
-  {$ifdef UNICODE} USTR_OFFSET_REFCOUNT = USTR_OFFSET_LENGTH + SizeOf(Integer); {$endif}
-
-  {$ifdef INTERNALCODEPAGE}
-    ASTR_OFFSET_CODEPAGE = ASTR_OFFSET_REFCOUNT + {ElemSize}SizeOf(Word) + {CodePage}SizeOf(Word);
-  {$endif}
+    const
+      WSTR_OFFSET_LENGTH = 4{SizeOf(Integer), inline bug fix};
+  {$else .INTERNALCODEPAGE}
+    TWideStrRec = TUnicodeStrRec;
+    const
+      WSTR_OFFSET_LENGTH = USTR_OFFSET_LENGTH;
+  {$ifend}
 
 
 {$ifdef MSWINDOWS}
@@ -15447,21 +15734,10 @@ const
 {$endif}
 
 const
-  NULL_ANSICHAR = {$ifdef NEXTGEN}0{$else}#0{$endif};
+  NULL_ANSICHAR = {$ifdef ANSISTRSUPPORT}#0{$else}0{$endif};
   NULL_WIDECHAR = #0;
 
-  {$if Defined(MSWINDOWS) or Defined(FPC) or (CompilerVersion < 22)}
-    {$define WIDE_STR_SHIFT}
-  {$else}
-    {$undef WIDE_STR_SHIFT}
-  {$ifend}
-
-  {$if not Defined(FPC) and (CompilerVersion >= 20)}
-    {$define INTERNALSTRFLAGS}
-  {$ifend}
-
-
-procedure AnsiStringClear(var S{: AnsiString/UTF8String});
+procedure AnsiStringClear(var S{: AnsiString/UTF8String/RawByteString});
 var
   P: PAnsiStrRec;
   RefCount: Integer;
@@ -15478,7 +15754,7 @@ begin
 
     if (not System.IsMultiThread) then
     begin
-      P.RefCount := RefCount-1;
+      P.RefCount := RefCount - 1;
       Exit;
     end else
     begin
@@ -15492,12 +15768,6 @@ begin
 end;
 
 {$ifdef UNICODE}
-{$if SizeOf(TUnicodeStrRec) = SizeOf(TAnsiStrRec)}
-procedure UnicodeStringClear(var S{: UnicodeString}); inline;
-begin
-  AnsiStringClear(S);
-end;
-{$else}
 procedure UnicodeStringClear(var S{: UnicodeString});
 var
   P: PUnicodeStrRec;
@@ -15515,7 +15785,7 @@ begin
 
     if (not System.IsMultiThread) then
     begin
-      P.RefCount := RefCount-1;
+      P.RefCount := RefCount - 1;
       Exit;
     end else
     begin
@@ -15527,12 +15797,11 @@ begin
   if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
     Error(reInvalidPtr);
 end;
-{$ifend}
 {$endif}
 
 
 {$ifdef MSWINDOWS}
-procedure WideStringClear(var S{: WideString});
+procedure WideStringClear(var S{: WideString}); {$ifdef FPC}assembler; nostackframe;{$endif}
 asm
   {$ifdef CPUX86}
     mov edx, [eax]
@@ -15557,19 +15826,40 @@ asm
   {$endif}
   jmp SysFreeString
 end;
-{$else}
-procedure WideStringClear(var S{: WideString}); inline;
+{$else .POSIX}
+procedure WideStringClear(var S{: WideString});
+var
+  P: PWideStrRec;
+  RefCount: Integer;
 begin
-  {$if SizeOf(TWideStrRec) = SizeOf(TAnsiStrRec)}
-     AnsiStringClear(S);
-  {$else}
-     UnicodeStringClear(S);
-  {$ifend}
+  P := Pointer(S);
+  if (P = nil) then Exit;
+  Dec(P);
+  Pointer(S) := nil;
+
+  RefCount := P.RefCount;
+  if (RefCount <> 1) then
+  begin
+    if (RefCount < 0) then Exit;
+
+    if (not System.IsMultiThread) then
+    begin
+      P.RefCount := RefCount - 1;
+      Exit;
+    end else
+    begin
+      if (AtomicDecrement(P.RefCount) <> 0) then Exit;
+    end;
+  end;
+
+  RefCount := MemoryManager.FreeMem(P);
+  if (RefCount {$ifdef FPC}={$else}<>{$endif} 0) then
+    Error(reInvalidPtr);
 end;
 {$endif}
 
 
-function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String}; Length, CodePage: Integer): Pointer;
+function AnsiStringAlloc(S: Pointer{last AnsiString/UTF8String/RawByteString}; Length, CodePage: Integer): Pointer;
 label
   out_of_memory, allocate_new, length_done, done;
 var
@@ -15578,7 +15868,7 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PAnsiStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
+    P := PAnsiStrRec(PAnsiChar(Pointer(S)) - SizeOf(P^));
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -15586,7 +15876,7 @@ begin
 
       if (not System.IsMultiThread) then
       begin
-        P.RefCount := RefCount-1;
+        P.RefCount := RefCount - 1;
         goto allocate_new;
       end else
       begin
@@ -15599,7 +15889,7 @@ begin
     begin
       if (CodePage{Flag} >= 0) and (P.Length <> Length) then
       begin
-        P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+        P := MemoryManager.ReallocMem(P, Length + (SizeOf(P^) {$ifdef ANSISTRSUPPORT}+ 1{$endif}));
         if (P = nil) then
         begin
         out_of_memory:
@@ -15624,18 +15914,18 @@ begin
   end;
 
 allocate_new:
-  P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif}));
+  P := MemoryManager.GetMem(Length + (SizeOf(P^) {$ifdef ANSISTRSUPPORT}+ 1{$endif}));
   if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
 length_done:
   P.Length := Length;
 done:
-  {$ifdef INTERNALCODEPAGE}
-    P.CodePageElemSize := (CodePage and $ffff) or $00010000;
-  {$endif}
+  {$if Defined(ANSISTRSUPPORT) and Defined(UNICODE)}
+  P.CodePageElemSize := (CodePage and $ffff) or $00010000;
+  {$ifend}
   Inc(NativeInt(P), SizeOf(P^));
-  {$ifNdef NEXTGEN}
-  PByteArray(P)[Length] := NULL_ANSICHAR;
+  {$ifdef ANSISTRSUPPORT}
+  PAnsiChar(P)[Length] := NULL_ANSICHAR;
   {$endif}
   Result := P;
 end;
@@ -15656,13 +15946,13 @@ begin
   begin
     P.Length := Length;
 
-    {$ifNdef NEXTGEN}
+    {$ifdef ANSISTRSUPPORT}
     Inc(P);
-    PByteArray(P)[Length] := NULL_ANSICHAR;
+    PAnsiChar(P)[Length] := NULL_ANSICHAR;
     Dec(P);
     {$endif}
 
-    Length := Length + (SizeOf(P^) {$ifNdef NEXTGEN}+1{$endif});
+    Length := Length + (SizeOf(P^) {$ifdef ANSISTRSUPPORT}+ 1{$endif});
     P := MemoryManager.ReallocMem(P, Length);
     if (P <> nil) then
     begin
@@ -15687,7 +15977,7 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PUnicodeStrRec(PByteArray(Pointer(S)) - SizeOf(P^));
+    P := PUnicodeStrRec(PAnsiChar(Pointer(S)) - SizeOf(P^));
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -15695,7 +15985,7 @@ begin
 
       if (not System.IsMultiThread) then
       begin
-        P.RefCount := RefCount-1;
+        P.RefCount := RefCount - 1;
         goto allocate_new;
       end else
       begin
@@ -15708,7 +15998,7 @@ begin
     begin
       if (Flag >= 0) and (P.Length <> Length) then
       begin
-        P := MemoryManager.ReallocMem(P, Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+        P := MemoryManager.ReallocMem(P, Length + Length + (SizeOf(P^) + SizeOf(WideChar)));
         if (P = nil) then
         begin
         out_of_memory:
@@ -15733,15 +16023,13 @@ begin
   end;
 
 allocate_new:
-  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^)+SizeOf(WideChar)));
+  P := MemoryManager.GetMem(Length + Length + (SizeOf(P^) + SizeOf(WideChar)));
   if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
 length_done:
   P.Length := Length;
 done:
-  {$ifdef INTERNALSTRFLAGS}
-    P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
-  {$endif}
+  P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
   Inc(NativeInt(P), SizeOf(P^));
   PWideChar(P)[Length] := NULL_WIDECHAR;
   Result := P;
@@ -15767,7 +16055,7 @@ begin
     PWideChar(P)[Length] := NULL_WIDECHAR;
     Dec(P);
 
-    Length := Length+Length + (SizeOf(P^)+SizeOf(WideChar));
+    Length := Length + Length + (SizeOf(P^) + SizeOf(WideChar));
     P := MemoryManager.ReallocMem(P, Length);
     if (P <> nil) then
     begin
@@ -15795,7 +16083,7 @@ begin
   end else
   begin
     Length := Length + Length;
-    CurrentLen := PInteger(PByteArray(S) - WSTR_OFFSET_LENGTH)^;
+    CurrentLen := PInteger(PAnsiChar(S) - WSTR_OFFSET_LENGTH)^;
 
     if (Flag < 0) then
     begin
@@ -15827,7 +16115,7 @@ begin
   Error(reOutOfMemory){WStrError};
   Result := nil;
 end;
-{$else}
+{$else .POSIX}
 label
   out_of_memory, allocate_new, length_done, done;
 var
@@ -15836,7 +16124,8 @@ var
 begin
   if (S <> nil) then
   begin
-    P := PWideStrRec(PByteArray(S) - SizeOf(P^));
+    P := PWideStrRec(PAnsiChar(S) - SizeOf(P^));
+
     RefCount := P.RefCount;
     if (RefCount <> 1) then
     begin
@@ -15844,7 +16133,7 @@ begin
 
       if (not System.IsMultiThread) then
       begin
-        P.RefCount := RefCount-1;
+        P.RefCount := RefCount - 1;
         goto allocate_new;
       end else
       begin
@@ -15853,11 +16142,11 @@ begin
     end;
 
     // use or free
-    if (P.Length >= Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
+    if (P.Length >= Length {$ifdef WIDESTRLENSHIFT}shl 1{$endif}) then
     begin
-      if (Flag >= 0) and (P.Length <> Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
+      if (Flag >= 0) and (P.Length <> Length {$ifdef WIDESTRLENSHIFT}shl 1{$endif}) then
       begin
-        P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+        P := MemoryManager.ReallocMem(P, Length+Length + (SizeOf(P^) {$ifdef WIDESTRSUPPORT}+ SizeOf(WideChar){$endif}));
         if (P = nil) then
         begin
         out_of_memory:
@@ -15882,23 +16171,23 @@ begin
   end;
 
 allocate_new:
-  P := MemoryManager.GetMem(Length+Length+(SizeOf(P^){$ifNdef NEXTGEN}+SizeOf(WideChar){$endif}));
+  P := MemoryManager.GetMem(Length + Length + (SizeOf(P^){$ifdef WIDESTRSUPPORT}+ SizeOf(WideChar){$endif}));
   if (P = nil) then goto out_of_memory;
   P.RefCount := 1;
 length_done:
   P.Length := Length;
 done:
-  {$if Defined(INTERNALSTRFLAGS) and not Defined(NEXTGEN)}
-    {$if CompilerVersion >= 22}
-       // Delphi >= XE (WideString = UnicodeString)
-       P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
+  {$if Defined(WIDESTRSUPPORT) and (not Defined(MSWINDOWS))}
+    {$if Defined(FPC) or (CompilerVersion >= 22)}
+      // FPC or Delphi >= XE (WideString = UnicodeString)
+      P.CodePageElemSize := CODEPAGE_UTF16 or $00020000;
     {$else}
-       // Delphi < XE (WideString = double AnsiString, CodePage default)
-       P.CodePageElemSize := DefaultSystemCodePage or $00010000;
+      // Delphi < XE (WideString = double AnsiString, CodePage default)
+      P.CodePageElemSize := DefaultSystemCodePage or $00010000;
     {$ifend}
   {$ifend}
   Inc(NativeInt(P), SizeOf(P^));
-  {$ifNdef NEXTGEN}
+  {$ifdef WIDESTRSUPPORT}
   PWideChar(P)[Length] := NULL_WIDECHAR;
   {$endif}
   Result := P;
@@ -15906,9 +16195,28 @@ end;
 {$endif}
 
 
-{$ifdef INLINESUPPORT}
-procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer); //inline;
-{$ifdef MSWINDOWS}
+procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
+{$if Defined(MSWINDOWS) and Defined(CPUX86)} {$ifdef FPC}assembler; nostackframe;{$endif}
+asm
+  add ecx, ecx
+  cmp [edx - WSTR_OFFSET_LENGTH], ecx
+  jne @1
+  mov [eax], edx
+  ret
+@1:
+  shr ecx, 1
+  push ecx
+  push edx
+  push eax
+  call SysReAllocStringLen
+  test eax, eax
+  je @2
+  ret
+@2:
+  mov al, 1
+  jmp System.Error
+end;
+{$elseif Defined(MSWINDOWS)} // CPUX64
 var
   Done: LongBool;
 begin
@@ -15934,22 +16242,22 @@ begin
   P := S;
   Dec(P);
 
-  if (P.Length = Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif}) then
+  if (P.Length = Length {$ifdef WIDESTRLENSHIFT}shl 1{$endif}) then
   begin
     Inc(P);
     Result := P;
     Exit;
   end else
   begin
-    P.Length := Length {$ifdef WIDE_STR_SHIFT}shl 1{$endif};
+    P.Length := Length {$ifdef WIDESTRLENSHIFT}shl 1{$endif};
 
-    {$ifNdef NEXTGEN}
+    {$ifdef WIDESTRSUPPORT}
     Inc(P);
     PWideChar(P)[Length] := NULL_WIDECHAR;
     Dec(P);
     {$endif}
 
-    Length := Length+Length + (SizeOf(P^) {$ifNdef NEXTGEN}+SizeOf(WideChar){$endif});
+    Length := Length + Length + (SizeOf(P^) {$ifdef WIDESTRSUPPORT}+ SizeOf(WideChar){$endif});
     P := MemoryManager.ReallocMem(P, Length);
     if (P <> nil) then
     begin
@@ -15963,29 +16271,7 @@ begin
     end;
   end;
 end;
-{$endif}
-{$else .WINDOWS.CPUX86}
-procedure WideStringFinish(var Result: Pointer; S: Pointer; Length: Integer);
-asm
-  add ecx, ecx
-  cmp [edx - WSTR_OFFSET_LENGTH], ecx
-  jne @1
-  mov [eax], edx
-  ret
-@1:
-  shr ecx, 1
-  push ecx
-  push edx
-  push eax
-  call SysReAllocStringLen
-  test eax, eax
-  je @2
-  ret
-@2:
-  mov al, 1
-  jmp System.Error
-end;
-{$endif}
+{$ifend}
 {$ifdef undef}{$ENDREGION}{$endif}
 
 {$ifdef undef}{$REGION 'SBCS<-->UTF8<-->UTF16 conversions'}{$endif}
@@ -16004,8 +16290,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16134,10 +16420,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16176,8 +16462,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16327,10 +16613,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16376,8 +16662,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16527,10 +16813,10 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   if (Length > NativeUInt(High(Dest))) then Length := NativeUInt(High(Dest));
   PByte(@Dest)^ := Length;
-  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}SrcCodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(DestCodePage);
   Index := NativeUInt(DestCodePage);
@@ -16575,7 +16861,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16697,7 +16983,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -16741,7 +17027,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -16863,7 +17149,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -16907,7 +17193,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17029,7 +17315,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17073,7 +17359,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17115,7 +17401,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17162,7 +17448,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17214,7 +17500,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17259,7 +17545,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17301,7 +17587,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17348,7 +17634,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17400,7 +17686,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17445,7 +17731,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17487,7 +17773,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17534,7 +17820,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -17586,7 +17872,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -17632,8 +17918,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17752,12 +18038,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17794,8 +18080,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17914,12 +18200,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -17956,8 +18242,8 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18076,12 +18362,12 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
   Context.SourceSize := Length;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18114,10 +18400,10 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
-  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
   begin
     Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
     AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_lower(Buffer, Pointer(Src), Length));
@@ -18193,7 +18479,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18220,10 +18506,10 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
-  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PByteArray(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
+  if (Pointer(Dest) = Pointer(Src)) and (PInteger(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_REFCOUNT)^ > 0) then
   begin
     Buffer := AnsiStringAlloc(nil, (Length * 3) shr 1, CODEPAGE_UTF8);
     AnsiStringFinish(Pointer(Dest), Buffer, UniConv.utf8_from_utf8_upper(Buffer, Pointer(Src), Length));
@@ -18299,7 +18585,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18325,7 +18611,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18350,7 +18636,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18380,7 +18666,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18414,7 +18700,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18441,7 +18727,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18466,7 +18752,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18496,7 +18782,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18530,7 +18816,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18557,7 +18843,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18582,7 +18868,7 @@ begin
     AnsiStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := AnsiStringAlloc(Pointer(Dest), Length * 3, CODEPAGE_UTF8 or (1 shl 31));
@@ -18612,7 +18898,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -18646,7 +18932,7 @@ begin
     PByte(@Dest)^ := 0;
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
   Context.Destination := Pointer(@Dest[1]);
   Context.Source := Pointer(Src);
   Context.DestinationSize := NativeUInt(High(Dest));
@@ -18678,8 +18964,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18716,8 +19002,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18854,8 +19140,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -18892,8 +19178,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -19030,8 +19316,8 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -19068,8 +19354,8 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
-  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PByteArray(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  {$ifdef INTERNALCODEPAGE}CodePage := PWord(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_CODEPAGE)^;{$endif}
 
   // SBCS := UniConvSBCS(CodePage);
   Index := NativeUInt(CodePage);
@@ -19201,7 +19487,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19219,7 +19505,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19301,7 +19587,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19319,7 +19605,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19401,7 +19687,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := WideStringAlloc(Pointer(Dest), Length, -1);
@@ -19419,7 +19705,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - ASTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, -1);
@@ -19501,7 +19787,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19527,7 +19813,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
@@ -19560,7 +19846,7 @@ begin
     WideStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - WSTR_OFFSET_LENGTH)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
   {$ifdef MSWINDOWS}
   if (Length = 0) then
   begin
@@ -19586,7 +19872,7 @@ begin
     UnicodeStringClear(Dest);
     Exit;
   end;
-  Length := PCardinal(PByteArray(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
+  Length := PCardinal(PAnsiChar(Pointer(Src)) - USTR_OFFSET_LENGTH)^;
 
   // conversion
   Buffer := UnicodeStringAlloc(Pointer(Dest), Length, 0);
@@ -19779,10 +20065,10 @@ var
   {$ifdef CPUX86}
   F: record
     Y_Offset: NativeInt;
-    TopPtr: PByteArray;
+    TopPtr: PAnsiChar;
   end;
   {$else .CPUMANYREGS}
-    TopPtr: PByteArray;
+    TopPtr: PAnsiChar;
   {$endif}
 
   U, V: NativeUInt;
@@ -19808,10 +20094,10 @@ begin
 
   Lookup := Comp.Lookup;
   {$ifdef CPUX86}F.Y_Offset := NativeInt(S2) - NativeInt(S1){$endif};
-  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
+  {$ifdef CPUX86}F.{$endif}TopPtr := PAnsiChar(S1) + Comp.Length - SizeOf(NativeUInt);
 
   // while (Length >= SizeOf(NativeUInt)) do
-  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  if (PAnsiChar(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
   main_loop:
   begin
     X := PNativeUInt(S1)^;
@@ -19869,7 +20155,7 @@ begin
       end;
     end;
 
-   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+   if (PAnsiChar(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
   end;
   main_loop_finish:
 
@@ -19944,11 +20230,11 @@ var
   {$ifdef CPUX86}
   F: record
     _1, _2: PUniConvWB;
-    TopPtr: PByteArray;
+    TopPtr: PAnsiChar;
   end;
   {$else .CPUMANYREGS}
     _1, _2: PUniConvWB;
-    TopPtr: PByteArray;
+    TopPtr: PAnsiChar;
   {$endif}
 
   {$ifdef CPUX86}
@@ -19963,10 +20249,10 @@ begin
 
   {$ifdef CPUX86}F.{$endif}_1 := Comp.Lookup;
   {$ifdef CPUX86}F.{$endif}_2 := Comp.Lookup_2;
-  {$ifdef CPUX86}F.{$endif}TopPtr := PByteArray(S1) + Comp.Length - SizeOf(NativeUInt);
+  {$ifdef CPUX86}F.{$endif}TopPtr := PAnsiChar(S1) + Comp.Length - SizeOf(NativeUInt);
 
   // while (Length >= SizeOf(NativeUInt)) do
-  if (PByteArray(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
+  if (PAnsiChar(S1) > {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop_finish;
   main_loop:
   begin
     X := PNativeUInt(S1)^;
@@ -20003,7 +20289,7 @@ begin
         if {3}({$ifdef CPUX86}F._1[X]<>F._2[Y]{$else}_1[X]<>_2[Y]{$endif}) then goto make_result;
     end;
 
-   if (PByteArray(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
+   if (PAnsiChar(S1) <= {$ifdef CPUX86}F.{$endif}TopPtr) then goto main_loop;
   end;
   main_loop_finish:
 
@@ -20228,7 +20514,7 @@ begin
     X := PWordArray(S1)[Length-1];
     if (_1 <> nil) then X := _1[X];
 
-    Y := Byte(PByteArray(S2)[Length-1]);
+    Y := Byte(PAnsiChar(S2)[Length-1]);
     Y := _2[Y];
     if (X <> Y) then goto make_result;
   end;
@@ -20243,7 +20529,7 @@ begin
 make_result:
   Result := Ord(X > Y)*2 - 1;
 end;
-{$else .CPUX86}
+{$else .CPUX86} {$ifdef FPC}assembler; nostackframe;{$endif}
 asm
   // S1 - ebx
   // S2 - ebp
@@ -20265,10 +20551,10 @@ asm
   mov edi, [ECX].TUniConvCompareOptions.Lookup_2
 
   lea ecx, [eax + ebx*2]
-  lea ebx, [eax - 4] // S1 := PByteArray(S1) - 4;
+  lea ebx, [eax - 4] // S1 := PAnsiChar(S1) - 4;
   sub ecx, 8
   mov ebp, edx       // S2 := S2;
-  push ecx           // TopS1Ptr(stack) := PByteArray(S1) + Length*SizeOf(WideChar) - 4-4;
+  push ecx           // TopS1Ptr(stack) := PAnsiChar(S1) + Length*SizeOf(WideChar) - 4-4;
 
   cmp ebx, ecx
   jnbe @after_loop
@@ -20709,15 +20995,15 @@ compare_difficult:
       5:
       begin
         if (X <> Y) then goto make_result;
-        X := PByte(PByteArray(S1) - SizeOf(Byte))^;
-        Y := PByte(PByteArray(S2) - SizeOf(Byte))^;
+        X := PByte(PAnsiChar(S1) - SizeOf(Byte))^;
+        Y := PByte(PAnsiChar(S2) - SizeOf(Byte))^;
         goto compare_difficult_4;
       end;
       6:
       begin
         if (X <> Y) then goto make_result;
-        X := PWord(PByteArray(S1) - SizeOf(Word))^;
-        Y := PWord(PByteArray(S2) - SizeOf(Word))^;
+        X := PWord(PAnsiChar(S1) - SizeOf(Word))^;
+        Y := PWord(PAnsiChar(S2) - SizeOf(Word))^;
         goto compare_difficult_4;
       end;
     else
@@ -21080,7 +21366,7 @@ read_small:
 make_result:
   Result := Ord(X > Y)*2 - 1;
 end;
-{$else .CPUX86}
+{$else .CPUX86} {$ifdef FPC}assembler; nostackframe;{$endif}
 asm
 @prefix:
   push ebp
@@ -23497,7 +23783,7 @@ begin
 
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
-      Length := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      Length := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -23529,7 +23815,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23670,7 +23956,7 @@ begin
 
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
-      Length := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      Length := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       if (Length <> PCardinal(P1)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -23702,7 +23988,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -23848,7 +24134,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
-        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
@@ -23895,7 +24181,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -24053,7 +24339,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         L1 := PCardinal(P1)^;
-        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           Comp.Length := L1;
@@ -24100,7 +24386,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25260,7 +25546,7 @@ begin
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
-      L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       Comp.Length := L1;
       Comp.Length_2 := L2;
 
@@ -25277,7 +25563,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25387,7 +25673,7 @@ begin
       Dec(P1, ASTR_OFFSET_LENGTH);
       Dec(P2, WSTR_OFFSET_LENGTH);
       L1 := PCardinal(P1)^;
-      L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       Comp.Length := L1;
       Comp.Length_2 := L2;
 
@@ -25404,7 +25690,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25505,7 +25791,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
-        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         Inc(P1, ASTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
@@ -25522,7 +25808,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25620,7 +25906,7 @@ begin
         Dec(P1, ASTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P1)^;
-        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        Comp.Length_2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         Inc(P1, ASTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
@@ -25637,7 +25923,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25752,7 +26038,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      Length := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      Length := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -25784,7 +26070,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -25925,7 +26211,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      Length := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      Length := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       if (Length <> PCardinal(P2)^) then goto ret_false;
       Comp.Length := Length;
       {$ifdef INTERNALCODEPAGE}
@@ -25957,7 +26243,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26101,7 +26387,7 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
         begin
@@ -26148,7 +26434,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26303,7 +26589,7 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         L2 := PCardinal(P2)^;
         if (L1 <= L2) then
         begin
@@ -26350,7 +26636,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26485,7 +26771,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
       Comp.Length_2 := L1;
@@ -26503,7 +26789,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26612,7 +26898,7 @@ begin
 
       Dec(P1, WSTR_OFFSET_LENGTH);
       Dec(P2, ASTR_OFFSET_LENGTH);
-      L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+      L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
       L2 := PCardinal(P2)^;
       Comp.Length := L2;
       Comp.Length_2 := L1;
@@ -26630,7 +26916,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26732,7 +27018,7 @@ begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
-        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := nil;
@@ -26750,7 +27036,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26850,7 +27136,7 @@ begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, ASTR_OFFSET_LENGTH);
         Comp.Length := PCardinal(P2)^;
-        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        Comp.Length_2 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, ASTR_OFFSET_LENGTH);
         Comp.Lookup := Pointer(@UNICONV_CHARCASE.VALUES);
@@ -26868,7 +27154,7 @@ begin
     end else
     begin
     {$ifdef MSWINDOWS}
-      P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -26960,7 +27246,7 @@ begin
         Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
-        {$ifdef WIDE_STR_SHIFT}Length := Length shr 1;{$endif}
+        {$ifdef WIDESTRLENSHIFT}Length := Length shr 1;{$endif}
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_compare_words(Pointer(P1), Pointer(P2), Length);
@@ -26969,13 +27255,13 @@ begin
       end else
       begin
       {$ifdef MSWINDOWS}
-        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       {$endif}
       end;
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -27068,7 +27354,7 @@ begin
         Dec(P2, WSTR_OFFSET_LENGTH);
         Length := PCardinal(P1)^;
         if (Length <> PCardinal(P2)^) then goto ret_false;
-        {$ifdef WIDE_STR_SHIFT}Length := Length shr 1;{$endif}
+        {$ifdef WIDESTRLENSHIFT}Length := Length shr 1;{$endif}
         Inc(P1, WSTR_OFFSET_LENGTH);
         Inc(P2, WSTR_OFFSET_LENGTH);
         Ret := __uniconv_utf16_compare_utf16(Pointer(P1), Pointer(P2), Length);
@@ -27077,13 +27363,13 @@ begin
       end else
       begin
       {$ifdef MSWINDOWS}
-        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       {$endif}
       end;
     end else
     begin
     {$ifdef MSWINDOWS}
-      P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+      P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
     {$endif}
     end;
   end;
@@ -27177,8 +27463,8 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
-        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
@@ -27203,10 +27489,10 @@ begin
     {$ifdef MSWINDOWS}
       if (P2 = nil) then
       begin
-        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       end else
       begin
-        P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
       end;
     {$endif}
     end;
@@ -27311,8 +27597,8 @@ begin
       begin
         Dec(P1, WSTR_OFFSET_LENGTH);
         Dec(P2, WSTR_OFFSET_LENGTH);
-        L1 := PCardinal(P1)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
-        L2 := PCardinal(P2)^ {$ifdef WIDE_STR_SHIFT}shr 1{$endif};
+        L1 := PCardinal(P1)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
+        L2 := PCardinal(P2)^ {$ifdef WIDESTRLENSHIFT}shr 1{$endif};
         if (L1 <= L2) then
         begin
           L2 := (-NativeInt(L2 - L1)) shr {$ifdef SMALLINT}31{$else}63{$endif};
@@ -27337,10 +27623,10 @@ begin
     {$ifdef MSWINDOWS}
       if (P2 = nil) then
       begin
-        P1 := Pointer(PCardinal(PByteArray(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P1 := Pointer(PCardinal(PAnsiChar(P1) - WSTR_OFFSET_LENGTH)^ <> 0);
       end else
       begin
-        P2 := Pointer(PCardinal(PByteArray(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
+        P2 := Pointer(PCardinal(PAnsiChar(P2) - WSTR_OFFSET_LENGTH)^ <> 0);
       end;
     {$endif}
     end;
