@@ -9,8 +9,8 @@ UniConv is a universal quick and compact library intended for conversion, compar
 * Libraries are constructed from considerations of universality but not the maximum performance
 * The identity of the transformations is not guaranteed (e.g. `CFStringUppercase`, `u_strToUpper` and `CharUpperBuffW`) process differently some characters. Even `CharUpperBuffW` on Windows XP and Windows 10 may produce different results
 
-The examples of the library use you can find on demonstration projects: [Demo.zip]( http://dmozulyov.ucoz.net/UniConv/Demo.zip)
-![](http://dmozulyov.ucoz.net/UniConv/ScreenShots.png)
+The examples of the library use you can find on demonstration projects: [Demo.zip](https://github.com/d-mozulyov/UniConv/raw/master/data/Demo.zip)
+![](https://github.com/d-mozulyov/UniConv/raw/master/data/ScreenShots.png)
 
 ##### Supported encodings
 UniConv supports 50 encodings:
