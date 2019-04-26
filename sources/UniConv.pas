@@ -8080,7 +8080,6 @@ begin
     end else
     begin
       if (U >= $e000) then goto process_character;
-      if (U >= $dc00) then Inc(Src);
     unknown:
       PByte(Dest)^ := UNKNOWN_CHARACTER;
       Inc(Dest);
@@ -8284,7 +8283,6 @@ begin
     end else
     begin
       if (U >= $e000) then goto process_character;
-      if (U >= $dc00) then Inc(Src);
     unknown:
       PByte(Dest)^ := UNKNOWN_CHARACTER;
       Inc(Dest);
@@ -8488,7 +8486,6 @@ begin
     end else
     begin
       if (U >= $e000) then goto process_character;
-      if (U >= $dc00) then Inc(Src);
     unknown:
       PByte(Dest)^ := UNKNOWN_CHARACTER;
       Inc(Dest);
