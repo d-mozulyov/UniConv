@@ -3,7 +3,7 @@
         <ProjectGuid>{F68368CD-4B93-4381-8059-F9815745F7FE}</ProjectGuid>
         <ProjectVersion>15.1</ProjectVersion>
         <FrameworkType>None</FrameworkType>
-        <MainSource>FileConversion.dpr</MainSource>
+        <MainSource>StringConversion.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -33,7 +33,7 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DependencyCheckOutputName>bin\Writing.exe</DCC_DependencyCheckOutputName>
         <VerInfo_Locale>1049</VerInfo_Locale>
-        <DCC_UnitSearchPath>..\sources;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>..\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_DcuOutput>dcu</DCC_DcuOutput>
@@ -134,7 +134,7 @@
                     <VersionInfoKeys Name="theme"/>
                 </VersionInfoKeys>
                 <Source>
-                    <Source Name="MainSource">FileConversion.dpr</Source>
+                    <Source Name="MainSource">StringConversion.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl">File C:\Program Files (x86)\Raize\CS5\Bin\CodeSiteExpressPkg_Design190.bpl not found</Excluded_Packages>

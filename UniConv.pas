@@ -101,6 +101,7 @@ unit UniConv;
   {$define INLINESUPPORTSIMPLE}
   {$define OPERATORSUPPORT}
   {$define STATICSUPPORT}
+  {$define GENERICSUPPORT}
   {$define ANSISTRSUPPORT}
   {$define SHORTSTRSUPPORT}
   {$define WIDESTRSUPPORT}
@@ -139,13 +140,16 @@ unit UniConv;
   {$if CompilerVersion >= 18.5}
     {$define STATICSUPPORT}
   {$ifend}
+  {$if CompilerVersion >= 20}
+    {$define GENERICSUPPORT}
+    {$define SYSARRAYSUPPORT}
+  {$ifend}
   {$if CompilerVersion < 23}
     {$define CPUX86}
   {$ifend}
   {$if CompilerVersion >= 23}
     {$define UNITSCOPENAMES}
     {$define RETURNADDRESS}
-    {$define SYSARRAYSUPPORT}
   {$ifend}
   {$if CompilerVersion >= 21}
     {$WEAKLINKRTTI ON}
@@ -394,8 +398,13 @@ const
 type
   // main conversion interface
   PUniConvContext = ^TUniConvContext;
+  {$A1}
+  {$ifdef BCB}
+  TUniConvContext = record
+  {$else}
   TUniConvContext = object
   protected
+  {$endif}
     F: packed record
     case Integer of
          0: (Flags: Cardinal;
@@ -548,6 +557,7 @@ type
     property DestinationWritten: NativeUInt read FDestinationWritten;
     property SourceRead: NativeUInt read FSourceRead;
   end;
+  {$A4}
 
 
 type
@@ -624,15 +634,19 @@ type
   //(28) $fffd - User defined
 
   PUniConvSBCS = ^TUniConvSBCS;
+  {$A1}
+  {$ifdef BCB}
+  TUniConvSBCS= record
+  {$else}
   TUniConvSBCS = object
-  private
+  protected
+  {$endif}
     {$HINTS OFF}
     FAlign: packed record
       Ptrs: array[0..4] of Pointer;
       {$ifdef LARGEINT}C: Cardinal;{$endif}
     end;
     {$HINTS ON}
-  protected
     F: packed record
       Index: Word;
       CodePage: Word;
@@ -666,7 +680,9 @@ type
     function GetLowerCaseUTF8: PUniConvMS; {$ifdef INLINESUPPORT}inline;{$endif}
     function GetUpperCaseUTF8: PUniConvMS; {$ifdef INLINESUPPORT}inline;{$endif}
     function GetVALUES: PUniConvSBCSValues; {$ifdef INLINESUPPORT}inline;{$endif}
+  {$ifNdef BCB}
   protected
+  {$endif}
     procedure FillUCS2(var Buffer: TUniConvWB; const CharCase: TCharCase);
     procedure FillUTF8(var Buffer: TUniConvMB; const CharCase: TCharCase);
     procedure FillVALUES(var Buffer: TUniConvBW);
@@ -696,6 +712,7 @@ type
     // single-byte lookup from another encoding
     function FromSBCS(const Source: PUniConvSBCS; const CharCase: TCharCase = ccOriginal): PUniConvSS;
   end;
+  {$A4}
 
 var
   DEFAULT_UNICONV_SBCS: PUniConvSBCS;
